@@ -1,0 +1,65 @@
+{
+  "archivedAt": null,
+  "blueprintBranch": null,
+  "blueprintId": "fa43562c-945c-4fd1-ab8a-6bb5e33ebbc9",
+  "createdAt": "2023-04-12T01:26:37.828012Z",
+  "createdByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "documentId": "aa64f36f-2415-4e6b-b9f9-4b9ea41da361",
+  "environmentId": null,
+  "fields": [
+    {
+      "blueprintFieldId": "43b57b65-6b0a-40c2-a3ed-67c8b249116f",
+      "createdAt": "2023-04-12T01:26:38.383534Z",
+      "data": "How to Hire the Right People: Tips for Recruitment and Candidate Assessment",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.383534Z"
+    },
+    {
+      "blueprintFieldId": "5e421855-7a75-4149-bd1b-58522b0a5b89",
+      "createdAt": "2023-04-12T01:26:38.540347Z",
+      "data": "Learn how to hire the right people for your business by following these tips for recruitment, conducting thorough interviews, checking references and backgrounds, assessing for culture fit, and considering soft skills.",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.540347Z"
+    },
+    {
+      "blueprintFieldId": "7c6f061f-184a-411b-96bd-1260cc7c295b",
+      "createdAt": "2023-04-12T01:26:38.608079Z",
+      "data": "hiring, recruitment, job role, interviews, reference check, culture fit, soft skills, candidate assessment",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.608079Z"
+    },
+    {
+      "blueprintFieldId": "9c1d8497-dce4-4c6e-bced-a3984a44e593",
+      "createdAt": "2023-04-12T01:26:38.651516Z",
+      "data": [
+        "30385701-b215-4156-8966-31aa4f2dd840"
+      ],
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_CONNECTION",
+      "updatedAt": "2023-04-12T01:26:38.651516Z"
+    },
+    {
+      "blueprintFieldId": "d385eb56-308c-4d91-b3d2-39c5242240b4",
+      "createdAt": "2023-04-12T01:26:38.712811Z",
+      "data": "SEO: How to hire the right People",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.712811Z"
+    }
+  ],
+  "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "previewImageUrl": "",
+  "projectId": "01ee477c-9983-4f73-b88b-a45baefa0a8f",
+  "publishedAt": "2023-04-12T01:26:37.828012Z",
+  "statusId": 2,
+  "title": "SEO: How to hire the right People",
+  "updatedAt": "2023-04-12T01:26:37.828012Z"
+}

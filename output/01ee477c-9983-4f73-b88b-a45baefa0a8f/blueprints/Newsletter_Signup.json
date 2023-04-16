@@ -1,0 +1,136 @@
+{
+  "blueprintId": "e992323c-5d0b-4ab1-b4fa-3704d7ac4d02",
+  "createdAt": "2023-04-12T01:26:37.061075Z",
+  "createdBy": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "description": null,
+  "exposeMutations": false,
+  "groups": [
+    {
+      "blueprintGroupId": "62fa5829-38bc-4520-a1d5-0d0a5e5ec850",
+      "fields": [
+        {
+          "blueprintFieldId": "8bd67dd9-c92f-4179-9010-ac9b556db473",
+          "blueprintGroupId": "62fa5829-38bc-4520-a1d5-0d0a5e5ec850",
+          "blueprintId": "e992323c-5d0b-4ab1-b4fa-3704d7ac4d02",
+          "description": "",
+          "name": "titleInternal",
+          "options": {
+            "code": null,
+            "connection": null,
+            "datetime": null,
+            "disableInApi": null,
+            "disableInUi": false,
+            "extension": null,
+            "external": null,
+            "file": null,
+            "float": null,
+            "int": null,
+            "localized": null,
+            "primary": true,
+            "required": false,
+            "richtext": null,
+            "select": null,
+            "string": {
+              "max": null,
+              "min": null,
+              "multiline": null,
+              "pattern": null
+            },
+            "tag": null,
+            "uniqueGlobal": null,
+            "uniqueLocal": false,
+            "video": null
+          },
+          "system": false,
+          "title": "Title Internal",
+          "type": "BLUEPRINT_FIELD_TYPE_STRING"
+        },
+        {
+          "blueprintFieldId": "409e0e21-ed6e-492a-a7b6-4a72316dfdc1",
+          "blueprintGroupId": "62fa5829-38bc-4520-a1d5-0d0a5e5ec850",
+          "blueprintId": "e992323c-5d0b-4ab1-b4fa-3704d7ac4d02",
+          "description": "",
+          "name": "headline",
+          "options": {
+            "code": null,
+            "connection": null,
+            "datetime": null,
+            "disableInApi": false,
+            "disableInUi": false,
+            "extension": null,
+            "external": null,
+            "file": null,
+            "float": null,
+            "int": null,
+            "localized": null,
+            "primary": false,
+            "required": false,
+            "richtext": null,
+            "select": null,
+            "string": {
+              "max": null,
+              "min": null,
+              "multiline": null,
+              "pattern": null
+            },
+            "tag": null,
+            "uniqueGlobal": null,
+            "uniqueLocal": false,
+            "video": null
+          },
+          "system": false,
+          "title": "Headline",
+          "type": "BLUEPRINT_FIELD_TYPE_STRING"
+        },
+        {
+          "blueprintFieldId": "728859e8-b46e-4ce4-803b-32fca99e3fb6",
+          "blueprintGroupId": "62fa5829-38bc-4520-a1d5-0d0a5e5ec850",
+          "blueprintId": "e992323c-5d0b-4ab1-b4fa-3704d7ac4d02",
+          "description": "",
+          "name": "subheadline",
+          "options": {
+            "code": null,
+            "connection": null,
+            "datetime": null,
+            "disableInApi": false,
+            "disableInUi": false,
+            "extension": null,
+            "external": null,
+            "file": null,
+            "float": null,
+            "int": null,
+            "localized": null,
+            "primary": false,
+            "required": false,
+            "richtext": null,
+            "select": null,
+            "string": {
+              "max": null,
+              "min": null,
+              "multiline": null,
+              "pattern": null
+            },
+            "tag": null,
+            "uniqueGlobal": null,
+            "uniqueLocal": false,
+            "video": null
+          },
+          "system": false,
+          "title": "Subheadline",
+          "type": "BLUEPRINT_FIELD_TYPE_STRING"
+        }
+      ],
+      "name": "Main"
+    }
+  ],
+  "name": "NewsletterSignup",
+  "previewImageUrl": "https://cloud.caisy.io/assets/blueprint/b76210be-a043-4989-98df-ecaf6c6e68d8/32a1f8ce-02b6-4fed-8fce-ba86fa29f867Screenshot20230302at11.13.03.png",
+  "projectId": "01ee477c-9983-4f73-b88b-a45baefa0a8f",
+  "single": false,
+  "system": false,
+  "tagIds": [],
+  "title": "Newsletter Signup",
+  "updatedAt": "2023-04-12T01:26:37.061075Z",
+  "updatedBy": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "variant": "BLUEPRINT_VARIANT_COMPONENT"
+}

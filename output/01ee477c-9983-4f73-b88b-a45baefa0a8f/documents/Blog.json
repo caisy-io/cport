@@ -1,0 +1,27 @@
+{
+  "archivedAt": null,
+  "blueprintBranch": null,
+  "blueprintId": "d1d44168-1e14-4362-945b-66395dbda7b4",
+  "createdAt": "2023-04-12T01:26:37.82753Z",
+  "createdByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "documentId": "2f018fa0-5d3c-450a-8f66-d3e63e40e63f",
+  "environmentId": null,
+  "fields": [
+    {
+      "blueprintFieldId": "9e0a2bb2-9af8-49de-91ba-260e57e2af3e",
+      "createdAt": "2023-04-12T01:26:38.459364Z",
+      "data": "Blog",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.459364Z"
+    }
+  ],
+  "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "previewImageUrl": "",
+  "projectId": "01ee477c-9983-4f73-b88b-a45baefa0a8f",
+  "publishedAt": "2023-04-12T01:26:37.827531Z",
+  "statusId": 2,
+  "title": "Blog",
+  "updatedAt": "2023-04-12T01:26:37.827531Z"
+}

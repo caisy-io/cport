@@ -1,0 +1,65 @@
+{
+  "archivedAt": null,
+  "blueprintBranch": null,
+  "blueprintId": "fa43562c-945c-4fd1-ab8a-6bb5e33ebbc9",
+  "createdAt": "2023-04-12T01:26:37.827985Z",
+  "createdByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "documentId": "c990ec4e-f1e1-41ad-ab30-20dafc63f20b",
+  "environmentId": null,
+  "fields": [
+    {
+      "blueprintFieldId": "43b57b65-6b0a-40c2-a3ed-67c8b249116f",
+      "createdAt": "2023-04-12T01:26:38.35881Z",
+      "data": "Jane Doe's Blog",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.35881Z"
+    },
+    {
+      "blueprintFieldId": "5e421855-7a75-4149-bd1b-58522b0a5b89",
+      "createdAt": "2023-04-12T01:26:38.512295Z",
+      "data": "A sample blog template with caisy.io",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.512295Z"
+    },
+    {
+      "blueprintFieldId": "7c6f061f-184a-411b-96bd-1260cc7c295b",
+      "createdAt": "2023-04-12T01:26:38.596277Z",
+      "data": "Blog, Example, caisy.io, tailwindcss, astro",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.596277Z"
+    },
+    {
+      "blueprintFieldId": "9c1d8497-dce4-4c6e-bced-a3984a44e593",
+      "createdAt": "2023-04-12T01:26:38.641555Z",
+      "data": [
+        "d6af95c6-de94-4466-8f26-356b28c283d5"
+      ],
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_CONNECTION",
+      "updatedAt": "2023-04-12T01:26:38.641555Z"
+    },
+    {
+      "blueprintFieldId": "d385eb56-308c-4d91-b3d2-39c5242240b4",
+      "createdAt": "2023-04-12T01:26:38.664615Z",
+      "data": "Basic SEO Infos for Home",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.664615Z"
+    }
+  ],
+  "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "previewImageUrl": "",
+  "projectId": "01ee477c-9983-4f73-b88b-a45baefa0a8f",
+  "publishedAt": "2023-04-12T01:26:37.827985Z",
+  "statusId": 2,
+  "title": "Basic SEO Infos for Home",
+  "updatedAt": "2023-04-12T01:26:37.827985Z"
+}

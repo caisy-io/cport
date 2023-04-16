@@ -1,0 +1,59 @@
+{
+  "archivedAt": null,
+  "blueprintBranch": null,
+  "blueprintId": "c0251568-046e-4a09-b4b4-982f27f04d43",
+  "createdAt": "2023-04-12T01:26:37.827432Z",
+  "createdByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "documentId": "bd799a70-a936-40e5-8873-4e183df8bcbc",
+  "environmentId": null,
+  "fields": [
+    {
+      "blueprintFieldId": "3e247281-0497-4e6c-bc99-1226784d6872",
+      "createdAt": "2023-04-12T01:26:38.04984Z",
+      "data": "testpage",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.04984Z"
+    },
+    {
+      "blueprintFieldId": "3ecce696-4b70-4999-9176-0109556c29e7",
+      "createdAt": "2023-04-12T01:26:38.127227Z",
+      "data": [
+        "a5eda4eb-9e40-4670-b680-ebe6e73a0466"
+      ],
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_CONNECTION",
+      "updatedAt": "2023-04-12T01:26:38.127227Z"
+    },
+    {
+      "blueprintFieldId": "6329bc21-8a5c-496d-9851-43adc129778a",
+      "createdAt": "2023-04-12T01:26:38.166766Z",
+      "data": [
+        "a4f614a7-38da-40a8-8fb8-e43693662a83",
+        "c813d561-0e90-447a-a258-7ae9e36abced"
+      ],
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_CONNECTION",
+      "updatedAt": "2023-04-12T01:26:38.166766Z"
+    },
+    {
+      "blueprintFieldId": "85376f2d-c273-4684-831b-f73933b059cf",
+      "createdAt": "2023-04-12T01:26:38.233775Z",
+      "data": "testpage",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.233775Z"
+    }
+  ],
+  "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "previewImageUrl": "",
+  "projectId": "01ee477c-9983-4f73-b88b-a45baefa0a8f",
+  "publishedAt": "2023-04-12T01:26:37.827432Z",
+  "statusId": 2,
+  "title": "testpage",
+  "updatedAt": "2023-04-12T01:26:37.827432Z"
+}

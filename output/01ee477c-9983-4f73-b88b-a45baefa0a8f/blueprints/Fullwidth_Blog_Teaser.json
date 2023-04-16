@@ -1,0 +1,104 @@
+{
+  "blueprintId": "830d56c9-cd40-4190-99ab-2a1098ec522c",
+  "createdAt": "2023-04-12T01:26:37.217392Z",
+  "createdBy": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "description": null,
+  "exposeMutations": false,
+  "groups": [
+    {
+      "blueprintGroupId": "91ce1753-01d6-41a0-a3e6-009a09aae844",
+      "fields": [
+        {
+          "blueprintFieldId": "5e3879e6-4110-4f3f-8672-97c9358f2c7e",
+          "blueprintGroupId": "91ce1753-01d6-41a0-a3e6-009a09aae844",
+          "blueprintId": "830d56c9-cd40-4190-99ab-2a1098ec522c",
+          "description": "",
+          "name": "titleInternal",
+          "options": {
+            "code": null,
+            "connection": null,
+            "datetime": null,
+            "disableInApi": false,
+            "disableInUi": false,
+            "extension": null,
+            "external": null,
+            "file": null,
+            "float": null,
+            "int": null,
+            "localized": null,
+            "primary": true,
+            "required": false,
+            "richtext": null,
+            "select": null,
+            "string": {
+              "max": null,
+              "min": null,
+              "multiline": null,
+              "pattern": null
+            },
+            "tag": null,
+            "uniqueGlobal": null,
+            "uniqueLocal": false,
+            "video": null
+          },
+          "system": false,
+          "title": "Title Internal",
+          "type": "BLUEPRINT_FIELD_TYPE_STRING"
+        },
+        {
+          "blueprintFieldId": "42bd8fc3-c8cd-4ba8-b422-42979913191b",
+          "blueprintGroupId": "91ce1753-01d6-41a0-a3e6-009a09aae844",
+          "blueprintId": "830d56c9-cd40-4190-99ab-2a1098ec522c",
+          "description": "",
+          "name": "featuredArticle",
+          "options": {
+            "code": null,
+            "connection": {
+              "connectedIds": [
+                "d5f7b0fe-3c47-407a-ae35-d6b469059773"
+              ],
+              "max": null,
+              "min": null,
+              "multiple": false,
+              "variant": "BLUEPRINT_VARIANT_DOCUMENT"
+            },
+            "datetime": null,
+            "disableInApi": false,
+            "disableInUi": false,
+            "extension": null,
+            "external": null,
+            "file": null,
+            "float": null,
+            "int": null,
+            "localized": null,
+            "primary": false,
+            "required": false,
+            "richtext": null,
+            "select": null,
+            "string": null,
+            "tag": null,
+            "uniqueGlobal": null,
+            "uniqueLocal": null,
+            "video": null
+          },
+          "system": false,
+          "title": "Featured Article ",
+          "type": "BLUEPRINT_FIELD_TYPE_CONNECTION"
+        }
+      ],
+      "name": "Main"
+    }
+  ],
+  "name": "FullwidthBlogTeaser",
+  "previewImageUrl": "https://cloud.caisy.io/assets/blueprint/b76210be-a043-4989-98df-ecaf6c6e68d8/75301bde-518d-4483-8b2b-483429714160Screenshot20230302at11.09.26.png",
+  "projectId": "01ee477c-9983-4f73-b88b-a45baefa0a8f",
+  "single": false,
+  "system": false,
+  "tagIds": [
+    "3dbd06db-f3fc-4806-b322-ba306ce2b216"
+  ],
+  "title": "Fullwidth Blog Teaser",
+  "updatedAt": "2023-04-12T01:26:37.217392Z",
+  "updatedBy": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "variant": "BLUEPRINT_VARIANT_COMPONENT"
+}

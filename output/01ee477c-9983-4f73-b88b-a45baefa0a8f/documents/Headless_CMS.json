@@ -1,0 +1,65 @@
+{
+  "archivedAt": null,
+  "blueprintBranch": null,
+  "blueprintId": "fa43562c-945c-4fd1-ab8a-6bb5e33ebbc9",
+  "createdAt": "2023-04-12T01:26:37.827531Z",
+  "createdByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "documentId": "b49b12dd-8196-4466-9f55-257b6042aa0c",
+  "environmentId": null,
+  "fields": [
+    {
+      "blueprintFieldId": "43b57b65-6b0a-40c2-a3ed-67c8b249116f",
+      "createdAt": "2023-04-12T01:26:38.153104Z",
+      "data": "What is a Headless CMS?",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.153104Z"
+    },
+    {
+      "blueprintFieldId": "5e421855-7a75-4149-bd1b-58522b0a5b89",
+      "createdAt": "2023-04-12T01:26:38.27288Z",
+      "data": "This article explains what a headless CMS is, how it works, and its benefits. A headless CMS is a content management system that separates content creation and delivery, providing developers with the flexibility to use any technology stack or platform to deliver content. The benefits of using a headless CMS include flexibility, scalability, speed, security, and better collaboration. A headless CMS is useful in several scenarios, including multi-channel content delivery, e-commerce, content-rich websites, and personalization. This article provides valuable insights into the advantages of using a headless CMS for businesses looking to streamline their content management and delivery processes.",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.27288Z"
+    },
+    {
+      "blueprintFieldId": "7c6f061f-184a-411b-96bd-1260cc7c295b",
+      "createdAt": "2023-04-12T01:26:38.303507Z",
+      "data": "headless CMS, content management system, content creation, content delivery, API, flexibility, scalability, speed, security, collaboration, multi-channel content delivery, e-commerce, personalized content, technology stack, platform",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.303507Z"
+    },
+    {
+      "blueprintFieldId": "9c1d8497-dce4-4c6e-bced-a3984a44e593",
+      "createdAt": "2023-04-12T01:26:38.330253Z",
+      "data": [
+        "da8843e1-a98b-4305-b72a-5023a8f841bc"
+      ],
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_CONNECTION",
+      "updatedAt": "2023-04-12T01:26:38.330253Z"
+    },
+    {
+      "blueprintFieldId": "d385eb56-308c-4d91-b3d2-39c5242240b4",
+      "createdAt": "2023-04-12T01:26:38.393174Z",
+      "data": "Headless CMS",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.393174Z"
+    }
+  ],
+  "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "previewImageUrl": "",
+  "projectId": "01ee477c-9983-4f73-b88b-a45baefa0a8f",
+  "publishedAt": "2023-04-12T01:26:37.827532Z",
+  "statusId": 2,
+  "title": "Headless CMS",
+  "updatedAt": "2023-04-12T01:26:37.827532Z"
+}

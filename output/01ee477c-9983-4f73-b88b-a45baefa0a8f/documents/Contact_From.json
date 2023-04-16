@@ -1,0 +1,36 @@
+{
+  "archivedAt": null,
+  "blueprintBranch": null,
+  "blueprintId": "406819d6-fbf9-4a82-9e0c-2090f9c7ce27",
+  "createdAt": "2023-04-12T01:26:37.827872Z",
+  "createdByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "documentId": "5f3056c4-3ec6-457c-b8f5-ede4cefd0ceb",
+  "environmentId": null,
+  "fields": [
+    {
+      "blueprintFieldId": "3af70bf3-5dc1-477c-b93d-69e3a2033e3b",
+      "createdAt": "2023-04-12T01:26:38.376423Z",
+      "data": "Contact From",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.376423Z"
+    },
+    {
+      "blueprintFieldId": "4bf17ddc-1c09-4d9a-b4cb-aecdf38e00c8",
+      "createdAt": "2023-04-12T01:26:38.593673Z",
+      "data": "Contact",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.593673Z"
+    }
+  ],
+  "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "previewImageUrl": "",
+  "projectId": "01ee477c-9983-4f73-b88b-a45baefa0a8f",
+  "publishedAt": "2023-04-12T01:26:37.827873Z",
+  "statusId": 2,
+  "title": "Contact From",
+  "updatedAt": "2023-04-12T01:26:37.827873Z"
+}

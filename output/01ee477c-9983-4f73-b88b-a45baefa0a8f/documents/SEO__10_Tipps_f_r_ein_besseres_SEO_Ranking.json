@@ -1,0 +1,65 @@
+{
+  "archivedAt": null,
+  "blueprintBranch": null,
+  "blueprintId": "fa43562c-945c-4fd1-ab8a-6bb5e33ebbc9",
+  "createdAt": "2023-04-12T01:26:37.827723Z",
+  "createdByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "documentId": "0591df85-720e-4c34-a6ff-9dce0a35db68",
+  "environmentId": null,
+  "fields": [
+    {
+      "blueprintFieldId": "43b57b65-6b0a-40c2-a3ed-67c8b249116f",
+      "createdAt": "2023-04-12T01:26:38.618428Z",
+      "data": "10 Tips to Improve Your Website's SEO Ranking",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.618428Z"
+    },
+    {
+      "blueprintFieldId": "5e421855-7a75-4149-bd1b-58522b0a5b89",
+      "createdAt": "2023-04-12T01:26:38.824554Z",
+      "data": "Improve your website's SEO ranking and generate more traffic with these 10 tips. Learn how to optimize your content, use internal and external links, improve load times, and more.",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.824554Z"
+    },
+    {
+      "blueprintFieldId": "7c6f061f-184a-411b-96bd-1260cc7c295b",
+      "createdAt": "2023-04-12T01:26:38.87487Z",
+      "data": "SEO ranking, search engine optimization, keyword research, mobile optimization, internal links, external links, load time, social media, local SEO, analytics tools.",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.87487Z"
+    },
+    {
+      "blueprintFieldId": "9c1d8497-dce4-4c6e-bced-a3984a44e593",
+      "createdAt": "2023-04-12T01:26:38.89713Z",
+      "data": [
+        "c1dc5a77-ee1a-4afb-9ddf-ab2c4e44b181"
+      ],
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_CONNECTION",
+      "updatedAt": "2023-04-12T01:26:38.89713Z"
+    },
+    {
+      "blueprintFieldId": "d385eb56-308c-4d91-b3d2-39c5242240b4",
+      "createdAt": "2023-04-12T01:26:38.958016Z",
+      "data": "SEO: 10 Tipps für ein besseres SEO-Ranking",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.958016Z"
+    }
+  ],
+  "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "previewImageUrl": "",
+  "projectId": "01ee477c-9983-4f73-b88b-a45baefa0a8f",
+  "publishedAt": "2023-04-12T01:26:37.827723Z",
+  "statusId": 2,
+  "title": "SEO: 10 Tipps für ein besseres SEO-Ranking",
+  "updatedAt": "2023-04-12T01:26:37.827723Z"
+}

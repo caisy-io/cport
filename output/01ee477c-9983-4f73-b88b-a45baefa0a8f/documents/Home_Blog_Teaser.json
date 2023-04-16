@@ -1,0 +1,38 @@
+{
+  "archivedAt": null,
+  "blueprintBranch": null,
+  "blueprintId": "830d56c9-cd40-4190-99ab-2a1098ec522c",
+  "createdAt": "2023-04-12T01:26:37.827812Z",
+  "createdByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "documentId": "40e78d39-92cc-49eb-ad90-56f2a8a76d59",
+  "environmentId": null,
+  "fields": [
+    {
+      "blueprintFieldId": "42bd8fc3-c8cd-4ba8-b422-42979913191b",
+      "createdAt": "2023-04-12T01:26:38.687151Z",
+      "data": [
+        "b3cb3aba-0ec5-4436-80d5-7e34bf9eae9b"
+      ],
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_CONNECTION",
+      "updatedAt": "2023-04-12T01:26:38.687151Z"
+    },
+    {
+      "blueprintFieldId": "5e3879e6-4110-4f3f-8672-97c9358f2c7e",
+      "createdAt": "2023-04-12T01:26:38.878976Z",
+      "data": "Home Blog Teaser",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.878976Z"
+    }
+  ],
+  "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "previewImageUrl": "",
+  "projectId": "01ee477c-9983-4f73-b88b-a45baefa0a8f",
+  "publishedAt": "2023-04-12T01:26:37.827813Z",
+  "statusId": 2,
+  "title": "Home Blog Teaser",
+  "updatedAt": "2023-04-12T01:26:37.827813Z"
+}

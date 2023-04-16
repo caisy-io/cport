@@ -1,0 +1,47 @@
+{
+  "archivedAt": null,
+  "blueprintBranch": null,
+  "blueprintId": "63d06d08-2fc7-45c3-9a97-7957b29718ea",
+  "createdAt": "2023-04-12T01:26:37.827651Z",
+  "createdByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "documentId": "ee1c024d-db4c-46f1-82a1-379098354b42",
+  "environmentId": null,
+  "fields": [
+    {
+      "blueprintFieldId": "823e1f26-5e40-4eed-93f0-9e13d36ccd52",
+      "createdAt": "2023-04-12T01:26:38.133006Z",
+      "data": "Jean Doe",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.133006Z"
+    },
+    {
+      "blueprintFieldId": "a39b060b-cee6-4c9b-89df-114ca30cddaa",
+      "createdAt": "2023-04-12T01:26:38.327549Z",
+      "data": [
+        "8c9ebda9-bc55-43a2-b03b-050f6dcd4f46"
+      ],
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_CONNECTION",
+      "updatedAt": "2023-04-12T01:26:38.327549Z"
+    },
+    {
+      "blueprintFieldId": "f69839b7-9bae-478b-be1a-75155d7b2ee4",
+      "createdAt": "2023-04-12T01:26:38.39566Z",
+      "data": "Author",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.39566Z"
+    }
+  ],
+  "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "previewImageUrl": "",
+  "projectId": "01ee477c-9983-4f73-b88b-a45baefa0a8f",
+  "publishedAt": "2023-04-12T01:26:37.827652Z",
+  "statusId": 2,
+  "title": "Jean Doe",
+  "updatedAt": "2023-04-12T01:26:37.827651Z"
+}

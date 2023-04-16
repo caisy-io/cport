@@ -1,0 +1,102 @@
+{
+  "blueprintId": "8a258ce3-e654-4ab6-a51e-0fdcfa744992",
+  "createdAt": "2023-04-12T01:26:36.991969Z",
+  "createdBy": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "description": null,
+  "exposeMutations": false,
+  "groups": [
+    {
+      "blueprintGroupId": "417884b0-2d51-4262-ba3c-4222d6fa87aa",
+      "fields": [
+        {
+          "blueprintFieldId": "3b1588d6-ffdb-4d90-90e8-6f98935d9460",
+          "blueprintGroupId": "417884b0-2d51-4262-ba3c-4222d6fa87aa",
+          "blueprintId": "8a258ce3-e654-4ab6-a51e-0fdcfa744992",
+          "description": "",
+          "name": "title",
+          "options": {
+            "code": null,
+            "connection": null,
+            "datetime": null,
+            "disableInApi": false,
+            "disableInUi": null,
+            "extension": null,
+            "external": null,
+            "file": null,
+            "float": null,
+            "int": null,
+            "localized": null,
+            "primary": true,
+            "required": false,
+            "richtext": null,
+            "select": null,
+            "string": {
+              "max": null,
+              "min": null,
+              "multiline": null,
+              "pattern": null
+            },
+            "tag": null,
+            "uniqueGlobal": null,
+            "uniqueLocal": false,
+            "video": null
+          },
+          "system": false,
+          "title": "Title",
+          "type": "BLUEPRINT_FIELD_TYPE_STRING"
+        },
+        {
+          "blueprintFieldId": "f03caf84-ddb3-416c-81dd-c7ee48f02e00",
+          "blueprintGroupId": "417884b0-2d51-4262-ba3c-4222d6fa87aa",
+          "blueprintId": "8a258ce3-e654-4ab6-a51e-0fdcfa744992",
+          "description": "",
+          "name": "connection",
+          "options": {
+            "code": null,
+            "connection": {
+              "connectedIds": [
+                "c0251568-046e-4a09-b4b4-982f27f04d43"
+              ],
+              "max": null,
+              "min": null,
+              "multiple": false,
+              "variant": "BLUEPRINT_VARIANT_DOCUMENT"
+            },
+            "datetime": null,
+            "disableInApi": false,
+            "disableInUi": false,
+            "extension": null,
+            "external": null,
+            "file": null,
+            "float": null,
+            "int": null,
+            "localized": null,
+            "primary": false,
+            "required": false,
+            "richtext": null,
+            "select": null,
+            "string": null,
+            "tag": null,
+            "uniqueGlobal": null,
+            "uniqueLocal": null,
+            "video": null
+          },
+          "system": false,
+          "title": "Connection",
+          "type": "BLUEPRINT_FIELD_TYPE_CONNECTION"
+        }
+      ],
+      "name": "Main"
+    }
+  ],
+  "name": "NavigationEntry",
+  "previewImageUrl": null,
+  "projectId": "01ee477c-9983-4f73-b88b-a45baefa0a8f",
+  "single": false,
+  "system": false,
+  "tagIds": [],
+  "title": "NavigationEntry",
+  "updatedAt": "2023-04-12T01:26:36.991969Z",
+  "updatedBy": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "variant": "BLUEPRINT_VARIANT_DOCUMENT"
+}

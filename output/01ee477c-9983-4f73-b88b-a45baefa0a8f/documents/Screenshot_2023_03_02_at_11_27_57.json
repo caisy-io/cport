@@ -1,0 +1,101 @@
+{
+  "archivedAt": null,
+  "blueprintBranch": null,
+  "blueprintId": "cb1bbee7-7fa8-46ac-bf1e-ca4bd86c5615",
+  "createdAt": "2023-04-12T01:26:37.828001Z",
+  "createdByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "documentId": "fd94d300-22a2-4abe-8b00-041038211e6a",
+  "environmentId": null,
+  "fields": [
+    {
+      "blueprintFieldId": "0b18edf5-4701-4a87-bf8f-a883f0dec285",
+      "createdAt": "2023-04-12T01:26:39.147465Z",
+      "data": "Screenshot 2023-03-02 at 11.27.57.png",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:39.147465Z"
+    },
+    {
+      "blueprintFieldId": "46ccd1ce-4653-4b59-b0b8-4181093c0a06",
+      "createdAt": "2023-04-12T01:26:39.050044Z",
+      "data": "",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:39.050044Z"
+    },
+    {
+      "blueprintFieldId": "65910072-b564-4e2f-aaf1-6576f51f1bb1",
+      "createdAt": "2023-04-12T01:26:39.077246Z",
+      "data": "",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:39.077246Z"
+    },
+    {
+      "blueprintFieldId": "a5707b6b-0979-4082-81bc-879e6e4bdbea",
+      "createdAt": "2023-04-12T01:26:38.993831Z",
+      "data": "",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.993831Z"
+    },
+    {
+      "blueprintFieldId": "a96799cb-b1a4-4af8-958c-ec635198763c",
+      "createdAt": "2023-04-12T01:26:39.025785Z",
+      "data": "image/png",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:39.025785Z"
+    },
+    {
+      "blueprintFieldId": "cb4e2852-9cf8-480b-b5c2-4f61c60d4515",
+      "createdAt": "2023-04-12T01:26:38.780711Z",
+      "data": "Screenshot 2023-03-02 at 11.27.57",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.780711Z"
+    },
+    {
+      "blueprintFieldId": "e9051352-223d-4c3b-b155-059c4f0c3414",
+      "createdAt": "2023-04-12T01:26:38.921225Z",
+      "data": "#e2e3e5",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_COLOR",
+      "updatedAt": "2023-04-12T01:26:38.921225Z"
+    },
+    {
+      "blueprintFieldId": "f0049ac6-19a6-4609-9417-0a566cfb8cd6",
+      "createdAt": "2023-04-12T01:26:39.124898Z",
+      "data": {
+        "url": "https://assets.caisy.io/assets/b76210be-a043-4989-98df-ecaf6c6e68d8/fd94d300-22a2-4abe-8b00-041038211e6a/5d9df131-56e2-432d-93d0-3ab94df797cbScreenshot20230302at11.27.57.png"
+      },
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_FILE",
+      "updatedAt": "2023-04-12T01:26:39.124898Z"
+    },
+    {
+      "blueprintFieldId": "fa7c41ab-6fcd-4e9f-ba9c-5b3bd6e54df3",
+      "createdAt": "2023-04-12T01:26:38.966108Z",
+      "data": "",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.966108Z"
+    }
+  ],
+  "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "previewImageUrl": "https://assets.caisy.io/assets/b76210be-a043-4989-98df-ecaf6c6e68d8/fd94d300-22a2-4abe-8b00-041038211e6a/5d9df131-56e2-432d-93d0-3ab94df797cbScreenshot20230302at11.27.57.png",
+  "projectId": "01ee477c-9983-4f73-b88b-a45baefa0a8f",
+  "publishedAt": "2023-04-12T01:26:37.828002Z",
+  "statusId": 2,
+  "title": "Screenshot 2023-03-02 at 11.27.57",
+  "updatedAt": "2023-04-12T01:26:37.828002Z"
+}

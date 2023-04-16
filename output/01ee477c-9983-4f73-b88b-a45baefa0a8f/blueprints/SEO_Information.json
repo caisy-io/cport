@@ -1,0 +1,213 @@
+{
+  "blueprintId": "fa43562c-945c-4fd1-ab8a-6bb5e33ebbc9",
+  "createdAt": "2023-04-12T01:26:37.217606Z",
+  "createdBy": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "description": null,
+  "exposeMutations": false,
+  "groups": [
+    {
+      "blueprintGroupId": "ffbf6d59-ad93-48c5-bdad-354804edd248",
+      "fields": [
+        {
+          "blueprintFieldId": "d385eb56-308c-4d91-b3d2-39c5242240b4",
+          "blueprintGroupId": "ffbf6d59-ad93-48c5-bdad-354804edd248",
+          "blueprintId": "fa43562c-945c-4fd1-ab8a-6bb5e33ebbc9",
+          "description": "",
+          "name": "titleInternal",
+          "options": {
+            "code": null,
+            "connection": null,
+            "datetime": null,
+            "disableInApi": null,
+            "disableInUi": false,
+            "extension": null,
+            "external": null,
+            "file": null,
+            "float": null,
+            "int": null,
+            "localized": null,
+            "primary": true,
+            "required": false,
+            "richtext": null,
+            "select": null,
+            "string": {
+              "max": null,
+              "min": null,
+              "multiline": null,
+              "pattern": null
+            },
+            "tag": null,
+            "uniqueGlobal": null,
+            "uniqueLocal": false,
+            "video": null
+          },
+          "system": false,
+          "title": "Title Internal",
+          "type": "BLUEPRINT_FIELD_TYPE_STRING"
+        },
+        {
+          "blueprintFieldId": "43b57b65-6b0a-40c2-a3ed-67c8b249116f",
+          "blueprintGroupId": "ffbf6d59-ad93-48c5-bdad-354804edd248",
+          "blueprintId": "fa43562c-945c-4fd1-ab8a-6bb5e33ebbc9",
+          "description": "",
+          "name": "title",
+          "options": {
+            "code": null,
+            "connection": null,
+            "datetime": null,
+            "disableInApi": false,
+            "disableInUi": false,
+            "extension": null,
+            "external": null,
+            "file": null,
+            "float": null,
+            "int": null,
+            "localized": null,
+            "primary": false,
+            "required": false,
+            "richtext": null,
+            "select": null,
+            "string": {
+              "max": null,
+              "min": null,
+              "multiline": null,
+              "pattern": null
+            },
+            "tag": null,
+            "uniqueGlobal": null,
+            "uniqueLocal": false,
+            "video": null
+          },
+          "system": false,
+          "title": "Page Title",
+          "type": "BLUEPRINT_FIELD_TYPE_STRING"
+        },
+        {
+          "blueprintFieldId": "5e421855-7a75-4149-bd1b-58522b0a5b89",
+          "blueprintGroupId": "ffbf6d59-ad93-48c5-bdad-354804edd248",
+          "blueprintId": "fa43562c-945c-4fd1-ab8a-6bb5e33ebbc9",
+          "description": "",
+          "name": "description",
+          "options": {
+            "code": null,
+            "connection": null,
+            "datetime": null,
+            "disableInApi": false,
+            "disableInUi": false,
+            "extension": null,
+            "external": null,
+            "file": null,
+            "float": null,
+            "int": null,
+            "localized": null,
+            "primary": false,
+            "required": false,
+            "richtext": null,
+            "select": null,
+            "string": {
+              "max": null,
+              "min": null,
+              "multiline": null,
+              "pattern": null
+            },
+            "tag": null,
+            "uniqueGlobal": null,
+            "uniqueLocal": false,
+            "video": null
+          },
+          "system": false,
+          "title": "Page Description",
+          "type": "BLUEPRINT_FIELD_TYPE_STRING"
+        },
+        {
+          "blueprintFieldId": "7c6f061f-184a-411b-96bd-1260cc7c295b",
+          "blueprintGroupId": "ffbf6d59-ad93-48c5-bdad-354804edd248",
+          "blueprintId": "fa43562c-945c-4fd1-ab8a-6bb5e33ebbc9",
+          "description": "",
+          "name": "keywords",
+          "options": {
+            "code": null,
+            "connection": null,
+            "datetime": null,
+            "disableInApi": false,
+            "disableInUi": false,
+            "extension": null,
+            "external": null,
+            "file": null,
+            "float": null,
+            "int": null,
+            "localized": null,
+            "primary": false,
+            "required": false,
+            "richtext": null,
+            "select": null,
+            "string": {
+              "max": null,
+              "min": null,
+              "multiline": null,
+              "pattern": null
+            },
+            "tag": null,
+            "uniqueGlobal": null,
+            "uniqueLocal": false,
+            "video": null
+          },
+          "system": false,
+          "title": "Page Keywords",
+          "type": "BLUEPRINT_FIELD_TYPE_STRING"
+        },
+        {
+          "blueprintFieldId": "9c1d8497-dce4-4c6e-bced-a3984a44e593",
+          "blueprintGroupId": "ffbf6d59-ad93-48c5-bdad-354804edd248",
+          "blueprintId": "fa43562c-945c-4fd1-ab8a-6bb5e33ebbc9",
+          "description": "",
+          "name": "ogImage",
+          "options": {
+            "code": null,
+            "connection": {
+              "connectedIds": [
+                "cb1bbee7-7fa8-46ac-bf1e-ca4bd86c5615"
+              ],
+              "max": null,
+              "min": null,
+              "multiple": false,
+              "variant": "BLUEPRINT_VARIANT_ASSET"
+            },
+            "datetime": null,
+            "disableInApi": false,
+            "disableInUi": false,
+            "extension": null,
+            "external": null,
+            "file": null,
+            "float": null,
+            "int": null,
+            "localized": null,
+            "primary": false,
+            "required": false,
+            "richtext": null,
+            "select": null,
+            "string": null,
+            "tag": null,
+            "uniqueGlobal": null,
+            "uniqueLocal": null,
+            "video": null
+          },
+          "system": false,
+          "title": "Page OG preview image",
+          "type": "BLUEPRINT_FIELD_TYPE_CONNECTION"
+        }
+      ],
+      "name": "Main"
+    }
+  ],
+  "name": "SeoInformation",
+  "previewImageUrl": null,
+  "projectId": "01ee477c-9983-4f73-b88b-a45baefa0a8f",
+  "single": false,
+  "system": false,
+  "tagIds": [],
+  "title": "SEO Information",
+  "updatedAt": "2023-04-12T01:26:37.217606Z",
+  "updatedBy": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "variant": "BLUEPRINT_VARIANT_DOCUMENT"
+}

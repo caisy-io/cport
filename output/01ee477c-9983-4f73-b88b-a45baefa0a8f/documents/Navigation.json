@@ -1,0 +1,62 @@
+{
+  "archivedAt": null,
+  "blueprintBranch": null,
+  "blueprintId": "cea5eb2e-4b22-41a4-9357-ed9c4bf8c8ea",
+  "createdAt": "2023-04-12T01:26:37.827629Z",
+  "createdByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "documentId": "ff790c10-6d38-40e1-9015-d8e9f0dec2b0",
+  "environmentId": null,
+  "fields": [
+    {
+      "blueprintFieldId": "81a159fc-4439-4e84-97a2-88e5f0654adf",
+      "createdAt": "2023-04-12T01:26:38.799331Z",
+      "data": [
+        "4b405ce2-a671-4b2e-a624-26898c731f8a"
+      ],
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_CONNECTION",
+      "updatedAt": "2023-04-12T01:26:38.799331Z"
+    },
+    {
+      "blueprintFieldId": "973ad558-42dd-4fb5-a0ed-21fa8bf9aa0f",
+      "createdAt": "2023-04-12T01:26:38.940116Z",
+      "data": [
+        "019e113e-9671-485a-ad8e-776cab86e17f"
+      ],
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_CONNECTION",
+      "updatedAt": "2023-04-12T01:26:38.940116Z"
+    },
+    {
+      "blueprintFieldId": "e03ac2f8-770f-42bb-b8ab-80a0b4e72396",
+      "createdAt": "2023-04-12T01:26:38.99709Z",
+      "data": [
+        "1e4583fc-6400-4c00-b587-d14013f2c4cf",
+        "50bcd151-ada7-49d4-a921-89bbb51d3e05",
+        "566d0cdc-4345-4393-aa95-83e07ed46f61"
+      ],
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_CONNECTION",
+      "updatedAt": "2023-04-12T01:26:38.99709Z"
+    },
+    {
+      "blueprintFieldId": "e29477dd-4be3-4e9f-be82-a44122dbff38",
+      "createdAt": "2023-04-12T01:26:39.096635Z",
+      "data": "Navigation",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:39.096635Z"
+    }
+  ],
+  "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "previewImageUrl": "",
+  "projectId": "01ee477c-9983-4f73-b88b-a45baefa0a8f",
+  "publishedAt": "2023-04-12T01:26:37.82763Z",
+  "statusId": 2,
+  "title": "Navigation",
+  "updatedAt": "2023-04-12T01:26:37.827629Z"
+}

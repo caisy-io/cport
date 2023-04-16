@@ -1,0 +1,125 @@
+{
+  "archivedAt": null,
+  "blueprintBranch": null,
+  "blueprintId": "110f837a-d5d3-40d1-b8af-42dc2103f98d",
+  "createdAt": "2023-04-12T01:26:37.827966Z",
+  "createdByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "documentId": "02a8be00-ed69-45e3-ab16-a8dc3e46dde1",
+  "environmentId": null,
+  "fields": [
+    {
+      "blueprintFieldId": "970ef3d6-dfbb-4e46-8bb0-5ba48e43ddb7",
+      "createdAt": "2023-04-12T01:26:38.401138Z",
+      "data": "About Text",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.401138Z"
+    },
+    {
+      "blueprintFieldId": "d2dc0d0a-6e95-4297-932b-026b22d2be0a",
+      "createdAt": "2023-04-12T01:26:38.599069Z",
+      "data": {
+        "content": [
+          {
+            "attrs": {
+              "textAlign": "left"
+            },
+            "content": [
+              {
+                "text": "Welcome to the personal blog of ",
+                "type": "text"
+              },
+              {
+                "marks": [
+                  {
+                    "type": "bold"
+                  }
+                ],
+                "text": "Jane Doe",
+                "type": "text"
+              },
+              {
+                "text": "! I am a writer who loves to share my thoughts and insights on various topics such as lifestyle, opinions, experiences, and tips/advice.",
+                "type": "text"
+              }
+            ],
+            "type": "paragraph"
+          },
+          {
+            "attrs": {
+              "textAlign": "start"
+            },
+            "content": [
+              {
+                "text": "Growing up, I always had a passion for writing. Whether it was writing in my diary or creating stories, I found a sense of comfort and joy in the written word. As I got older, I realized that writing could not only be a hobby but a career path as well.",
+                "type": "text"
+              }
+            ],
+            "type": "paragraph"
+          },
+          {
+            "attrs": {
+              "textAlign": "start"
+            },
+            "content": [
+              {
+                "text": "After completing my degree in journalism, I worked for various media outlets, gaining experience in different areas such as feature writing, copywriting, and digital content creation. While working in the industry, I found that I had a lot to say and wanted a space to share my own voice and opinions.",
+                "type": "text"
+              }
+            ],
+            "type": "paragraph"
+          },
+          {
+            "attrs": {
+              "textAlign": "start"
+            },
+            "content": [
+              {
+                "text": "And so, my personal blog was born. Here, I can write about topics that I am passionate about and share my experiences and insights with others. I aim to create content that is relatable, informative, and thought-provoking.",
+                "type": "text"
+              }
+            ],
+            "type": "paragraph"
+          },
+          {
+            "attrs": {
+              "textAlign": "start"
+            },
+            "content": [
+              {
+                "text": "Aside from writing, I enjoy traveling, trying new foods, and spending time with my family and friends. I believe that life is all about experiences and I hope to share some of mine with you through my blog.",
+                "type": "text"
+              }
+            ],
+            "type": "paragraph"
+          },
+          {
+            "attrs": {
+              "textAlign": "start"
+            },
+            "content": [
+              {
+                "text": "Thank you for taking the time to visit my blog and I hope you enjoy reading my articles as much as I enjoy writing them.",
+                "type": "text"
+              }
+            ],
+            "type": "paragraph"
+          }
+        ],
+        "type": "doc"
+      },
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_RICHTEXT",
+      "updatedAt": "2023-04-12T01:26:38.599069Z"
+    }
+  ],
+  "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "previewImageUrl": "",
+  "projectId": "01ee477c-9983-4f73-b88b-a45baefa0a8f",
+  "publishedAt": "2023-04-12T01:26:37.827967Z",
+  "statusId": 2,
+  "title": "About Text",
+  "updatedAt": "2023-04-12T01:26:37.827966Z"
+}

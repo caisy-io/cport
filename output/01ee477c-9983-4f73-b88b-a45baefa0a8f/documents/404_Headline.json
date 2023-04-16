@@ -1,0 +1,45 @@
+{
+  "archivedAt": null,
+  "blueprintBranch": null,
+  "blueprintId": "fae6fd88-cc7a-4c9a-8185-7465bd6a14bc",
+  "createdAt": "2023-04-12T01:26:37.828104Z",
+  "createdByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "documentId": "e42909df-85b5-44df-b436-77166cccfd8e",
+  "environmentId": null,
+  "fields": [
+    {
+      "blueprintFieldId": "5938b8d4-7a30-4b12-a997-b132a522209d",
+      "createdAt": "2023-04-12T01:26:38.409957Z",
+      "data": "Looks like you took a wrong turn, but don't worry, we're here to entertain you with some wacky hat until you find your way back.",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.409957Z"
+    },
+    {
+      "blueprintFieldId": "f2db7548-3319-43c3-94d5-320e95722074",
+      "createdAt": "2023-04-12T01:26:38.594904Z",
+      "data": "404 Headline",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.594904Z"
+    },
+    {
+      "blueprintFieldId": "f3f4e786-4b0a-482d-a5c7-dbbcfb330c6b",
+      "createdAt": "2023-04-12T01:26:38.636903Z",
+      "data": "404 Error: The Page Couldn't Be Found",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.636903Z"
+    }
+  ],
+  "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "previewImageUrl": "",
+  "projectId": "01ee477c-9983-4f73-b88b-a45baefa0a8f",
+  "publishedAt": "2023-04-12T01:26:37.828105Z",
+  "statusId": 2,
+  "title": "404 Headline",
+  "updatedAt": "2023-04-12T01:26:37.828104Z"
+}

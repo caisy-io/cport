@@ -1,0 +1,66 @@
+{
+  "archivedAt": null,
+  "blueprintBranch": null,
+  "blueprintId": "5dbb7a31-246b-4446-b68c-52d081491312",
+  "createdAt": "2023-04-12T01:26:37.827324Z",
+  "createdByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "documentId": "5a76d0dc-337d-4aa7-b2c2-5416fa9df270",
+  "environmentId": null,
+  "fields": [
+    {
+      "blueprintFieldId": "56638ce4-7b3b-4f2d-b14a-7028651f8495",
+      "createdAt": "2023-04-12T01:26:37.845859Z",
+      "data": "Global Footer ",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:37.845859Z"
+    },
+    {
+      "blueprintFieldId": "b427182e-655d-453f-8a07-390ba3bac544",
+      "createdAt": "2023-04-12T01:26:37.86063Z",
+      "data": {
+        "content": [
+          {
+            "attrs": {
+              "textAlign": "center"
+            },
+            "content": [
+              {
+                "text": "Proudly published using ",
+                "type": "text"
+              },
+              {
+                "marks": [
+                  {
+                    "attrs": {
+                      "class": "text-slate-700",
+                      "href": "https://caisy.io",
+                      "target": "_blank"
+                    },
+                    "type": "link"
+                  }
+                ],
+                "text": "caisy",
+                "type": "text"
+              }
+            ],
+            "type": "paragraph"
+          }
+        ],
+        "type": "doc"
+      },
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_RICHTEXT",
+      "updatedAt": "2023-04-12T01:26:37.86063Z"
+    }
+  ],
+  "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "previewImageUrl": "",
+  "projectId": "01ee477c-9983-4f73-b88b-a45baefa0a8f",
+  "publishedAt": "2023-04-12T01:26:37.827325Z",
+  "statusId": 2,
+  "title": "Global Footer ",
+  "updatedAt": "2023-04-12T01:26:37.827325Z"
+}

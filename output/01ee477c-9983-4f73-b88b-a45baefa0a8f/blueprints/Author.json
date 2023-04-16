@@ -1,0 +1,141 @@
+{
+  "blueprintId": "63d06d08-2fc7-45c3-9a97-7957b29718ea",
+  "createdAt": "2023-04-12T01:26:37.198254Z",
+  "createdBy": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "description": null,
+  "exposeMutations": false,
+  "groups": [
+    {
+      "blueprintGroupId": "831ced90-2dcf-4a4d-be74-aeabbfab829e",
+      "fields": [
+        {
+          "blueprintFieldId": "823e1f26-5e40-4eed-93f0-9e13d36ccd52",
+          "blueprintGroupId": "831ced90-2dcf-4a4d-be74-aeabbfab829e",
+          "blueprintId": "63d06d08-2fc7-45c3-9a97-7957b29718ea",
+          "description": "",
+          "name": "name",
+          "options": {
+            "code": null,
+            "connection": null,
+            "datetime": null,
+            "disableInApi": false,
+            "disableInUi": false,
+            "extension": null,
+            "external": null,
+            "file": null,
+            "float": null,
+            "int": null,
+            "localized": null,
+            "primary": true,
+            "required": false,
+            "richtext": null,
+            "select": null,
+            "string": {
+              "max": null,
+              "min": null,
+              "multiline": null,
+              "pattern": null
+            },
+            "tag": null,
+            "uniqueGlobal": null,
+            "uniqueLocal": false,
+            "video": null
+          },
+          "system": false,
+          "title": "Name",
+          "type": "BLUEPRINT_FIELD_TYPE_STRING"
+        },
+        {
+          "blueprintFieldId": "f69839b7-9bae-478b-be1a-75155d7b2ee4",
+          "blueprintGroupId": "831ced90-2dcf-4a4d-be74-aeabbfab829e",
+          "blueprintId": "63d06d08-2fc7-45c3-9a97-7957b29718ea",
+          "description": "",
+          "name": "role",
+          "options": {
+            "code": null,
+            "connection": null,
+            "datetime": null,
+            "disableInApi": false,
+            "disableInUi": false,
+            "extension": null,
+            "external": null,
+            "file": null,
+            "float": null,
+            "int": null,
+            "localized": null,
+            "primary": false,
+            "required": false,
+            "richtext": null,
+            "select": null,
+            "string": {
+              "max": null,
+              "min": null,
+              "multiline": null,
+              "pattern": null
+            },
+            "tag": null,
+            "uniqueGlobal": null,
+            "uniqueLocal": false,
+            "video": null
+          },
+          "system": false,
+          "title": "Role",
+          "type": "BLUEPRINT_FIELD_TYPE_STRING"
+        },
+        {
+          "blueprintFieldId": "a39b060b-cee6-4c9b-89df-114ca30cddaa",
+          "blueprintGroupId": "831ced90-2dcf-4a4d-be74-aeabbfab829e",
+          "blueprintId": "63d06d08-2fc7-45c3-9a97-7957b29718ea",
+          "description": "",
+          "name": "avatar",
+          "options": {
+            "code": null,
+            "connection": {
+              "connectedIds": [
+                "cb1bbee7-7fa8-46ac-bf1e-ca4bd86c5615"
+              ],
+              "max": null,
+              "min": null,
+              "multiple": false,
+              "variant": "BLUEPRINT_VARIANT_ASSET"
+            },
+            "datetime": null,
+            "disableInApi": false,
+            "disableInUi": false,
+            "extension": null,
+            "external": null,
+            "file": null,
+            "float": null,
+            "int": null,
+            "localized": null,
+            "primary": false,
+            "required": false,
+            "richtext": null,
+            "select": null,
+            "string": null,
+            "tag": null,
+            "uniqueGlobal": null,
+            "uniqueLocal": null,
+            "video": null
+          },
+          "system": false,
+          "title": "Avatar",
+          "type": "BLUEPRINT_FIELD_TYPE_CONNECTION"
+        }
+      ],
+      "name": "Main"
+    }
+  ],
+  "name": "Author",
+  "previewImageUrl": null,
+  "projectId": "01ee477c-9983-4f73-b88b-a45baefa0a8f",
+  "single": false,
+  "system": false,
+  "tagIds": [
+    "3dbd06db-f3fc-4806-b322-ba306ce2b216"
+  ],
+  "title": "Author",
+  "updatedAt": "2023-04-12T01:26:37.198254Z",
+  "updatedBy": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "variant": "BLUEPRINT_VARIANT_DOCUMENT"
+}

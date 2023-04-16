@@ -1,0 +1,65 @@
+{
+  "archivedAt": null,
+  "blueprintBranch": null,
+  "blueprintId": "fa43562c-945c-4fd1-ab8a-6bb5e33ebbc9",
+  "createdAt": "2023-04-12T01:26:37.827997Z",
+  "createdByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "documentId": "a5eda4eb-9e40-4670-b680-ebe6e73a0466",
+  "environmentId": null,
+  "fields": [
+    {
+      "blueprintFieldId": "43b57b65-6b0a-40c2-a3ed-67c8b249116f",
+      "createdAt": "2023-04-12T01:26:38.128853Z",
+      "data": "Jane Doe's Personal Blog: Thoughts and Insights on Life and More",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.128853Z"
+    },
+    {
+      "blueprintFieldId": "5e421855-7a75-4149-bd1b-58522b0a5b89",
+      "createdAt": "2023-04-12T01:26:38.340252Z",
+      "data": "Welcome to the personal blog of Jane Doe. Here, you'll find articles on various topics such as lifestyle, opinions, experiences, and tips/advice. Join me as I share my thoughts and insights on the world around us.",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.340252Z"
+    },
+    {
+      "blueprintFieldId": "7c6f061f-184a-411b-96bd-1260cc7c295b",
+      "createdAt": "2023-04-12T01:26:38.417258Z",
+      "data": "blog, writing, author, jane doe, personal blog, lifestyle, opinions, experiences, tips, advice",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.417258Z"
+    },
+    {
+      "blueprintFieldId": "9c1d8497-dce4-4c6e-bced-a3984a44e593",
+      "createdAt": "2023-04-12T01:26:38.508214Z",
+      "data": [
+        "c761f2e5-6d8d-45b9-8551-4a90ca585ef4"
+      ],
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_CONNECTION",
+      "updatedAt": "2023-04-12T01:26:38.508214Z"
+    },
+    {
+      "blueprintFieldId": "d385eb56-308c-4d91-b3d2-39c5242240b4",
+      "createdAt": "2023-04-12T01:26:38.587996Z",
+      "data": "SEO: I am lazy and use the same SEO everywhere",
+      "documentFieldLocaleId": "78106dfa-8838-4436-9ff3-c1df0b259d69",
+      "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+      "type": "BLUEPRINT_FIELD_TYPE_STRING",
+      "updatedAt": "2023-04-12T01:26:38.587996Z"
+    }
+  ],
+  "lastUpdatedByUserId": "22ab1779-9bbd-40be-9bfe-d023f9947cb9",
+  "previewImageUrl": "",
+  "projectId": "01ee477c-9983-4f73-b88b-a45baefa0a8f",
+  "publishedAt": "2023-04-12T01:26:37.827998Z",
+  "statusId": 2,
+  "title": "SEO: I am lazy and use the same SEO everywhere",
+  "updatedAt": "2023-04-12T01:26:37.827997Z"
+}
