@@ -7,8 +7,10 @@ export async function saveToJson(
   outputPath: string
 ): Promise<void> {
   data.forEach((element: any, index: number) => {
-    const title: string = element.node.title.replace(/[^a-zA-Z0-9]/g, "_");
+    const nameOrTitle = element.node.name || element.node.title;
+    const title: string = nameOrTitle.replace(/[^a-zA-Z0-9]/g, "_");
     const projectPath = `${outputPath}/${projectId}/${contentType}`;
+    //Todo name instead of title
     const filePath = `${projectPath}/${title}.json`;
 
     if (!fs.existsSync(projectPath)) {
