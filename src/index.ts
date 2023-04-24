@@ -17,7 +17,7 @@ async function run(): Promise<void> {
 
   const answers = await inquirer.prompt(questions);
 
-  const action = options.import || options.export || answers.action;
+  const action = (options.import && "import") || (options.export && "export") || answers.action;
   const accessToken = options.token || answers.token;
   const projectId = options.projectId || answers.projectId;
   const outputPath = options.outputPath || answers.outputPath || "./output";
@@ -34,13 +34,12 @@ async function run(): Promise<void> {
 
     progressBar.stop();
   } else if (action === "export") {
-    // progressBar.start(1, 0);
+    progressBar.start(1, 0);
 
     await exportCaisyData(accessToken, projectId, importPath);
-    // await testExportData();
-    // progressBar.update(1);
+    progressBar.update(1);
 
-    // progressBar.stop();
+    progressBar.stop();
   }
 
   return null;

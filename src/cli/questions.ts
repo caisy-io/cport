@@ -7,7 +7,7 @@ const questions: Question[] = [
     name: "action",
     message: "🔄 Do you want to import or export data?",
     choices: ["import", "export", "migrate"],
-    when: () => !options.import || !options.export,
+    when: () => !options.import && !options.export,
   },
   {
     type: "input",

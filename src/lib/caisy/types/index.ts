@@ -1,27 +1,4 @@
-// export interface Blueprint {
-//   blueprintId: string;
-//   createdAt: string;
-//   createdBy: string;
-//   description: string | null;
-//   exposeMutations: boolean;
-//   groups: Array<any>;
-//   name: string;
-//   previewImageUrl: string | null;
-//   projectId: string;
-//   single: boolean;
-//   system: boolean;
-//   tagIds: Array<string>;
-//   title: string;
-//   updatedAt: string;
-//   updatedBy: string;
-//   variant: string;
-// }
-
-
 // copy-paste from shema.graphql
-//
-//
-//
 
 export type Scalars = {
   ID: string;
