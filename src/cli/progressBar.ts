@@ -11,6 +11,9 @@ const progressBarOptions: SingleBarOptions = {
   hideCursor: true,
 };
 
-const progressBar = new cliProgress.SingleBar(progressBarOptions, cliProgress.Presets.shades_classic as ProgressBarStyle);
+const progressBar = new cliProgress.SingleBar(
+  progressBarOptions,
+  cliProgress.Presets.shades_classic as ProgressBarStyle
+);
 
 export default progressBar;

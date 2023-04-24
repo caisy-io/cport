@@ -1,15 +1,15 @@
 import * as fs from "fs";
 import * as path from "path";
-import { BlueprintUpsertInputInput } from "../caisy";
+import { BlueprintUpsertInputInput } from "../types";
 
-export async function readBlueprints(blueprintsPath: string): Promise<BlueprintUpsertInputInput[]> {
+export async function readBlueprints(blueprintsPath: string): Promise<any> {
   try {
     const filenames = fs.readdirSync(blueprintsPath);
-    const jsonFiles = filenames.filter(filename => filename.endsWith('.json'));
+    const jsonFiles = filenames.filter((filename) => filename.endsWith(".json"));
 
-    const blueprints = jsonFiles.map(filename => {
+    const blueprints = jsonFiles.map((filename) => {
       const filePath = path.join(blueprintsPath, filename);
-      const fileContent = fs.readFileSync(filePath, 'utf-8');
+      const fileContent = fs.readFileSync(filePath, "utf-8");
       return JSON.parse(fileContent);
     });
 

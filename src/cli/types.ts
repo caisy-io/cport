@@ -31,8 +31,4 @@ interface SingleBarOptions {
   hideCursor: boolean;
 }
 
-
-export {
-  Question,
-  SingleBarOptions,
-}
+export { Question, SingleBarOptions };
