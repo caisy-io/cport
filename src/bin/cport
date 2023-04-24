@@ -1,0 +1,8 @@
+#!/usr/bin/env node
+/*
+ * This file is used to run the CLI from the command line
+ * chmod +x ./cport to make it executable
+ * then run ./cport to run the CLI
+ */
+
+require('../../dist/index.js');

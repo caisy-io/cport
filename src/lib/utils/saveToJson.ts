@@ -16,7 +16,6 @@ export async function saveToJson(
     if (!fs.existsSync(projectPath)) {
       fs.mkdirSync(projectPath, { recursive: true });
     }
-
     fs.writeFileSync(filePath, JSON.stringify(element.node, null, 2));
   });
 }

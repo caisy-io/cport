@@ -9,7 +9,7 @@ async function getData(accessToken: string, projectId: string, query: string): P
   return data[query]?.connection?.edges;
 }
 
-export async function getBlueprints(
+export async function importCaisyBlueprints(
   accessToken: string,
   projectId: string,
   outputPath: string
@@ -18,7 +18,7 @@ export async function getBlueprints(
   await saveToJson(blueprints, projectId, "blueprints", outputPath);
 }
 
-export async function getDocuments(
+export async function importCaisyDocuments(
   accessToken: string,
   projectId: string,
   outputPath: string
