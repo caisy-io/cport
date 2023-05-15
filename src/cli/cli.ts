@@ -9,6 +9,9 @@ program
   .option("-I, --importPath <inputPath>", "input data storage location")
   .option("-t, --token <token>", "access token")
   .option("-p, --projectId <projectId>", "project id")
+  .option("-P, --provider <provider>", "provider")
+  .option("-u, --userId <userId>", "Caisy user id")
+  .option("-d, --dataType <dataType>", "data type")
   .parse(process.argv);
 
 const options = program.opts();
