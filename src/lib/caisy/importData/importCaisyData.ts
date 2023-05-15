@@ -11,6 +11,7 @@ async function getData(accessToken: string, projectId: string, query: string): P
 }
 
 export async function importCaisyBlueprints(
+  provider: string,
   accessToken: string,
   projectId: string,
   outputPath: string
@@ -20,16 +21,17 @@ export async function importCaisyBlueprints(
     projectId,
     "GetManyBlueprints"
   );
-  await saveToJson(blueprints, projectId, "blueprints", outputPath);
-  console.log("✅ Inserted blueprints");
+  await saveToJson(blueprints, provider, projectId, "blueprints", outputPath);
+  console.log("Blueprints imported");
 }
 
 export async function importCaisyDocuments(
+  provider: string,
   accessToken: string,
   projectId: string,
   outputPath: string
 ): Promise<void> {
   const documents = await getData(accessToken, projectId, "GetManyDocuments");
-  await saveToJson(documents, projectId, "documents", outputPath);
-  console.log("✅ Inserted documents");
+  await saveToJson(documents, provider, projectId, "documents", outputPath);
+  console.log("Documents imported");
 }

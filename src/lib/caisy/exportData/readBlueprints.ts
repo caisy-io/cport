@@ -13,6 +13,11 @@ export async function readBlueprints(blueprintsPath: string): Promise<any> {
       return JSON.parse(fileContent);
     });
 
+    blueprints.forEach((blueprint: BlueprintUpsertInputInput) => {
+      delete blueprint.createdAt;
+      delete blueprint.updatedAt;
+    });
+
     return blueprints;
   } catch (error) {
     console.error("❌ Error reading blueprints:", error);
