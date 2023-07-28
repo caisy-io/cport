@@ -13,7 +13,7 @@ const questions: Question[] = [
     type: "list",
     name: "provider",
     message: "🔍 Which provider do you want to import from?",
-    choices: ["Caisy", "Contentful", "Strapi"],
+    choices: ["caisy", "contentful", "strapi"],
     when: (answers: any) => answers.action === "import" && !options.provider,
   },
   {
@@ -21,14 +21,14 @@ const questions: Question[] = [
     name: "dataType",
     message: "📦 Which data type do you want to import?",
     choices: ["Blueprints", "Documents", "All"],
-    when: (answers: any) => answers.provider === "Caisy" && !options.dataType,
+    when: (answers: any) => answers.provider === "caisy" && !options.dataType,
   },
   {
     type: "list",
     name: "dataType",
     message: "📦 Which data type do you want to import?",
     choices: ["Content-Model", "All"],
-    when: (answers: any) => answers.provider === "Contentful" && !options.dataType,
+    when: (answers: any) => answers.provider === "contentful" && !options.dataType,
   },
   {
     type: "input",

@@ -8,7 +8,7 @@ import { importCaisyBlueprints, importCaisyDocuments, exportCaisyData } from "./
 import { importContentfulData } from "./lib/contentful/";
 
 async function run(): Promise<void> {
-  console.log(figlet.textSync("CPORT"));
+  console.log(figlet.textSync("CPORT" ));
 
   if (!process.argv.slice(2).length) {
     console.log("No arguments");
@@ -28,7 +28,7 @@ async function run(): Promise<void> {
   const outputPath = options.outputPath || answers.outputPath || "./output";
   const importPath = options.importPath || answers.importPath || "./input";
 
-  if (action === "import" && provider === "Caisy") {
+  if (action === "import" && provider === "caisy") {
     console.log(chalk.green("Importing data from Caisy..."));
 
     if (dataType === "All") {
