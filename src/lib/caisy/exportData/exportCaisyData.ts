@@ -10,7 +10,7 @@ export async function exportCaisyData(
   inputPath: string
 ): Promise<void> {
 
-  userId = "8ecf8def-af66-4897-982e-263d5f107be4";
+  // userId = "8ecf8def-af66-4897-982e-263d5f107be4";
 
   const sdk = initSdk({ token: accessToken });
 
@@ -24,7 +24,7 @@ export async function exportCaisyData(
         userId: userId,
       },
     });
-    // console.log("✅ Inserted blueprints:", insertedBlueprints);
+    console.log("✅ Inserted blueprints:", insertedBlueprints);
   } catch (error) {
     console.error("❌ Error inserting blueprints:", error);
   }
