@@ -4,6 +4,6 @@ node_modules
 dist
 yarn.lock
 .DS_Store
-output
+output*
 input
 notes.md

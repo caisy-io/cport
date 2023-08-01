@@ -46,7 +46,7 @@ const questions: Question[] = [
     type: "input",
     name: "projectId",
     message: "🆔 Please enter your project id:",
-    when: (answers: any) => !options.projectId && (answers.provider === "Caisy"  || answers.action === "export"),
+    when: (answers: any) => !options.projectId && (answers.provider === "caisy" || answers.action === "export"),
     validate: (input: string) => {
       if (!input) {
         return "Project id is required";
@@ -71,7 +71,7 @@ const questions: Question[] = [
     type: "input",
     name: "spaceId",
     message: "🆔 Please enter your space id:",
-    when: (answers: any) => !options.spaceId && answers.provider === "Contentful",
+    when: (answers: any) => !options.spaceId && answers.provider === "contentful",
     validate: (input: string) => {
       if (!input) {
         return "Space id is required";

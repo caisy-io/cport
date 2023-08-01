@@ -8,7 +8,7 @@ import { importCaisyBlueprints, importCaisyDocuments, exportCaisyData } from "./
 import { importContentfulData } from "./lib/contentful/";
 
 async function run(): Promise<void> {
-  console.log(figlet.textSync("CPORT" ));
+  console.log(figlet.textSync("CPORT"));
 
   if (!process.argv.slice(2).length) {
     console.log("No arguments");
@@ -57,20 +57,20 @@ async function run(): Promise<void> {
       progressBar.update(1);
     }
     progressBar.stop();
-  } else if (action === "import" && provider === "Contentful") {
+  } else if (action === "import" && provider === "contentful") {
     console.log(chalk.green("Importing data from Contentful..."));
 
     if (dataType === "All") {
       console.log("Importing all data from Contentful...");
       progressBar.start(1, 0);
 
-      await importContentfulData(provider, spaceId, accessToken, outputPath);
+      await importContentfulData(provider, accessToken, spaceId, outputPath);
       progressBar.update(1);
     }
     if (dataType === "Content-Model") {
       console.log("Importing content-model from Contentful...");
       progressBar.start(1, 0);
-      await importContentfulData(provider, spaceId, accessToken, outputPath);
+      await importContentfulData(provider, accessToken, spaceId, outputPath);
       progressBar.update(1);
     }
     progressBar.stop();

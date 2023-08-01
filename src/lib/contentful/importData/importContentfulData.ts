@@ -2,8 +2,8 @@ import { saveToJson } from "./saveToJson";
 
 const contentful = require("contentful");
 
-const contentfulSpace = "oz1hbkbww7w9";
-const contentfulAccessToken = "rTjM_XS3QTLXJpIBjtIMXm2LenP6rTwK6fJVh_KtRNs";
+// const contentfulSpace = "oz1hbkbww7w9";
+// const contentfulAccessToken = "rTjM_XS3QTLXJpIBjtIMXm2LenP6rTwK6fJVh_KtRNs";
 
 export async function importContentfulData(
   provider: string,
