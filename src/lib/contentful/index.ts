@@ -1,1 +1,1 @@
-export * from "./importData/importContentfulData";
+export * from "./exportData/exportContentfulData";

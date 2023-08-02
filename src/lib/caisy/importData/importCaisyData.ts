@@ -1,37 +1,31 @@
 import { initSdk } from "@caisy/sdk";
-import { saveToJson } from "./saveToJson";
+import { readBlueprints } from "../exportData/readBlueprints";
+
 import { BlueprintUpsertInputInput } from "../types";
 
-async function getData(accessToken: string, projectId: string, query: string): Promise<Array<any>> {
+export async function importCaisyData(
+  accessToken: string,
+  projectId: string,
+  userId: string,
+  inputPath: string
+): Promise<void> {
+
+  // userId = "8ecf8def-af66-4897-982e-263d5f107be4";
+
   const sdk = initSdk({ token: accessToken });
 
-  const data = await sdk[query]({ input: { projectId } });
+  const blueprints: BlueprintUpsertInputInput[] = await readBlueprints(inputPath);
 
-  return data[query]?.connection?.edges;
-}
-
-export async function importCaisyBlueprints(
-  provider: string,
-  accessToken: string,
-  projectId: string,
-  outputPath: string
-): Promise<void> {
-  const blueprints: BlueprintUpsertInputInput[] = await getData(
-    accessToken,
-    projectId,
-    "GetManyBlueprints"
-  );
-  await saveToJson(blueprints, provider, projectId, "blueprints", outputPath);
-  console.log("Blueprints imported");
-}
-
-export async function importCaisyDocuments(
-  provider: string,
-  accessToken: string,
-  projectId: string,
-  outputPath: string
-): Promise<void> {
-  const documents = await getData(accessToken, projectId, "GetManyDocuments");
-  await saveToJson(documents, provider, projectId, "documents", outputPath);
-  console.log("Documents imported");
+  try {
+    const insertedBlueprints = await sdk.PutManyBlueprints({
+      input: {
+        blueprintInputs: blueprints,
+        projectId: projectId,
+        userId: userId,
+      },
+    });
+    console.log("✅ Inserted blueprints:", insertedBlueprints);
+  } catch (error) {
+    console.error("❌ Error inserting blueprints:", error);
+  }
 }
