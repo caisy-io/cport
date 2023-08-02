@@ -12,21 +12,21 @@ const questions: Question[] = [
   {
     type: "list",
     name: "provider",
-    message: "🔍 Which provider do you want to import from?",
+    message: "🔍 Which provider do you want to export from?",
     choices: ["caisy", "contentful", "strapi"],
-    when: (answers: any) => answers.action === "import" && !options.provider,
+    when: (answers: any) => answers.action === "export" && !options.provider,
   },
   {
     type: "list",
     name: "dataType",
-    message: "📦 Which data type do you want to import?",
+    message: "📦 Which data type do you want to export?",
     choices: ["Blueprints", "Documents", "All"],
     when: (answers: any) => answers.provider === "caisy" && !options.dataType,
   },
   {
     type: "list",
     name: "dataType",
-    message: "📦 Which data type do you want to import?",
+    message: "📦 Which data type do you want to export?",
     choices: ["Content-Model", "All"],
     when: (answers: any) => answers.provider === "contentful" && !options.dataType,
   },
@@ -46,7 +46,7 @@ const questions: Question[] = [
     type: "input",
     name: "projectId",
     message: "🆔 Please enter your project id:",
-    when: (answers: any) => !options.projectId && (answers.provider === "caisy" || answers.action === "export"),
+    when: (answers: any) => !options.projectId && (answers.provider === "caisy" || answers.action === "import"),
     validate: (input: string) => {
       if (!input) {
         return "Project id is required";
@@ -59,7 +59,7 @@ const questions: Question[] = [
     name: "userId",
     message: "🆔 Please enter your user id:",
     when: (answers: any) =>
-      answers.action === "export" && !options.userId,
+      answers.action === "import" && !options.userId,
     validate: (input: string) => {
       if (!input) {
         return "User id is required";
@@ -84,14 +84,14 @@ const questions: Question[] = [
     name: "outputPath",
     message: "📂 Please enter the output data storage location (default: ./output):",
     default: "./output",
-    when: (answers: any) => answers.action === "import" && !options.outputPath,
+    when: (answers: any) => answers.action === "export" && !options.outputPath,
   },
   {
     type: "input",
     name: "importPath",
     message: "📥 Please enter the input data storage location (default: ./input):",
     default: "./input",
-    when: (answers: any) => answers.action === "export" && !options.importPath,
+    when: (answers: any) => answers.action === "import" && !options.importPath,
   },
 ];
 
