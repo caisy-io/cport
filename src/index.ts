@@ -4,11 +4,11 @@ import figlet from "figlet";
 import chalk from "chalk";
 import progressBar from "./cli/progressBar";
 
-import { importCaisyBlueprints, importCaisyDocuments, exportCaisyData } from "./lib/caisy";
-import { importContentfulData } from "./lib/contentful/";
+import { exportCaisyBlueprints, exportCaisyDocuments, importCaisyData } from "./lib/caisy";
+import { exportContentfulData, exportContentfulContentData } from "./lib/contentful/";
 
 async function run(): Promise<void> {
-  console.log(figlet.textSync("CPORT" ));
+  console.log(figlet.textSync("CPORT"));
 
   if (!process.argv.slice(2).length) {
     console.log("No arguments");
@@ -28,58 +28,60 @@ async function run(): Promise<void> {
   const outputPath = options.outputPath || answers.outputPath || "./output";
   const importPath = options.importPath || answers.importPath || "./input";
 
-  if (action === "import" && provider === "caisy") {
-    console.log(chalk.green("Importing data from Caisy..."));
+  if (action === "export" && provider === "caisy") {
+    console.log(chalk.green("Exporting data from Caisy..."));
 
     if (dataType === "All") {
-      console.log("Importing all data from Caisy...");
+      console.log("Exporting all data from Caisy...");
 
       progressBar.start(2, 0);
 
-      await importCaisyBlueprints(provider, accessToken, projectId, outputPath);
+      await exportCaisyBlueprints(provider, accessToken, projectId, outputPath);
       progressBar.update(1);
 
-      await importCaisyDocuments(provider, accessToken, projectId, outputPath);
+      await exportCaisyDocuments(provider, accessToken, projectId, outputPath);
       progressBar.update(2);
     }
     if (dataType === "Blueprints") {
-      console.log("Importing blueprints from Caisy...");
+      console.log("Exporting blueprints from Caisy...");
 
       progressBar.start(1, 0);
-      await importCaisyBlueprints(provider, accessToken, projectId, outputPath);
+      await exportCaisyBlueprints(provider, accessToken, projectId, outputPath);
       progressBar.update(1);
     }
     if (dataType === "Documents") {
       console.log("Importing documents from Caisy...");
 
       progressBar.start(1, 0);
-      await importCaisyDocuments(provider, accessToken, projectId, outputPath);
+      await exportCaisyDocuments(provider, accessToken, projectId, outputPath);
       progressBar.update(1);
     }
     progressBar.stop();
-  } else if (action === "import" && provider === "Contentful") {
-    console.log(chalk.green("Importing data from Contentful..."));
+  } else if (action === "export" && provider === "contentful") {
+    console.log(chalk.green("Exporting data from Contentful..."));
 
     if (dataType === "All") {
-      console.log("Importing all data from Contentful...");
-      progressBar.start(1, 0);
+      console.log("Exporting all data from Contentful...");
+      progressBar.start(2, 0);
 
-      await importContentfulData(provider, spaceId, accessToken, outputPath);
+      await exportContentfulData(provider, accessToken, spaceId, outputPath);
       progressBar.update(1);
+      await exportContentfulContentData(provider, accessToken, spaceId, outputPath);
+      progressBar.update(2);
     }
     if (dataType === "Content-Model") {
-      console.log("Importing content-model from Contentful...");
+      console.log("Exporting content-model from Contentful...");
       progressBar.start(1, 0);
-      await importContentfulData(provider, spaceId, accessToken, outputPath);
+      await exportContentfulData(provider, accessToken, spaceId, outputPath);
       progressBar.update(1);
     }
     progressBar.stop();
-  } else if (action === "export") {
-    console.log(chalk.green("Exporting data to Caisy..."));
+  } else if (action === "import") {
+    console.log(chalk.green("importing data to Caisy..."));
 
     progressBar.start(1, 0);
 
-    await exportCaisyData(accessToken, projectId, userId, importPath);
+    await importCaisyData(accessToken, projectId, userId, importPath);
     progressBar.update(1);
 
     progressBar.stop();
