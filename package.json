@@ -27,6 +27,7 @@
     "dotenv": "^16.0.3",
     "figlet": "^1.6.0",
     "inquirer": "^8.0.0",
+    "json-stringify-safe": "^5.0.1",
     "ts-node": "^10.9.1"
   }
 }
