@@ -26,7 +26,7 @@ export async function readBlueprints(blueprintsPath: string): Promise<any> {
   }
 }
 
-export async function readBlueprintsV2(blueprintsPath: string): Promise<any> {
+export async function readBlueprintsFromContentful(blueprintsPath: string): Promise<any> {
   try {
     const filenames = fs.readdirSync(blueprintsPath);
     const jsonFiles = filenames.filter((filename) => filename.endsWith(".json"));
