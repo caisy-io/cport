@@ -26,7 +26,7 @@ export async function readBlueprints(blueprintsPath: string): Promise<any> {
   }
 }
 
-export async function readBlueprints2(blueprintsPath: string): Promise<any> {
+export async function readBlueprintsV2(blueprintsPath: string): Promise<any> {
   try {
     const filenames = fs.readdirSync(blueprintsPath);
     const jsonFiles = filenames.filter((filename) => filename.endsWith(".json"));
@@ -39,7 +39,6 @@ export async function readBlueprints2(blueprintsPath: string): Promise<any> {
     let test: BlueprintUpsertInputInput[] = new Array(blueprints.length);
     for (let i = 0; i < blueprints.length; i++) {
       let blueprint = blueprints[i];
-      console.log("\nBLUEPRINT_SINGLE: ", blueprint);
       let blueprintType = BlueprintVariant.BlueprintVariantDocument
       if (blueprint.sys.type !== "ContentType") {
         console.log("\nShould check the blueprint Type again (Not Document type)");
@@ -48,30 +47,50 @@ export async function readBlueprints2(blueprintsPath: string): Promise<any> {
       for (let j = 0; j < blueprint.fields.length; j++) {
         let field = blueprint.fields[j];
         let fieldType = BlueprintFieldType.BlueprintFieldTypeString;
-        if (field.type === "Link") {
-          fieldType = BlueprintFieldType.BlueprintFieldTypeFile;
+        switch (field.type) {
+          case "Boolean":
+            fieldType = BlueprintFieldType.BlueprintFieldTypeBoolean;
+            break;
+          case "Link":
+            fieldType = BlueprintFieldType.BlueprintFieldTypeFile;
+            break;
+          case "Array":
+            fieldType = BlueprintFieldType.BlueprintFieldTypeSelect;
+            break;
+          case "RichText":
+            fieldType = BlueprintFieldType.BlueprintFieldTypeRichtext;
+            break;
+          case "Date":
+            fieldType = BlueprintFieldType.BlueprintFieldTypeDatetime;
+            break;
+          default:
+            fieldType = BlueprintFieldType.BlueprintFieldTypeString;
         }
+
         let options: BlueprintFieldOptionsInput = {
           required: field.required,
           localized: field.localized,
           disableInUi: field.disabled,
           disableInApi: field.disabled,
         };
+        let blueprintFieldName = field.id;
         testField[j] = {
-          name: field.name,
+          name: blueprintFieldName,
+          title: field.name,
           description: field.description,
           system: false,
           type: fieldType,
         };
       }
       let group: BlueprintGroupInputInput[] = new Array(1);
+      let blueprintName = blueprint.sys.id;
       group[0] = {
-        name: blueprint.name,
+        name: blueprintName,
         fields: testField,
       }
       test[i] = {
-        name: blueprint.name,
-        title: blueprint.displayField,
+        name: blueprintName,
+        title: blueprint.name,
         description: blueprint.description,
         variant: blueprintType,
         tagIds: null,
@@ -81,17 +100,14 @@ export async function readBlueprints2(blueprintsPath: string): Promise<any> {
         exposeMutations: true,
         groups: group,
       };
-      console.log("\nTEST: : ", test);
     }
     blueprints.forEach((blueprint: BlueprintUpsertInputInput) => {
       delete blueprint.createdAt;
       delete blueprint.updatedAt;
     });
-    console.log("TEST BLUEPRINTS: ", test);
     return test;
   } catch (error) {
     console.error("❌ Error reading blueprints:", error);
     return [];
   }
 }
-
