@@ -1,5 +1,5 @@
 import { initSdk } from "@caisy/sdk";
-import { readBlueprints, readBlueprintsV2 } from "../exportData/readBlueprints";
+import { readBlueprints, readBlueprintsFromContentful } from "../exportData/readBlueprints";
 
 import { BlueprintUpsertInputInput } from "../types";
 
@@ -14,7 +14,7 @@ export async function importCaisyData(
 
   const sdk = initSdk({ token: accessToken });
 
-  const blueprints: BlueprintUpsertInputInput[] = await readBlueprintsV2(inputPath);
+  const blueprints: BlueprintUpsertInputInput[] = await readBlueprintsFromContentful(inputPath);
 
   try {
     const insertedBlueprints = await sdk.PutManyBlueprints({
