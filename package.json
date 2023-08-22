@@ -19,7 +19,7 @@
     "typescript": "^4.9.4"
   },
   "dependencies": {
-    "@caisy/sdk": "^1.2.0",
+    "@caisy/sdk": "^1.2.16",
     "chalk": "4.1.2",
     "cli-progress": "^3.12.0",
     "commander": "^10.0.0",
