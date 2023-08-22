@@ -38,11 +38,30 @@ export async function exportContentfulContentData(
       accessToken: accessToken,
     });
     const content = await client.getEntries();
-
     await saveToJsonAdvanced(content, provider, spaceId, "content", outputPath);
   } catch (error) {
     console.error("❌ Error reading contentful entries:", error);
   }
 }
 
+export async function exportContentfulLocaleData(
+  provider: string,
+  accessToken: string,
+  spaceId: string,
+  outputPath: string
+): Promise<void> {
+  try {
+    // for locales -> client.getLocales()
+    // for assets -> client.getAssets()
+    // for tags -> client.getTags()
+    const client = contentful.createClient({
+      space: spaceId,
+      accessToken: accessToken,
+    });
+    const locale = await client.getLocales();
+    await saveToJson(locale, provider, spaceId, "locale", outputPath);
+  } catch (error) {
+    console.error("❌ Error reading contentful entries:", error);
+  }
+}
 // importContentfulData("Contentful", contentfulAccessToken, contentfulSpace, "./output");
