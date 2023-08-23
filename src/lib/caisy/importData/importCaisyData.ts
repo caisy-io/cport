@@ -1,6 +1,7 @@
 import { initSdk, DocumentWithFieldsInput, DocumentFieldLocaleUpsertInputInput } from "@caisy/sdk";
 import { readBlueprints, readBlueprintsFromContentful } from "../exportData/readBlueprints";
 import { readLocales } from "../exportData/readLocales";
+import { readDocumentsFromContentful } from "../exportData/readDocuments";
 
 import { BlueprintUpsertInputInput } from "../types";
 import { get } from "http";
@@ -28,7 +29,7 @@ export async function importCaisyData(
   let localesPath = inputPath + "/locale";
   const blueprints: BlueprintUpsertInputInput[] = await readBlueprintsFromContentful(blueprintPath);
   const locales: DocumentFieldLocaleUpsertInputInput[] = await readLocales(localesPath, getLocales);
-  // const documents: DocumentWithFieldsInput[] = await readDocumentsFromContentful(inputPath);
+
 
   try {
     const insertedBlueprints = await sdk.PutManyBlueprints({
@@ -56,6 +57,18 @@ export async function importCaisyData(
     console.error("❌ Error inserting locales:", error);
   }
 
+  getLocales = await sdk.GetAllDocumentFieldLocale({
+    input: {
+      projectId: projectId,
+
+    }
+  })
+  let getBlueprints = await sdk.GetManyBlueprints({
+    input: {
+      projectId: projectId,
+    }
+  })
+  const documents: DocumentWithFieldsInput[] = await readDocumentsFromContentful(inputPath, getLocales, getBlueprints, projectId);
   // try {
   //   const insertedDocuments = await sdk.PutManyDocuments({
   //     input: {
