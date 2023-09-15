@@ -2,6 +2,14 @@
 
 The cport project aims to provide an import/export tool for multiple headless CMS platforms. The project roadmap outlines the main areas of development and progress status.
 
+<div style="position: relative; padding-bottom: 51.9730510105871%; height: 0;"><iframe src="https://www.loom.com/embed/fc94726ced0442aaafe474c11edd95c9?sid=8ad2e97b-a17a-4b49-bf08-4a42c84a70f8" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+
+![cport overview](./assets/cport.svg)
+
+Very importat is this provider interface that every provider needs to implement: https://github.com/caisy-io/cport/blob/0dc3929afa285f80eef059366b0cfc7d20c44836/src/lib/common/types.ts
+![provider](./assets/provider_interface.png)
+
+
 ## Topics:
 
 1. **Find a Good Normalization Format:** Find a compatible format for normalization that can handle all CMS data structures. This involves:
