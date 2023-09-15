@@ -5,9 +5,6 @@ The cport project aims to provide an import/export tool for multiple headless CM
 Here is a explainationen video of CPORT: 
 https://www.loom.com/share/Cport-Making-Data-Import-and-Export-Easy-fc94726ced0442aaafe474c11edd95c9?sid=b58fb118-122b-4178-93da-56896c27e09c
 
-<video src="LINK" controls="controls" style="max-width: 730px;">
-</video>
-
 <div style="position: relative; padding-bottom: 51.9730510105871%; height: 0;"><video src="./assets/explain_video.mp4" style="width:100%" controls="controls" >
 </video></div>
 
