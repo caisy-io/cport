@@ -2,7 +2,8 @@
 
 The cport project aims to provide an import/export tool for multiple headless CMS platforms. The project roadmap outlines the main areas of development and progress status.
 
-<div style="position: relative; padding-bottom: 51.9730510105871%; height: 0;"><iframe src="https://www.loom.com/embed/fc94726ced0442aaafe474c11edd95c9?sid=8ad2e97b-a17a-4b49-bf08-4a42c84a70f8" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+Here is a explainationen video of CPORT: 
+https://www.loom.com/share/Cport-Making-Data-Import-and-Export-Easy-fc94726ced0442aaafe474c11edd95c9?sid=b58fb118-122b-4178-93da-56896c27e09c
 
 ![cport overview](./assets/cport.svg)
 
