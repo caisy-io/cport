@@ -5,7 +5,7 @@ import chalk from "chalk";
 import progressBar from "./cli/progressBar";
 
 import { exportCaisyBlueprints, exportCaisyDocuments, importCaisyData } from "./lib/caisy";
-import { exportContentfulData, exportContentfulContentData } from "./lib/contentful/";
+import { exportContentfulData, exportContentfulContentData, exportContentfulLocaleData } from "./lib/contentful/";
 
 async function run(): Promise<void> {
   console.log(figlet.textSync("CPORT"));
@@ -62,12 +62,14 @@ async function run(): Promise<void> {
 
     if (dataType === "All") {
       console.log("Exporting all data from Contentful...");
-      progressBar.start(2, 0);
+      progressBar.start(3, 0);
 
       await exportContentfulData(provider, accessToken, spaceId, outputPath);
       progressBar.update(1);
       await exportContentfulContentData(provider, accessToken, spaceId, outputPath);
       progressBar.update(2);
+      await exportContentfulLocaleData(provider, accessToken, spaceId, outputPath);
+      progressBar.update(3);
     }
     if (dataType === "Content-Model") {
       console.log("Exporting content-model from Contentful...");
