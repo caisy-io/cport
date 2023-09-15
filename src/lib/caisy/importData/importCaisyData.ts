@@ -1,7 +1,12 @@
-import { initSdk } from "@caisy/sdk";
-import { readBlueprints, readBlueprints2 } from "../exportData/readBlueprints";
+import { initSdk, DocumentWithFieldsInput, DocumentFieldLocaleUpsertInputInput } from "@caisy/sdk";
+import { readBlueprints, readBlueprintsFromContentful } from "../exportData/readBlueprints";
+import { readLocales } from "../exportData/readLocales";
+import { readDocumentsFromContentful } from "../exportData/readDocuments";
 
 import { BlueprintUpsertInputInput } from "../types";
+import { get } from "http";
+// import { Document } from "../allTypes";
+
 
 export async function importCaisyData(
   accessToken: string,
@@ -14,7 +19,17 @@ export async function importCaisyData(
 
   const sdk = initSdk({ token: accessToken });
 
-  const blueprints: BlueprintUpsertInputInput[] = await readBlueprints2(inputPath);
+  let getLocales = await sdk.GetAllDocumentFieldLocale({
+    input: {
+      projectId: projectId,
+
+    }
+  })
+  let blueprintPath = inputPath + "/content-model";
+  let localesPath = inputPath + "/locale";
+  const blueprints: BlueprintUpsertInputInput[] = await readBlueprintsFromContentful(blueprintPath);
+  const locales: DocumentFieldLocaleUpsertInputInput[] = await readLocales(localesPath, getLocales);
+
 
   try {
     const insertedBlueprints = await sdk.PutManyBlueprints({
@@ -28,4 +43,41 @@ export async function importCaisyData(
   } catch (error) {
     console.error("❌ Error inserting blueprints:", error);
   }
+
+  try {
+    const insertedLocales = await sdk.PutManyDocumentFieldLocales({
+      input: {
+        projectId: projectId,
+        dryRun: false,
+        documentFieldLocaleInputs: locales,
+      },
+    });
+    console.log("✅ Inserted locales:", insertedLocales);
+  } catch (error) {
+    console.error("❌ Error inserting locales:", error);
+  }
+
+  getLocales = await sdk.GetAllDocumentFieldLocale({
+    input: {
+      projectId: projectId,
+
+    }
+  })
+  let getBlueprints = await sdk.GetManyBlueprints({
+    input: {
+      projectId: projectId,
+    }
+  })
+  const documents: DocumentWithFieldsInput[] = await readDocumentsFromContentful(inputPath, getLocales, getBlueprints, projectId);
+  // try {
+  //   const insertedDocuments = await sdk.PutManyDocuments({
+  //     input: {
+  //       documentInputs: documents,
+  //       projectId: projectId,
+  //     },
+  //   });
+  //   console.log("✅ Inserted documents:", insertedDocuments);
+  // } catch (error) {
+  //   console.error("❌ Error inserting documents:", error);
+  // }
 }
