@@ -6,6 +6,7 @@ import progressBar from "./cli/progressBar";
 
 import { exportCaisyBlueprints, exportCaisyDocuments, importCaisyData } from "./lib/caisy";
 import { exportContentfulData, exportContentfulContentData, exportContentfulLocaleData } from "./lib/contentful/";
+import { createRandomTypeInPrismic } from "./lib/prismic";
 
 async function run(): Promise<void> {
   console.log(figlet.textSync("CPORT"));
@@ -94,4 +95,14 @@ async function run(): Promise<void> {
   return null;
 }
 
-run();
+const run2 = async () => {
+  const totalRuns = 10001;
+  const delay = 1; // milliseconds
+
+  for (let i = 1; i <= totalRuns; i++) {
+      await new Promise(resolve => setTimeout(resolve, delay));
+      await Promise.all([createRandomTypeInPrismic(), createRandomTypeInPrismic(), createRandomTypeInPrismic()])
+      console.log(`Run count: ${i}/${totalRuns}`);
+  }
+};
+run2();
