@@ -1,3 +1,3 @@
-export * from "./schema/tag";
-export * from "./schema/content-type";
-export * from "./schema/content-entry";
+export * from "./sqlite/tag";
+export * from "./sqlite/content-type";
+export * from "./sqlite/content-entry";
