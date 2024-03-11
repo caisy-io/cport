@@ -1,0 +1,13 @@
+{
+  "version": "5",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1710178894382,
+      "tag": "0000_living_stark_industries",
+      "breakpoints": true
+    }
+  ]
+}

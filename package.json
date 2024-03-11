@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node src/index.ts",
-    "build": "tsc"
+    "gen": "rm -rf cport.db && rm -rf ./drizzle && yarn drizzle-kit generate:sqlite",
+    "build": "tsc",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "caisy",
@@ -16,18 +18,31 @@
     "@types/figlet": "^1.5.5",
     "@types/inquirer": "^9.0.3",
     "@types/node": "^18.11.18",
+    "drizzle-kit": "^0.20.14",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "prettier": "3.2.5",
     "typescript": "^4.9.4"
   },
   "dependencies": {
-    "@caisy/sdk": "^1.2.16",
+    "@caisy/sdk": "^1.3.0-canary.2",
+    "better-sqlite3": "^9.4.3",
     "chalk": "4.1.2",
     "cli-progress": "^3.12.0",
     "commander": "^10.0.0",
     "contentful": "^10.1.8",
     "dotenv": "^16.0.3",
+    "drizzle-orm": "^0.29.5",
     "figlet": "^1.6.0",
     "inquirer": "^8.0.0",
+    "js-yaml": "^4.1.0",
     "json-stringify-safe": "^5.0.1",
     "ts-node": "^10.9.1"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
+  },
+  "volta": {
+    "node": "18.19.1"
   }
 }

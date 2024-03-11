@@ -2,7 +2,7 @@
 
 The cport project aims to provide an import/export tool for multiple headless CMS platforms. The project roadmap outlines the main areas of development and progress status.
 
-Here is a explainationen video of CPORT: 
+Here is a explainationen video of CPORT:
 https://www.loom.com/share/Cport-Making-Data-Import-and-Export-Easy-fc94726ced0442aaafe474c11edd95c9?sid=b58fb118-122b-4178-93da-56896c27e09c
 
 ![cport overview](./assets/cport.png)
@@ -10,19 +10,18 @@ https://www.loom.com/share/Cport-Making-Data-Import-and-Export-Easy-fc94726ced04
 Very importat is this provider interface that every provider needs to implement: https://github.com/caisy-io/cport/blob/0dc3929afa285f80eef059366b0cfc7d20c44836/src/lib/common/types.ts
 ![provider](./assets/provider_interface.png)
 
-
 ## Topics:
 
 1. **Find a Good Normalization Format:** Find a compatible format for normalization that can handle all CMS data structures. This involves:
-   - Content Types
+   - Blueprints
    - Entries
 2. **Write Exporter:** Develop modules that fetch data from each CMS API.
 3. **Write Importer:** Develop modules that write data to each CMS API.
 4. **Write Normalization Functions:** Develop normalization functions for each headless CMS, which involves:
-   - Content Types
+   - Blueprints
    - Entries
 5. **Write Denormalization Functions:** Develop denormalization functions for each headless CMS, which involves:
-   - Content Types
+   - Blueprints
    - Entries
 
 ## Progress Status:
@@ -63,6 +62,8 @@ In different Headless CMS platforms, the terms used to refer to Content Models c
 **Strapi:** Strapi uses several terms to refer to its content models: 'ContentType', 'CollectionType', and 'Single Type'. These terminologies provide flexibility in defining the structure and behavior of the content.
 
 **Prismic:** In Prismic, 'Types' and 'Slices' are used. Both are treated as content types, offering different ways to structure and segment your content.
+
+We will use the term 'Blueprints' in cport too, since if with diffrent databases or languages the team "schema","type" or "model" is already reserved for other purposes.
 
 # USAGE
 
