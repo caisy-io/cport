@@ -2,8 +2,8 @@
 .env.local
 node_modules
 dist
-yarn.lock
 .DS_Store
 output*
 input
 notes.md
+cport.db

@@ -1,19 +1,84 @@
 import { program } from "commander";
+import fs from "fs";
+import path from "path";
+import yaml from "js-yaml";
+import { ProviderName } from "../lib/common/types";
+import { CaisyProviderOptions } from "../lib/caisy/provider";
 
 program
   .version("0.0.1")
-  .option("-i, --import", "import data from Caisy")
-  .option("-e, --export", "export data to Caisy")
-  .option("-m, --migrate", "migrate data from Contentful to Caisy")
+  .option("-i, --import", "import data")
+  .option("-e, --export", "export data")
+  .option("-m, --migrate", "migrate data directly from one provider to another")
   .option("-o, --outputPath <outputPath>", "output data storage location")
   .option("-I, --importPath <inputPath>", "input data storage location")
   .option("-t, --token <token>", "access token")
-  .option("-p, --projectId <projectId>", "project id")
-  .option("-P, --provider <provider>", "provider")
-  .option("-u, --userId <userId>", "Caisy user id")
-  .option("-d, --dataType <dataType>", "data type")
-  .parse(process.argv);
+  .option("-P, --source <provider>", "source provider")
+  .option("-P, --target <provider>", "source provider")
+  .option("-c, --config <configFile>", "path to the configuration file")
+  .option(
+    "-s, --set <set>",
+    "set individual configuration values",
+    (value, previous) => {
+      previous.push(value);
+      return previous;
+    },
+    [],
+  );
 
-const options = program.opts();
+program.parse(process.argv);
 
-export default options;
+export type OptionsShared = {
+  import?: boolean;
+  export?: boolean;
+  migrate?: boolean;
+  outputPath?: string;
+  importPath?: string;
+  token?: string;
+  source?: ProviderName;
+  target?: ProviderName;
+  config?: string;
+  caisy?: CaisyProviderOptions;
+  contentful?: {
+    space_id?: string;
+    token?: string;
+  };
+};
+export type OptionsInput = OptionsShared & {
+  set?: string[];
+};
+
+const options = (program.opts() || {}) as OptionsInput;
+
+// Load the configuration file if provided
+let config = {};
+if (options.config) {
+  const configPath = path.resolve(options.config);
+  const configContent = fs.readFileSync(configPath, "utf8");
+  config = yaml.load(configContent);
+}
+
+// Merge the --set values with the configuration
+if (options.set) {
+  options.set.forEach((setParam) => {
+    const [key, value] = setParam.split("=");
+    const keys = key.split(".");
+    let obj = config;
+    for (let i = 0; i < keys.length - 1; i++) {
+      if (!obj[keys[i]]) {
+        obj[keys[i]] = {};
+      }
+      obj = obj[keys[i]];
+    }
+    obj[keys[keys.length - 1]] = value;
+  });
+}
+
+// Merge the command-line options with the configuration
+const mergedOptions: OptionsShared = { ...config, ...options };
+
+// Use the merged options for further processing
+console.log("Options:", mergedOptions);
+// Add your CLI logic here
+
+export default mergedOptions;
