@@ -1,27 +1,27 @@
-import { initSdk } from "@caisy/sdk";
-import { CaisyProviderOptions } from "../provider";
+import { DocumentFieldLocaleResponse } from "@caisy/sdk";
+import { CaisyRunOptions } from "../provider";
+import { contentLocaleSchema } from "../../common/zod/content-entry";
+import { z } from "zod";
+import { writeContentLocale } from "../../common/writer/content-entry";
 
-export const runTagExport = async (options: CaisyProviderOptions): Promise<void> => {
-  const sdk = initSdk({ token: options.token });
-
+export const exportCaisyLocales = async ({ sdk, projectId }: CaisyRunOptions): Promise<void> => {
   const allLocalesResult = await sdk.GetAllDocumentFieldLocale({
     input: {
-      projectId: options.projectId,
+      projectId,
     },
   });
 
-  await Promise.allSettled(
+  console.log(` allLocalesResult`, allLocalesResult);
+
+  await Promise.all(
     allLocalesResult.GetAllDocumentFieldLocale.documentFieldLocales.map(async (locale) => {
-      const normalizedLocale = normalizeLocale(locale);
-      await writeLocale(normalizedLocale);
+      console.log(` locale`, locale);
+      const res = await writeContentLocale(normalizeCaisyLocale(locale));
+      console.log(` res`, res);
     }),
   );
 };
 
-export const normalizeLocale = (locale: any) => {
-  return {
-    id: locale.id,
-    name: locale.name,
-    code: locale.code,
-  };
+export const normalizeCaisyLocale = (locale: DocumentFieldLocaleResponse): z.infer<typeof contentLocaleSchema> => {
+  return locale;
 };

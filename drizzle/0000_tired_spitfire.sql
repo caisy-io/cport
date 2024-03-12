@@ -55,17 +55,14 @@ CREATE TABLE `content_entry` (
 	`id` text PRIMARY KEY NOT NULL,
 	`status` text DEFAULT 'draft' NOT NULL,
 	`content_type_id` text NOT NULL,
-	`title` text,
-	`preview_image_url` text,
-	`published_at` integer,
-	`archived_at` integer,
 	`content_type_variant` text NOT NULL,
-	`first_published_at` integer,
-	`unpublished_at` integer
+	`title` text,
+	`preview_image_url` text
 );
 --> statement-breakpoint
 CREATE TABLE `content_entry_field` (
 	`id` text PRIMARY KEY NOT NULL,
+	`content_type_field_type` text NOT NULL,
 	`content_entry_id` text NOT NULL,
 	`content_type_field_id` text NOT NULL,
 	`content_type_field_name` text NOT NULL,
@@ -75,11 +72,10 @@ CREATE TABLE `content_entry_field` (
 	`value_keywords` text,
 	`value_date` integer,
 	`value_number` text,
-	`value_objects` text,
-	`content_type_field_type` text NOT NULL
+	`value_objects` text
 );
 --> statement-breakpoint
-CREATE TABLE `content_entry_field_locale` (
+CREATE TABLE `content_locale` (
 	`id` text PRIMARY KEY NOT NULL,
 	`api_name` text NOT NULL,
 	`title` text NOT NULL,

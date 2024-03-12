@@ -9,6 +9,7 @@ import { exportContentfulData, exportContentfulContentData, exportContentfulLoca
 import { createRandomTypeInPrismic } from "./lib/prismic";
 import { runMigrations } from "./lib/common/migrate";
 import { migrate } from "drizzle-orm/better-sqlite3/migrator";
+import { createCaisyProvider } from "./lib/caisy/provider";
 
 async function run(): Promise<void> {
   console.log(figlet.textSync("CPORT"));
@@ -26,8 +27,19 @@ async function run(): Promise<void> {
   const outputPath = options.outputPath || answers.outputPath || "./output";
   const importPath = options.importPath || answers.importPath || "./input";
 
-  if (options.export || options.migrate) {
+  if (options.config || options.migrate) {
     if (options.source === "caisy") {
+      const provider = createCaisyProvider({
+        token: options.caisy.token,
+        projectId: options.caisy.projectId,
+        endpoint: options.caisy.endpoint,
+      });
+
+      if (!(await provider.checkCredentials())) {
+        console.log(chalk.red("Invalid credentials for Caisy"));
+        return;
+      }
+      await provider.export({});
     }
   }
 
@@ -96,15 +108,15 @@ async function run(): Promise<void> {
   return null;
 }
 
-const run2 = async () => {
-  await runMigrations();
-  // const totalRuns = 10001;
-  // const delay = 1; // milliseconds
+// const run2 = async () => {
+//   await runMigrations();
+//   // const totalRuns = 10001;
+//   // const delay = 1; // milliseconds
 
-  // for (let i = 1; i <= totalRuns; i++) {
-  //     await new Promise(resolve => setTimeout(resolve, delay));
-  //     await Promise.all([createRandomTypeInPrismic(), createRandomTypeInPrismic(), createRandomTypeInPrismic()])
-  //     console.log(`Run count: ${i}/${totalRuns}`);
-  // }
-};
-run2();
+//   // for (let i = 1; i <= totalRuns; i++) {
+//   //     await new Promise(resolve => setTimeout(resolve, delay));
+//   //     await Promise.all([createRandomTypeInPrismic(), createRandomTypeInPrismic(), createRandomTypeInPrismic()])
+//   //     console.log(`Run count: ${i}/${totalRuns}`);
+//   // }
+// };
+run();
