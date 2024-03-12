@@ -21,12 +21,12 @@ export const contentEntrySchema = z.object({
   contentTypeVariant: contentEntryContentTypeVariantSchema,
 });
 
-export const contentEntryFieldLocaleSchema = z.object({
+export const contentLocaleSchema = z.object({
   id: z.string(),
   apiName: z.string(),
   title: z.string(),
   flag: z.string(),
-  fallbackLocaleId: z.string().optional(),
+  fallbackLocaleId: z.string().optional().nullable(),
   default: z.boolean(),
   disableInResponse: z.boolean(),
   disableEditing: z.boolean(),

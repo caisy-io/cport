@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "df18d41e-1403-46b8-a3cd-b8e2b67330a0",
+  "id": "e15d28a7-a430-40f1-92f5-5665e317890b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "tag": {
@@ -395,6 +395,13 @@
           "notNull": true,
           "autoincrement": false
         },
+        "content_type_variant": {
+          "name": "content_type_variant",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "title": {
           "name": "title",
           "type": "text",
@@ -405,41 +412,6 @@
         "preview_image_url": {
           "name": "preview_image_url",
           "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "published_at": {
-          "name": "published_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "archived_at": {
-          "name": "archived_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "content_type_variant": {
-          "name": "content_type_variant",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "first_published_at": {
-          "name": "first_published_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "unpublished_at": {
-          "name": "unpublished_at",
-          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -457,6 +429,13 @@
           "name": "id",
           "type": "text",
           "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "content_type_field_type": {
+          "name": "content_type_field_type",
+          "type": "text",
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
@@ -529,13 +508,6 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
-        },
-        "content_type_field_type": {
-          "name": "content_type_field_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
         }
       },
       "indexes": {},
@@ -543,8 +515,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "content_entry_field_locale": {
-      "name": "content_entry_field_locale",
+    "content_locale": {
+      "name": "content_locale",
       "columns": {
         "id": {
           "name": "id",

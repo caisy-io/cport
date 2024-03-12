@@ -34,7 +34,7 @@ export enum ContentEntryStatus {
   Archived = "archived",
 }
 
-export const contentEntryFieldLocale = sqliteTable("content_entry_field_locale", {
+export const contentLocale = sqliteTable("content_locale", {
   id: text("id").primaryKey(),
   apiName: text("api_name").notNull(),
   title: text("title").notNull(),

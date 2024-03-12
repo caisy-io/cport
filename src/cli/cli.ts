@@ -48,6 +48,23 @@ export type OptionsInput = OptionsShared & {
   set?: string[];
 };
 
+function snakeToCamel(key) {
+  return key.replace(/([-_][a-z])/g, (group) => group.toUpperCase().replace("-", "").replace("_", ""));
+}
+
+function convertObjectToCamelCase(obj) {
+  if (Array.isArray(obj)) {
+    return obj.map(convertObjectToCamelCase);
+  } else if (typeof obj === "object" && obj !== null) {
+    const newObj = {};
+    Object.keys(obj).forEach((key) => {
+      newObj[snakeToCamel(key)] = convertObjectToCamelCase(obj[key]);
+    });
+    return newObj;
+  }
+  return obj;
+}
+
 const options = (program.opts() || {}) as OptionsInput;
 
 // Load the configuration file if provided
@@ -55,7 +72,8 @@ let config = {};
 if (options.config) {
   const configPath = path.resolve(options.config);
   const configContent = fs.readFileSync(configPath, "utf8");
-  config = yaml.load(configContent);
+  const loadedConfig = yaml.load(configContent);
+  config = convertObjectToCamelCase(loadedConfig);
 }
 
 // Merge the --set values with the configuration
@@ -74,6 +92,7 @@ if (options.set) {
   });
 }
 
+console.log(` config`, config);
 // Merge the command-line options with the configuration
 const mergedOptions: OptionsShared = { ...config, ...options };
 
