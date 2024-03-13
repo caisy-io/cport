@@ -1,36 +1,14 @@
 import { db } from "../db";
 import { contentLocale } from "../schema";
 import { contentLocaleSchema } from "../zod/content-entry";
-import { z } from "zod";
+import { InferInsertModel } from "drizzle-orm";
 
-export const writeContentLocale = async (locale: z.infer<typeof contentLocaleSchema>) => {
-  console.log(` writeContentLocale`);
-  const input = contentLocaleSchema.parse({
-    id: locale.id,
-    apiName: locale.apiName,
-    title: locale.title,
-    flag: locale.flag,
-    fallbackLocaleId: locale.fallbackLocaleId,
-    default: locale.default,
-    disableInResponse: locale.disableInResponse,
-    disableEditing: locale.disableEditing,
-    allowEmptyRequired: locale.allowEmptyRequired,
-  });
+export const writeContentLocale = async (locale: InferInsertModel<typeof contentLocale>) => {
+  const input = contentLocaleSchema.parse(locale) as InferInsertModel<typeof contentLocale>;
 
-  console.log(` input`, input);
   const dbRes = await db
     .insert(contentLocale)
-    .values({
-      id: input.id,
-      apiName: input.apiName,
-      title: input.title,
-      flag: input.flag,
-      fallbackLocaleId: input.fallbackLocaleId,
-      default: input.default,
-      disableInResponse: input.disableInResponse,
-      disableEditing: input.disableEditing,
-      allowEmptyRequired: input.allowEmptyRequired,
-    })
+    .values(input)
     .returning({
       id: contentLocale.id,
       apiName: contentLocale.apiName,
@@ -43,8 +21,6 @@ export const writeContentLocale = async (locale: z.infer<typeof contentLocaleSch
       allowEmptyRequired: contentLocale.allowEmptyRequired,
     })
     .execute();
-
-  console.log(` dbRes`, dbRes);
 
   return dbRes;
 };
