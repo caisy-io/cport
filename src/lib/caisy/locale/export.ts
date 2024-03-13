@@ -1,8 +1,8 @@
 import { DocumentFieldLocaleResponse } from "@caisy/sdk";
 import { CaisyRunOptions } from "../provider";
-import { contentLocaleSchema } from "../../common/zod/content-entry";
-import { z } from "zod";
 import { writeContentLocale } from "../../common/writer/content-entry";
+import { InferInsertModel } from "drizzle-orm";
+import { contentLocale } from "../../common/schema";
 
 export const exportCaisyLocales = async ({ sdk, projectId }: CaisyRunOptions): Promise<void> => {
   const allLocalesResult = await sdk.GetAllDocumentFieldLocale({
@@ -11,17 +11,13 @@ export const exportCaisyLocales = async ({ sdk, projectId }: CaisyRunOptions): P
     },
   });
 
-  console.log(` allLocalesResult`, allLocalesResult);
-
   await Promise.all(
     allLocalesResult.GetAllDocumentFieldLocale.documentFieldLocales.map(async (locale) => {
-      console.log(` locale`, locale);
-      const res = await writeContentLocale(normalizeCaisyLocale(locale));
-      console.log(` res`, res);
+      await writeContentLocale(normalizeCaisyLocale(locale));
     }),
   );
 };
 
-export const normalizeCaisyLocale = (locale: DocumentFieldLocaleResponse): z.infer<typeof contentLocaleSchema> => {
-  return locale;
+export const normalizeCaisyLocale = (locale: DocumentFieldLocaleResponse) => {
+  return locale as InferInsertModel<typeof contentLocale>;
 };
