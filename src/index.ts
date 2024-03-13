@@ -10,6 +10,8 @@ import { createRandomTypeInPrismic } from "./lib/prismic";
 import { runMigrations } from "./lib/common/migrate";
 import { migrate } from "drizzle-orm/better-sqlite3/migrator";
 import { createCaisyProvider } from "./lib/caisy/provider";
+import { sql } from "drizzle-orm";
+import { db } from "./lib/common/db";
 
 async function run(): Promise<void> {
   console.log(figlet.textSync("CPORT"));
@@ -26,6 +28,8 @@ async function run(): Promise<void> {
   const accessToken = options.token || answers.token;
   const outputPath = options.outputPath || answers.outputPath || "./output";
   const importPath = options.importPath || answers.importPath || "./input";
+
+  const resDBs = db.execute(sql`a`);
 
   if (options.config || options.migrate) {
     if (options.source === "caisy") {

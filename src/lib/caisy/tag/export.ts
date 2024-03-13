@@ -1,4 +1,4 @@
-import { TagResponse, initSdk } from "@caisy/sdk";
+import { ReferenceType, TagResponse, initSdk } from "@caisy/sdk";
 import { CaisyRunOptions } from "../provider";
 import { z } from "zod";
 import { tagSchema } from "../../common/zod/tag";
@@ -10,6 +10,9 @@ export const paginateTags = async (sdk: ReturnType<typeof initSdk>, projectId: s
       projectId,
       paginationArguments: {
         after,
+      },
+      filter: {
+        referenceType: ReferenceType.Blueprint,
       },
     },
   });
