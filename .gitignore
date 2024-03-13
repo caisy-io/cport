@@ -8,4 +8,6 @@ input
 notes.md
 cport.db
 config.yaml
-./drizzle
+drizzle
+drizzle/**
+drizzle/**/**
