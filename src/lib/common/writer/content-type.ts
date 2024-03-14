@@ -1,8 +1,10 @@
 import { normalizeCaisyContentType } from "../../caisy/content-type/normalize";
 import { db } from "../db";
 import { ContentTypeVariant, contentType, contentTypeField, contentTypeGroup, contentTypeTag } from "../schema";
+import { contentTypeSchema } from "../zod/content-type";
+import { z } from "zod";
 
-export const writeContentType = async (contentTypeInput: ReturnType<typeof normalizeCaisyContentType>) => {
+export const writeContentType = async (contentTypeInput: z.infer<typeof contentTypeSchema>) => {
   try {
     const contentTypeResult = await insertContentType(contentTypeInput);
     await insertContentTypeGroups(contentTypeInput);
@@ -13,7 +15,7 @@ export const writeContentType = async (contentTypeInput: ReturnType<typeof norma
   }
 };
 
-const insertContentType = async (contentTypeInput: ReturnType<typeof normalizeCaisyContentType>) => {
+const insertContentType = async (contentTypeInput: z.infer<typeof contentTypeSchema>) => {
   return await db
     .insert(contentType)
     .values({
@@ -41,7 +43,7 @@ const insertContentType = async (contentTypeInput: ReturnType<typeof normalizeCa
     .execute();
 };
 
-const insertContentTypeGroups = async (contentTypeInput: ReturnType<typeof normalizeCaisyContentType>) => {
+const insertContentTypeGroups = async (contentTypeInput: z.infer<typeof contentTypeSchema>) => {
   for (const group of contentTypeInput.groups) {
     await insertContentTypeGroup(group, contentTypeInput.id);
     await insertContentTypeFields(group.fields, group.id, contentTypeInput.id);
@@ -49,7 +51,7 @@ const insertContentTypeGroups = async (contentTypeInput: ReturnType<typeof norma
 };
 
 const insertContentTypeGroup = async (
-  group: ReturnType<typeof normalizeCaisyContentType>["groups"][number],
+  group: z.infer<typeof contentTypeSchema>["groups"][number],
   contentTypeId: string,
 ) => {
   return await db
@@ -70,7 +72,7 @@ const insertContentTypeGroup = async (
 };
 
 const insertContentTypeFields = async (
-  fields: ReturnType<typeof normalizeCaisyContentType>["groups"][number]["fields"],
+  fields: z.infer<typeof contentTypeSchema>["groups"][number]["fields"],
   groupId: string,
   contentTypeId: string,
 ) => {
@@ -113,7 +115,7 @@ const insertContentTypeFields = async (
   }
 };
 
-const insertContentTypeTags = async (contentTypeInput: ReturnType<typeof normalizeCaisyContentType>) => {
+const insertContentTypeTags = async (contentTypeInput: z.infer<typeof contentTypeSchema>) => {
   for (const tagId of contentTypeInput.tagIds) {
     await db
       .insert(contentTypeTag)
