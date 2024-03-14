@@ -92,12 +92,12 @@ if (options.set) {
   });
 }
 
-console.log(` config`, config);
+// console.log(` config`, config);
 // Merge the command-line options with the configuration
 const mergedOptions: OptionsShared = { ...config, ...options };
 
 // Use the merged options for further processing
-console.log("Options:", mergedOptions);
+// console.log("Options:", mergedOptions);
 // Add your CLI logic here
 
 export default mergedOptions;

@@ -14,6 +14,7 @@ import { sql } from "drizzle-orm";
 import { db } from "./lib/common/db";
 
 async function run(): Promise<void> {
+  await runMigrations();
   console.log(figlet.textSync("CPORT"));
 
   if (!process.argv.slice(2).length) {
@@ -29,7 +30,12 @@ async function run(): Promise<void> {
   const outputPath = options.outputPath || answers.outputPath || "./output";
   const importPath = options.importPath || answers.importPath || "./input";
 
-  const resDBs = db.execute(sql`a`);
+  const onProgress = ({ step, value }: { step: string; value: number }) => {
+    console.info(`Progress: ${step} - ${value}%`);
+  };
+  const onError = ({ error, step, meta }: { error: Error; step: string; meta: any }) => {
+    console.error(`Error: ${step} - ${error.message}`, JSON.stringify(meta, null, 2), error);
+  };
 
   if (options.config || options.migrate) {
     if (options.source === "caisy") {
@@ -43,7 +49,7 @@ async function run(): Promise<void> {
         console.log(chalk.red("Invalid credentials for Caisy"));
         return;
       }
-      await provider.export({});
+      await provider.export({ onError, onProgress });
     }
   }
 
