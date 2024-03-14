@@ -3,8 +3,8 @@ import { exportCaisyTags } from "./tag/export";
 import { exportCaisyLocales } from "./locale/export";
 import { initSdk } from "@caisy/sdk";
 import { db } from "../common/db";
-import { tag } from "../common/sqlite/tag";
 import { contentLocale } from "../common/schema";
+import { exportCaisyContentTypes } from "./content-type/export";
 
 export type CaisyProviderOptions = {
   token: string;
@@ -29,19 +29,18 @@ export const createCaisyProvider = ({ token, endpoint, projectId }: CaisyProvide
     export: async ({ onError, onProgress }): Promise<void> => {
       console.log("Exporting data from Caisy...");
       // export tags
-      await Promise.allSettled([
+      await Promise.all([
         exportCaisyTags({ sdk, projectId, onError, onProgress }),
         exportCaisyLocales({ sdk, projectId, onError, onProgress }),
-      ]).then((results) => {
-        console.log(` results`, results);
-      });
+      ]);
+      await Promise.all([exportCaisyContentTypes({ sdk, projectId, onError, onProgress })]);
 
-      await db
-        .select()
-        .from(contentLocale)
-        .then(function (rows) {
-          console.log(` rows`, rows);
-        });
+      // await db
+      //   .select()
+      //   .from(contentLocale)
+      //   .then(function (rows) {
+      //     console.log(` rows`, rows);
+      //   });
     },
     checkCredentials: async (): Promise<boolean> => {
       try {
