@@ -1,26 +1,30 @@
 import { Maybe, Scalars } from "./util";
 
 export type ContentType = {
+  id?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
   exposeMutations?: Maybe<Scalars["Boolean"]>;
   groups?: Maybe<Array<Maybe<ContentTypeGroup>>>;
   name?: Maybe<Scalars["String"]>;
   previewImageUrl?: Maybe<Scalars["String"]>;
   single?: Maybe<Scalars["Boolean"]>;
+  system?: Maybe<Scalars["Boolean"]>;
   tagIds?: Maybe<Array<Maybe<Scalars["String"]>>>;
   title?: Maybe<Scalars["String"]>;
   variant?: Maybe<ContentTypeVariant>;
 };
 
 export type ContentTypeGroup = {
-  contentTypeGroupId?: Maybe<Scalars["String"]>;
+  id?: Maybe<Scalars["String"]>;
+  contentTypeId?: Maybe<Scalars["String"]>;
   fields?: Maybe<Array<Maybe<ContentTypeField>>>;
   name?: Maybe<Scalars["String"]>;
+  position?: Maybe<Scalars["Float"]>;
 };
 
 export type ContentTypeField = {
-  contentTypeFieldId?: Maybe<Scalars["String"]>;
-  contentTypeGroupId?: Maybe<Scalars["String"]>;
+  id?: Maybe<Scalars["String"]>;
+  groupId?: Maybe<Scalars["String"]>;
   contentTypeId?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
   name?: Maybe<Scalars["String"]>;
@@ -28,6 +32,11 @@ export type ContentTypeField = {
   system?: Maybe<Scalars["Boolean"]>;
   title?: Maybe<Scalars["String"]>;
   type?: Maybe<ContentFieldType>;
+  position?: Maybe<Scalars["Float"]>;
+  primary?: Maybe<Scalars["Boolean"]>;
+  disableInApi?: Maybe<Scalars["Boolean"]>;
+  disableInUi?: Maybe<Scalars["Boolean"]>;
+  localized?: Maybe<Scalars["Boolean"]>;
 };
 
 export type ContentTypeFieldOptions = {

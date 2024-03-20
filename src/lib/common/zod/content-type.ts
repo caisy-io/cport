@@ -158,26 +158,36 @@ export const contentTypeFieldSchema = z.object({
   contentTypeGroupId: z.string().optional(),
   contentTypeId: z.string().optional(),
   description: z.string().optional(),
+  id: z.string(),
   name: z.string().optional(),
   options: contentTypeFieldOptionsSchema.optional(),
   system: z.boolean().optional(),
+  primary: z.boolean().optional(),
+  position: z.number(),
+  disableInUi: z.boolean().optional(),
+  disableInApi: z.boolean().optional(),
+  localized: z.boolean().optional(),
   title: z.string().optional(),
   type: contentTypeTypeSchema.optional(),
 });
 
 export const contentTypeGroupSchema = z.object({
+  id: z.string(),
   contentTypeGroupId: z.string().optional(),
   fields: z.array(contentTypeFieldSchema).optional(),
   name: z.string().optional(),
+  position: z.number(),
 });
 
 export const contentTypeSchema = z.object({
+  id: z.string(),
   description: z.string().optional(),
   exposeMutations: z.boolean().optional(),
   groups: z.array(contentTypeGroupSchema).optional(),
   name: z.string().optional(),
   previewImageUrl: z.string().optional(),
   single: z.boolean().optional(),
+  system: z.boolean().optional(),
   tagIds: z.array(z.string()).optional(),
   title: z.string().optional(),
   variant: contentTypeVariantSchema.optional(),
