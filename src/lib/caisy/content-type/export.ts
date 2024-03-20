@@ -1,6 +1,6 @@
-import { BlueprintResponse, ReferenceType, TagResponse, initSdk } from "@caisy/sdk";
 import { CaisyRunOptions } from "../provider";
 import { normalizeCaisyContentType } from "./normalize";
+import { writeContentType } from "../../common/writer/content-type";
 
 export const paginateBlueprints = async ({
   sdk,
@@ -21,10 +21,11 @@ export const paginateBlueprints = async ({
   const hasNextPage = allTagsResult.GetManyBlueprints.connection.pageInfo.hasNextPage;
   const endCursor = allTagsResult.GetManyBlueprints.connection.pageInfo.endCursor;
 
-  await Promise.allSettled(
+  await Promise.all(
     allTagsResult.GetManyBlueprints.connection.edges.map(async (blueprint) => {
       const contentType = normalizeCaisyContentType(blueprint.node);
-      console.log(` contentType`, JSON.stringify(contentType, null, 2));
+      // console.log("contentType", JSON.stringify(contentType, null, 2));
+      await writeContentType(contentType);
       // await ().catch((e) => {
       //   onError({ step: "tag", error: e, meta: tag.node });
       // });

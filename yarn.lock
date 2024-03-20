@@ -737,6 +737,11 @@ drizzle-orm@^0.29.5:
   resolved "https://registry.yarnpkg.com/drizzle-orm/-/drizzle-orm-0.29.5.tgz#b82bb6d67101fff9438dacd4b09e9cd23109f49c"
   integrity sha512-jS3+uyzTz4P0Y2CICx8FmRQ1eplURPaIMWDn/yq6k4ShRFj9V7vlJk67lSf2kyYPzQ60GkkNGXcJcwrxZ6QCRw==
 
+drizzle-zod@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/drizzle-zod/-/drizzle-zod-0.5.1.tgz#4e5efe016dce22ed01063f72f839b07670b2d11e"
+  integrity sha512-C/8bvzUH/zSnVfwdSibOgFjLhtDtbKYmkbPbUCq46QZyZCH6kODIMSOgZ8R7rVjoI+tCj3k06MRJMDqsIeoS4A==
+
 emoji-regex@^10.3.0:
   version "10.3.0"
   resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-10.3.0.tgz#76998b9268409eb3dae3de989254d456e70cfe23"
