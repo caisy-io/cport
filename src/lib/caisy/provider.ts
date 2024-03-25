@@ -35,12 +35,12 @@ export const createCaisyProvider = ({ token, endpoint, projectId }: CaisyProvide
       ]);
       await Promise.all([exportCaisyContentTypes({ sdk, projectId, onError, onProgress })]);
 
-      // await db
-      //   .select()
-      //   .from(contentLocale)
-      //   .then(function (rows) {
-      //     console.log(` rows`, rows);
-      //   });
+      // TODO content entries + fields todo
+      // DRAFT PUBLISHED CHANGED
+
+      // we do not loose data if its changed
+      // we should store this is my changed content
+      // and this is my published content
     },
     checkCredentials: async (): Promise<boolean> => {
       try {

@@ -2,16 +2,9 @@ import options from "./cli/cli";
 import questions from "./cli/questions";
 import figlet from "figlet";
 import chalk from "chalk";
-import progressBar from "./cli/progressBar";
 
-import { exportCaisyBlueprints, exportCaisyDocuments, importCaisyData } from "./lib/caisy";
-import { exportContentfulData, exportContentfulContentData, exportContentfulLocaleData } from "./lib/contentful/";
-import { createRandomTypeInPrismic } from "./lib/prismic";
 import { runMigrations } from "./lib/common/migrate";
-import { migrate } from "drizzle-orm/better-sqlite3/migrator";
 import { createCaisyProvider } from "./lib/caisy/provider";
-import { sql } from "drizzle-orm";
-import { db } from "./lib/common/db";
 import { createContentfulProvider } from "./lib/contentful/provider";
 
 async function run(): Promise<void> {
