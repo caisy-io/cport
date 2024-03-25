@@ -12,6 +12,7 @@ import { migrate } from "drizzle-orm/better-sqlite3/migrator";
 import { createCaisyProvider } from "./lib/caisy/provider";
 import { sql } from "drizzle-orm";
 import { db } from "./lib/common/db";
+import { createContentfulProvider } from "./lib/contentful/provider";
 
 async function run(): Promise<void> {
   await runMigrations();
@@ -47,6 +48,19 @@ async function run(): Promise<void> {
 
       if (!(await provider.checkCredentials())) {
         console.log(chalk.red("Invalid credentials for Caisy"));
+        return;
+      }
+      await provider.export({ onError, onProgress });
+    }
+    if (options.source === "contentful") {
+      console.log(` options.contentful`, options.contentful);
+      const provider = createContentfulProvider({
+        token: `${options.contentful.token}`,
+        spaceId: `${options.contentful.spaceId}`,
+      });
+
+      if (!(await provider.checkCredentials())) {
+        console.log(chalk.red("Invalid credentials for Contentful"));
         return;
       }
       await provider.export({ onError, onProgress });

@@ -193,6 +193,7 @@ export enum ContentFieldType {
   String = "STRING",
   Tag = "TAG",
   Video = "VIDEO",
+  Array = "ARRAY",
 }
 
 export enum ContentTypeFieldConnectionVisualization {

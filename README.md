@@ -77,4 +77,6 @@ yarn
 
 ```bash
 yarn dev
+yarn gen && yarn dev --export --source caisy --config config.yam
+yarn gen && yarn dev --export --source contentful --config config.yam
 ```

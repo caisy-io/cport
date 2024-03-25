@@ -31,6 +31,7 @@
     "cli-progress": "^3.12.0",
     "commander": "^10.0.0",
     "contentful": "^10.1.8",
+    "contentful-export": "^7.19.138",
     "dotenv": "^16.0.3",
     "drizzle-orm": "^0.29.5",
     "drizzle-zod": "^0.5.1",
