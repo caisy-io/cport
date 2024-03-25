@@ -18,6 +18,7 @@ export const contentTypeTypeSchema = z.enum([
   "STRING",
   "TAG",
   "VIDEO",
+  "ARRAY",
 ]);
 
 export const contentTypeVariantSchema = z.enum(["DOCUMENT", "ASSET", "COMPONENT", "TEMPLATE"]);

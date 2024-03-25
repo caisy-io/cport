@@ -40,7 +40,7 @@ export type OptionsShared = {
   config?: string;
   caisy?: CaisyProviderOptions;
   contentful?: {
-    space_id?: string;
+    spaceId?: string;
     token?: string;
   };
 };

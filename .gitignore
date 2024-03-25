@@ -11,3 +11,4 @@ config.yaml
 drizzle
 drizzle/**
 drizzle/**/**
+contentful-export*
