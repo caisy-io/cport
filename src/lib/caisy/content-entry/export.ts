@@ -1,5 +1,5 @@
 import { CaisyRunOptions } from "../provider";
-import { normalizeCaisyContentType } from "./normalize";
+import { normalizeCaisyContentEntry } from "./normalize";
 import { writeContentEntry } from "../../common/writer/content-entry";
 
 export const paginateDocuments = async ({
@@ -22,10 +22,10 @@ export const paginateDocuments = async ({
   const endCursor = allDocumentsResult.GetManyDocuments.connection.pageInfo.endCursor;
 
   await Promise.all(
-    allDocumentsResult.GetManyDocuments.connection.edges.map(async (blueprint) => {
-      const contentType = normalizeCaisyContentType(blueprint.node);
+    allDocumentsResult.GetManyDocuments.connection.edges.map(async (document) => {
+      const contentEntry = normalizeCaisyContentEntry(document.node);
       // console.log("contentType", JSON.stringify(contentType, null, 2));
-      await writeContentType(contentType);
+      await writeContentEntry(contentEntry);
       // await ().catch((e) => {
       //   onError({ step: "tag", error: e, meta: tag.node });
       // });
@@ -33,17 +33,17 @@ export const paginateDocuments = async ({
   );
 
   if (hasNextPage) {
-    await paginateBlueprints({ onError, onProgress, sdk, projectId, after: endCursor });
+    await paginateDocuments({ onError, onProgress, sdk, projectId, after: endCursor });
   } else {
-    onProgress({ step: "content-type", value: 100 });
+    onProgress({ step: "content-entry", value: 100 });
   }
 };
 
-export const exportCaisyContentTypes = async ({
+export const exportCaisyContentEntries = async ({
   sdk,
   projectId,
   onError,
   onProgress,
 }: CaisyRunOptions): Promise<void> => {
-  await paginateBlueprints({ sdk, projectId, onError, onProgress, after: null });
+  await paginateDocuments({ sdk, projectId, onError, onProgress, after: null });
 };
