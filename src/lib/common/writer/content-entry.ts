@@ -1,5 +1,6 @@
 import { db } from "../db";
 import { contentLocale, contentEntry, contentEntryField } from "../schema";
+import { ContentEntry, ContentEntryField } from "../types/content-entry";
 import { contentLocaleSchema } from "../zod/content-entry";
 import { InferInsertModel } from "drizzle-orm";
 
@@ -25,20 +26,21 @@ export const writeContentLocale = async (locale: InferInsertModel<typeof content
   return dbRes;
 };
 
-export const writeContentEntry = async (contentEntryInput: InferInsertModel<typeof contentEntry>) => {
+export const writeContentEntry = async (contentEntryInput: ContentEntry) => {
   const contentEntryResult = await insertContentEntry(contentEntryInput);
+  // await insertContentEntryFields(contentEntryInput.fields)
   return contentEntryResult;
 };
 
-const insertContentEntry = async (contentEntryInput: InferInsertModel<typeof contentEntry>) => {
+const insertContentEntry = async (contentEntryInput: ContentEntry) => {
   try {
     return await db
       .insert(contentEntry)
       .values({
-        id: contentEntryInput.id,
+        id: contentEntryInput.documentId,
         status: contentEntryInput.status,
-        contentTypeId: contentEntryInput.contentTypeId,
-        contentTypeVariant: contentEntryInput.contentTypeVariant,
+        contentTypeId: contentEntryInput.blueprintId,
+        contentTypeVariant: contentEntryInput.blueprintVariant,
         previewImageUrl: contentEntryInput.previewImageUrl,
       })
       .returning({
@@ -55,52 +57,52 @@ const insertContentEntry = async (contentEntryInput: InferInsertModel<typeof con
   }
 };
 
-export const writeContentEntryFields = async (
-  contentEntryFieldsInput: InferInsertModel<typeof contentEntryField>[],
-) => {
-  const contentEntryFieldsResult = await insertContentEntryFields(contentEntryFieldsInput);
-  return contentEntryFieldsResult;
-};
+// export const writeContentEntryFields = async (
+//   contentEntryFieldsInput: InferInsertModel<typeof contentEntryField>[],
+// ) => {
+//   const contentEntryFieldsResult = await insertContentEntryFields(contentEntryFieldsInput);
+//   return contentEntryFieldsResult;
+// };
 
-const insertContentEntryFields = async (fields: InferInsertModel<typeof contentEntryField>[]) => {
-  try {
-    for (const field of fields) {
-      await db
-        .insert(contentEntryField)
-        .values({
-          id: field.id,
-          draftContent: field.draftContent,
-          contentTypeFieldType: field.contentTypeFieldType,
-          contentEntryId: field.contentEntryId,
-          contentTypeFieldId: field.contentTypeFieldId,
-          contentTypeFieldName: field.contentTypeFieldName,
-          contentEntryFieldLocaleId: field.contentEntryFieldLocaleId,
-          valueString: field.valueString,
-          valueBool: field.valueBool,
-          valueKeywords: field.valueKeywords,
-          valueDate: field.valueDate,
-          valueNumber: field.valueNumber,
-          valueObjects: field.valueObjects,
-        })
-        .returning({
-          id: contentEntryField.id,
-          draftContent: contentEntryField.draftContent,
-          contentTypeFieldType: contentEntryField.contentTypeFieldType,
-          contentEntryId: contentEntryField.contentEntryId,
-          contentTypeFieldId: contentEntryField.contentTypeFieldId,
-          contentTypeFieldName: contentEntryField.contentTypeFieldName,
-          contentEntryFieldLocaleId: contentEntryField.contentEntryFieldLocaleId,
-          valueString: contentEntryField.valueString,
-          valueBool: contentEntryField.valueBool,
-          valueKeywords: contentEntryField.valueKeywords,
-          valueDate: contentEntryField.valueDate,
-          valueNumber: contentEntryField.valueNumber,
-          valueObjects: contentEntryField.valueObjects,
-        })
-        .execute();
-    }
-  } catch (err) {
-    console.log(` insertContentEntryFields`);
-    throw new Error(err);
-  }
-};
+// const insertContentEntryFields = async (fields: ContentEntryField[]) => {
+//   try {
+//     for (const field of fields) {
+//       await db
+//         .insert(contentEntryField)
+//         .values({
+//           id: field.id,
+//           draftContent: field.draftContent,
+//           contentTypeFieldType: field.contentTypeFieldType,
+//           contentEntryId: field.contentEntryId,
+//           contentTypeFieldId: field.contentTypeFieldId,
+//           contentTypeFieldName: field.contentTypeFieldName,
+//           contentEntryFieldLocaleId: field.contentEntryFieldLocaleId,
+//           valueString: field.valueString,
+//           valueBool: field.valueBool,
+//           valueKeywords: field.valueKeywords,
+//           valueDate: field.valueDate,
+//           valueNumber: field.valueNumber,
+//           valueObjects: field.valueObjects,
+//         })
+//         .returning({
+//           id: contentEntryField.id,
+//           draftContent: contentEntryField.draftContent,
+//           contentTypeFieldType: contentEntryField.contentTypeFieldType,
+//           contentEntryId: contentEntryField.contentEntryId,
+//           contentTypeFieldId: contentEntryField.contentTypeFieldId,
+//           contentTypeFieldName: contentEntryField.contentTypeFieldName,
+//           contentEntryFieldLocaleId: contentEntryField.contentEntryFieldLocaleId,
+//           valueString: contentEntryField.valueString,
+//           valueBool: contentEntryField.valueBool,
+//           valueKeywords: contentEntryField.valueKeywords,
+//           valueDate: contentEntryField.valueDate,
+//           valueNumber: contentEntryField.valueNumber,
+//           valueObjects: contentEntryField.valueObjects,
+//         })
+//         .execute();
+//     }
+//   } catch (err) {
+//     console.log(` insertContentEntryFields`);
+//     throw new Error(err);
+//   }
+// };

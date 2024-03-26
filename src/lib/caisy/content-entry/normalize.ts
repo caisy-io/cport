@@ -1,6 +1,7 @@
 import {
   BlueprintFieldType,
   DocumentFieldResponse,
+  DocumentWithFieldsResponse,
   Document,
   DocumentStatusResponse,
   BlueprintVariant,
@@ -9,136 +10,91 @@ import {
   ContentEntryContentTypeFieldType,
   ContentEntryContentTypeVariant,
   ContentEntryStatus,
+  ContentEntry,
+  ContentEntryField,
 } from "../../common/types/content-entry";
 
-export const normalizeCaisyFieldType = (fieldType: BlueprintFieldType): ContentFieldType => {
+export const normalizeCaisyFieldEntry = (fieldType: BlueprintFieldType): ContentEntryContentTypeFieldType => {
   switch (fieldType) {
     case BlueprintFieldType.BlueprintFieldTypeBoolean:
-      return ContentFieldType.Boolean;
+      return ContentEntryContentTypeFieldType.Boolean;
     case BlueprintFieldType.BlueprintFieldTypeCode:
-      return ContentFieldType.Code;
+      return ContentEntryContentTypeFieldType.Code;
     case BlueprintFieldType.BlueprintFieldTypeColor:
-      return ContentFieldType.Color;
+      return ContentEntryContentTypeFieldType.Color;
     case BlueprintFieldType.BlueprintFieldTypeConnection:
-      return ContentFieldType.Connection;
+      return ContentEntryContentTypeFieldType.Connection;
     case BlueprintFieldType.BlueprintFieldTypeDatetime:
-      return ContentFieldType.Datetime;
+      return ContentEntryContentTypeFieldType.DateTime;
     case BlueprintFieldType.BlueprintFieldTypeExtension:
-      return ContentFieldType.Extension;
+      return ContentEntryContentTypeFieldType.Extension;
     case BlueprintFieldType.BlueprintFieldTypeFile:
-      return ContentFieldType.File;
+      return ContentEntryContentTypeFieldType.File;
     case BlueprintFieldType.BlueprintFieldTypeFloat:
-      return ContentFieldType.Float;
+      return ContentEntryContentTypeFieldType.Float;
     case BlueprintFieldType.BlueprintFieldTypeGeopoint:
-      return ContentFieldType.Geopoint;
+      return ContentEntryContentTypeFieldType.GeoPoint;
     case BlueprintFieldType.BlueprintFieldTypeInt:
-      return ContentFieldType.Int;
+      return ContentEntryContentTypeFieldType.Int;
     case BlueprintFieldType.BlueprintFieldTypeRichtext:
-      return ContentFieldType.Richtext;
+      return ContentEntryContentTypeFieldType.RichText;
     case BlueprintFieldType.BlueprintFieldTypeSelect:
-      return ContentFieldType.Select;
+      return ContentEntryContentTypeFieldType.Select;
     case BlueprintFieldType.BlueprintFieldTypeString:
-      return ContentFieldType.String;
+      return ContentEntryContentTypeFieldType.String;
     case BlueprintFieldType.BlueprintFieldTypeTag:
-      return ContentFieldType.Tag;
+      return ContentEntryContentTypeFieldType.Tag;
     default:
       throw new Error(`Unsupported field type: ${fieldType}`);
   }
 };
 
-export const normalizeCaisyFieldOptions = (fieldType: BlueprintFieldOptions): ContentTypeFieldOptions => {
-  return {
-    uniqueGlobal: fieldType.uniqueGlobal,
-    uniqueLocal: fieldType.uniqueLocal,
-    float: fieldType.float,
-    int: fieldType.int,
-    string: fieldType.string,
-    datetime: fieldType.datetime,
-    extension: fieldType.extension,
-    disableInApi: fieldType.disableInApi,
-    disableInUi: fieldType.disableInUi,
-    external: fieldType.external,
-    file: fieldType.file,
-    localized: fieldType.localized,
-    primary: fieldType.primary,
-    required: fieldType.required,
-    code: fieldType.code,
-    richtext: fieldType.richtext,
-    select: fieldType.select,
-    tag: fieldType.tag,
-    video: fieldType.video,
-    ...(fieldType.connection
-      ? {
-          connection: {
-            connectedIds: fieldType.connection.connectedIds,
-            visualization: normalizeCaisyConnectionFieldVisualization(fieldType.connection.visualization),
-            variant: normalizeCaisyContentTypeVariant(fieldType.connection.variant),
-          } as ContentTypeFieldOptions["connection"],
-        }
-      : {}),
-  };
-};
-
-export const normalizeCaisyContentTypeVariant = (blueprintVariant: BlueprintVariant): ContentTypeVariant => {
+export const normalizeCaisyContentTypeVariant = (blueprintVariant: String): ContentEntryContentTypeVariant => {
   switch (blueprintVariant) {
     case BlueprintVariant.BlueprintVariantDocument:
-      return ContentTypeVariant.Document;
+      return ContentEntryContentTypeVariant.Document;
     case BlueprintVariant.BlueprintVariantAsset:
-      return ContentTypeVariant.Asset;
+      return ContentEntryContentTypeVariant.Asset;
     case BlueprintVariant.BlueprintVariantComponent:
-      return ContentTypeVariant.Component;
+      return ContentEntryContentTypeVariant.Component;
     case BlueprintVariant.BlueprintVariantTemplate:
-      return ContentTypeVariant.Template;
+      return ContentEntryContentTypeVariant.Template;
     default:
-      return ContentTypeVariant.Document;
+      return ContentEntryContentTypeVariant.Document;
   }
 };
 
-export const normalizeCaisyConnectionFieldVisualization = (
-  visualization: BlueprintFieldConnectionVisualization,
-): ContentTypeFieldConnectionVisualization => {
-  switch (visualization) {
-    case BlueprintFieldConnectionVisualization.BlueprintFieldConnectionVisualizationDeafult:
-      return ContentTypeFieldConnectionVisualization.Deafult;
-    case BlueprintFieldConnectionVisualization.BlueprintFieldConnectionVisualizationInline:
-      return ContentTypeFieldConnectionVisualization.Inline;
-    case BlueprintFieldConnectionVisualization.BlueprintFieldConnectionVisualizationGrid:
-      return ContentTypeFieldConnectionVisualization.Grid;
+export const normalizeCaisyContentEntryStatus = (status: Number): ContentEntryStatus => {
+  switch (status) {
+    case 0:
+      return ContentEntryStatus.Draft;
+    case 1:
+      return ContentEntryStatus.Changed;
+    case 2:
+      return ContentEntryStatus.Published;
+    case 3:
+      return ContentEntryStatus.Archived;
     default:
-      return ContentTypeFieldConnectionVisualization.Deafult;
+      return ContentEntryStatus.Draft;
   }
 };
 
-export const normalizeCaisyContentType = (blueprint: BlueprintResponse): ContentType => {
+export const normalizeCaisyContentEntry = (document: DocumentWithFieldsResponse): ContentEntry => {
   return {
-    id: blueprint.blueprintId,
-    name: blueprint.name,
-    title: blueprint.title,
-    system: blueprint.system,
-    single: blueprint.single,
-    tagIds: blueprint.tagIds,
-    variant: normalizeCaisyContentTypeVariant(blueprint.variant),
-    previewImageUrl: blueprint.previewImageUrl,
-    exposeMutations: blueprint.exposeMutations,
-    description: blueprint.description,
-    groups: blueprint.groups.map((group, index) => ({
-      id: group.blueprintGroupId,
-      contentTypeId: blueprint.blueprintId,
-      position: index,
-      name: group.name,
-      fields: group.fields.map((field, index) => ({
-        id: field.blueprintFieldId,
-        name: field.name,
-        groupId: group.blueprintGroupId,
-        contentTypeId: blueprint.blueprintId,
-        position: index,
-        primary: !!field.options.primary,
-        title: field.title,
-        type: normalizeCaisyFieldType(field.type),
-        system: field.system,
-        description: field.description,
-        options: normalizeCaisyFieldOptions(field.options),
-      })),
-    })),
+    documentId: document.documentId,
+    title: document.title,
+    // blueprintVariant: normalizeCaisyContentTypeVariant(document.blueprintVariant),
+    previewImageUrl: document.previewImageUrl,
+    status: normalizeCaisyContentEntryStatus(document.statusId),
+    archivedAt: document.archivedAt,
+    blueprintId: document.blueprintId,
+    projectId: document.projectId,
+    publishedAt: document.publishedAt,
+    createdAt: document.createdAt,
+    createdByUserId: document.createdByUserId,
+    firstPublishedAt: document.firstPublishedAt,
+    lastUpdatedByUserId: document.lastUpdatedByUserId,
+    updatedAt: document.updatedAt,
+    unpublishedAt: document.unpublishedAt,
   };
 };
