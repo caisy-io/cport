@@ -1,8 +1,9 @@
 import { db } from "../db";
 import { contentLocale, contentEntry, contentEntryField } from "../schema";
-import { ContentEntry, ContentEntryField } from "../types/content-entry";
+import { ContentEntry, ContentEntryField, processDataForEntryField } from "../types/content-entry";
 import { contentLocaleSchema } from "../zod/content-entry";
 import { InferInsertModel } from "drizzle-orm";
+import { BlueprintPaginationResult } from "../../caisy/content-type/export";
 
 export const writeContentLocale = async (locale: InferInsertModel<typeof contentLocale>) => {
   const input = contentLocaleSchema.parse(locale) as InferInsertModel<typeof contentLocale>;
@@ -26,9 +27,9 @@ export const writeContentLocale = async (locale: InferInsertModel<typeof content
   return dbRes;
 };
 
-export const writeContentEntry = async (contentEntryInput: ContentEntry) => {
+export const writeContentEntry = async (contentEntryInput: ContentEntry, blueprintMaps: BlueprintPaginationResult) => {
   const contentEntryResult = await insertContentEntry(contentEntryInput);
-  // await insertContentEntryFields(contentEntryInput.fields)
+  await insertContentEntryFields(contentEntryInput.fields, contentEntryInput.documentId, blueprintMaps);
   return contentEntryResult;
 };
 
@@ -64,45 +65,56 @@ const insertContentEntry = async (contentEntryInput: ContentEntry) => {
 //   return contentEntryFieldsResult;
 // };
 
-// const insertContentEntryFields = async (fields: ContentEntryField[]) => {
-//   try {
-//     for (const field of fields) {
-//       await db
-//         .insert(contentEntryField)
-//         .values({
-//           id: field.id,
-//           draftContent: field.draftContent,
-//           contentTypeFieldType: field.contentTypeFieldType,
-//           contentEntryId: field.contentEntryId,
-//           contentTypeFieldId: field.contentTypeFieldId,
-//           contentTypeFieldName: field.contentTypeFieldName,
-//           contentEntryFieldLocaleId: field.contentEntryFieldLocaleId,
-//           valueString: field.valueString,
-//           valueBool: field.valueBool,
-//           valueKeywords: field.valueKeywords,
-//           valueDate: field.valueDate,
-//           valueNumber: field.valueNumber,
-//           valueObjects: field.valueObjects,
-//         })
-//         .returning({
-//           id: contentEntryField.id,
-//           draftContent: contentEntryField.draftContent,
-//           contentTypeFieldType: contentEntryField.contentTypeFieldType,
-//           contentEntryId: contentEntryField.contentEntryId,
-//           contentTypeFieldId: contentEntryField.contentTypeFieldId,
-//           contentTypeFieldName: contentEntryField.contentTypeFieldName,
-//           contentEntryFieldLocaleId: contentEntryField.contentEntryFieldLocaleId,
-//           valueString: contentEntryField.valueString,
-//           valueBool: contentEntryField.valueBool,
-//           valueKeywords: contentEntryField.valueKeywords,
-//           valueDate: contentEntryField.valueDate,
-//           valueNumber: contentEntryField.valueNumber,
-//           valueObjects: contentEntryField.valueObjects,
-//         })
-//         .execute();
-//     }
-//   } catch (err) {
-//     console.log(` insertContentEntryFields`);
-//     throw new Error(err);
-//   }
-// };
+const insertContentEntryFields = async (
+  fields: ContentEntryField[],
+  documentID: string,
+  blueprintMaps: BlueprintPaginationResult,
+) => {
+  try {
+    for (const field of fields) {
+      let contentEntryFieldData = await processDataForEntryField(field.data);
+      let contentTypeFieldName = "";
+      for (const [key, value] of blueprintMaps.blueprintFieldNameMap.entries()) {
+        if (key === field.blueprintFieldId) {
+          contentTypeFieldName = value;
+        }
+      }
+      await db
+        .insert(contentEntryField)
+        .values({
+          id: field.id,
+          draftContent: 1,
+          contentTypeFieldType: field.type,
+          contentEntryId: documentID,
+          contentTypeFieldId: field.blueprintFieldId,
+          contentTypeFieldName: contentTypeFieldName,
+          contentEntryFieldLocaleId: field.documentFieldLocaleId,
+          valueString: contentEntryFieldData.valueString,
+          valueBool: contentEntryFieldData.valueBool,
+          valueKeywords: contentEntryFieldData.valueKeywords,
+          valueDate: contentEntryFieldData.valueDate,
+          valueNumber: contentEntryFieldData.valueNumber,
+          valueObjects: contentEntryFieldData.valueObjects,
+        })
+        .returning({
+          id: contentEntryField.id,
+          draftContent: contentEntryField.draftContent,
+          contentTypeFieldType: contentEntryField.contentTypeFieldType,
+          contentEntryId: contentEntryField.contentEntryId,
+          contentTypeFieldId: contentEntryField.contentTypeFieldId,
+          contentTypeFieldName: contentEntryField.contentTypeFieldName,
+          contentEntryFieldLocaleId: contentEntryField.contentEntryFieldLocaleId,
+          valueString: contentEntryField.valueString,
+          valueBool: contentEntryField.valueBool,
+          valueKeywords: contentEntryField.valueKeywords,
+          valueDate: contentEntryField.valueDate,
+          valueNumber: contentEntryField.valueNumber,
+          valueObjects: contentEntryField.valueObjects,
+        })
+        .execute();
+    }
+  } catch (err) {
+    console.log(` insertContentEntryFields`);
+    throw new Error(err);
+  }
+};

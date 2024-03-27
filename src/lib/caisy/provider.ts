@@ -33,8 +33,17 @@ export const createCaisyProvider = ({ token, endpoint, projectId }: CaisyProvide
         exportCaisyTags({ sdk, projectId, onError, onProgress }),
         exportCaisyLocales({ sdk, projectId, onError, onProgress }),
       ]);
-      await Promise.all([exportCaisyContentTypes({ sdk, projectId, onError, onProgress })]);
-      await Promise.all([exportCaisyContentEntries({ sdk, projectId, onError, onProgress })]);
+      const blueprintVariantsMap = await exportCaisyContentTypes({ sdk, projectId, onError, onProgress });
+
+      await exportCaisyContentEntries({
+        sdk,
+        projectId,
+        onError,
+        onProgress,
+        blueprintVariantsMap,
+      });
+      // await Promise.all([exportCaisyContentTypes({ sdk, projectId, onError, onProgress })]);
+      // await Promise.all([exportCaisyContentEntries({ sdk, projectId, onError, onProgress })]);
 
       // TODO content entries + fields todo
       // DRAFT PUBLISHED CHANGED
