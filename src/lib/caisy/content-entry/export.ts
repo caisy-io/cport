@@ -1,6 +1,11 @@
 import { CaisyRunOptions } from "../provider";
 import { normalizeCaisyContentEntry } from "./normalize";
 import { writeContentEntry } from "../../common/writer/content-entry";
+import { get } from "http";
+import { BlueprintPaginationResult } from "../content-type/export";
+interface ExtendedCaisyRunOptions extends CaisyRunOptions {
+  blueprintVariantsMap: BlueprintPaginationResult;
+}
 
 export const paginateDocuments = async ({
   sdk,
@@ -8,7 +13,8 @@ export const paginateDocuments = async ({
   after,
   onProgress,
   onError,
-}: CaisyRunOptions & { after: string | null }) => {
+  blueprintVariantsMap,
+}: ExtendedCaisyRunOptions & { after: string | null }) => {
   const allDocumentsResult = await sdk.GetManyDocuments({
     input: {
       projectId,
@@ -23,9 +29,10 @@ export const paginateDocuments = async ({
 
   await Promise.all(
     allDocumentsResult.GetManyDocuments.connection.edges.map(async (document) => {
-      const contentEntry = normalizeCaisyContentEntry(document.node);
+      const fixedDocument = document.node as Document;
+      const contentEntry = normalizeCaisyContentEntry(fixedDocument, blueprintVariantsMap);
       // console.log("contentType", JSON.stringify(contentType, null, 2));
-      await writeContentEntry(contentEntry);
+      await writeContentEntry(contentEntry, blueprintVariantsMap);
       // await ().catch((e) => {
       //   onError({ step: "tag", error: e, meta: tag.node });
       // });
@@ -33,7 +40,14 @@ export const paginateDocuments = async ({
   );
 
   if (hasNextPage) {
-    await paginateDocuments({ onError, onProgress, sdk, projectId, after: endCursor });
+    await paginateDocuments({
+      onError,
+      onProgress,
+      sdk,
+      projectId,
+      after: endCursor,
+      blueprintVariantsMap: blueprintVariantsMap,
+    });
   } else {
     onProgress({ step: "content-entry", value: 100 });
   }
@@ -44,6 +58,7 @@ export const exportCaisyContentEntries = async ({
   projectId,
   onError,
   onProgress,
-}: CaisyRunOptions): Promise<void> => {
-  await paginateDocuments({ sdk, projectId, onError, onProgress, after: null });
+  blueprintVariantsMap,
+}: ExtendedCaisyRunOptions): Promise<void> => {
+  await paginateDocuments({ sdk, projectId, onError, onProgress, blueprintVariantsMap, after: null });
 };

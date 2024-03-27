@@ -13,6 +13,7 @@ import {
   ContentEntry,
   ContentEntryField,
 } from "../../common/types/content-entry";
+import { BlueprintPaginationResult } from "../content-type/export";
 
 export const normalizeCaisyFieldEntry = (fieldType: BlueprintFieldType): ContentEntryContentTypeFieldType => {
   switch (fieldType) {
@@ -79,11 +80,22 @@ export const normalizeCaisyContentEntryStatus = (status: Number): ContentEntrySt
   }
 };
 
-export const normalizeCaisyContentEntry = (document: DocumentWithFieldsResponse): ContentEntry => {
+export const normalizeCaisyContentEntry = (
+  document: DocumentWithFieldsResponse,
+  blueprintVariantsMap: BlueprintPaginationResult,
+): ContentEntry => {
+  let blueprintVariant: string;
+  let BlueprintFieldType: string;
+  for (const [key, value] of blueprintVariantsMap.blueprintMap.entries()) {
+    if (key === document.blueprintId) {
+      blueprintVariant = value;
+    }
+  }
+  console.log(` blueprintVariant`, blueprintVariant);
   return {
     documentId: document.documentId,
     title: document.title,
-    // blueprintVariant: normalizeCaisyContentTypeVariant(document.blueprintVariant),
+    blueprintVariant: normalizeCaisyContentTypeVariant(blueprintVariant),
     previewImageUrl: document.previewImageUrl,
     status: normalizeCaisyContentEntryStatus(document.statusId),
     archivedAt: document.archivedAt,
@@ -96,5 +108,15 @@ export const normalizeCaisyContentEntry = (document: DocumentWithFieldsResponse)
     lastUpdatedByUserId: document.lastUpdatedByUserId,
     updatedAt: document.updatedAt,
     unpublishedAt: document.unpublishedAt,
+    fields: document.fields.map((field) => {
+      return {
+        blueprintFieldId: field.blueprintFieldId,
+        createdAt: field.createdAt,
+        documentFieldLocaleId: field.documentFieldLocaleId,
+        data: field.data,
+        updatedAt: field.updatedAt,
+        type: normalizeCaisyFieldEntry(field.type),
+      };
+    }),
   };
 };
