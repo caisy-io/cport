@@ -119,7 +119,7 @@ export const contentEntryField = sqliteTable(
     valueString: text("value_string"),
     valueBool: integer("value_bool", { mode: "boolean" }),
     valueKeywords: text("value_keywords"),
-    valueDate: integer("value_date", { mode: "timestamp_ms" }),
+    valueDate: text("value_date"),
     valueNumber: text("value_number"),
     valueObjects: text("value_objects"),
   },

@@ -8,6 +8,11 @@ export enum ContentEntryContentTypeVariant {
   Template = "template",
 }
 
+export enum DocumentMode {
+  DocumentRequestModeLatest = "GET_DOCUMENT_REQUEST_MODE_LATEST",
+  DocumentRequestModePublished = "GET_DOCUMENT_REQUEST_MODE_PUBLISHED",
+}
+
 export enum ContentEntryContentTypeFieldType {
   Unspecified = "unspecified",
   Boolean = "boolean",
@@ -69,46 +74,89 @@ export type ContentEntryField = {
 type ContentEntryFieldData = {
   valueString?: string | null;
   valueBool?: boolean | null;
-  valueKeywords?: string | null; // Assuming keywords are stored as a string
-  valueDate?: number | null; // Timestamp in milliseconds
+  valueKeywords?: string | null;
+  valueDate?: string | null;
   valueNumber?: number | null;
-  valueObjects?: string | null; // Assuming JSON string representation of objects
+  valueObjects?: string | null;
 };
 
 export const processDataForEntryField = (data: Maybe<Scalars["Any"]>): ContentEntryFieldData => {
   if (data === null || data === undefined) {
-    // Handle null or undefined data
     return {};
   } else if (typeof data === "string") {
-    // Assuming if it can be parsed as a date or a JSON object, you might want to handle those cases
     try {
       const parsedDate = Date.parse(data);
       if (!isNaN(parsedDate)) {
-        return { valueDate: parsedDate };
+        return {
+          valueDate: new Date(parsedDate).toISOString(),
+          valueString: undefined,
+          valueBool: undefined,
+          valueNumber: undefined,
+          valueKeywords: undefined,
+          valueObjects: undefined,
+        };
       }
     } catch (e) {
-      // Not a date, continue to check for JSON
+      // Not a date
     }
 
     try {
       JSON.parse(data);
-      // If parsing succeeded, assume it's meant to be an object
-      return { valueObjects: data };
+      return {
+        valueObjects: data,
+        valueString: undefined,
+        valueBool: undefined,
+        valueNumber: undefined,
+        valueKeywords: undefined,
+        valueDate: undefined,
+      };
     } catch (e) {
-      // Not JSON, treat as a regular string
-      return { valueString: data };
+      return {
+        valueString: data,
+        valueBool: undefined,
+        valueNumber: undefined,
+        valueKeywords: undefined,
+        valueDate: undefined,
+        valueObjects: undefined,
+      };
     }
   } else if (typeof data === "boolean") {
-    return { valueBool: data };
+    return {
+      valueBool: data,
+      valueString: undefined,
+      valueNumber: undefined,
+      valueKeywords: undefined,
+      valueDate: undefined,
+      valueObjects: undefined,
+    };
   } else if (typeof data === "number") {
-    // You might want to further distinguish between integers and floats if necessary
-    return { valueNumber: data };
-  } else if (Array.isArray(data) || typeof data === "object") {
-    // Assuming you convert arrays or objects to a JSON string
-    return { valueObjects: JSON.stringify(data) };
+    return {
+      valueNumber: data,
+      valueString: undefined,
+      valueBool: undefined,
+      valueKeywords: undefined,
+      valueDate: undefined,
+      valueObjects: undefined,
+    };
+  } else if (Array.isArray(data)) {
+    return {
+      valueObjects: undefined,
+      valueString: undefined,
+      valueBool: undefined,
+      valueNumber: undefined,
+      valueKeywords: JSON.stringify(data),
+      valueDate: undefined,
+    };
+  } else if (typeof data === "object") {
+    return {
+      valueObjects: JSON.stringify(data),
+      valueString: undefined,
+      valueBool: undefined,
+      valueNumber: undefined,
+      valueKeywords: undefined,
+      valueDate: undefined,
+    };
   }
-
-  // Add more conditions as necessary for other types or specific handling
 
   return {}; // Default case if none of the above matched
 };
