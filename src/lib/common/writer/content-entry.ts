@@ -73,12 +73,7 @@ const insertContentEntryFields = async (
   try {
     for (const field of fields) {
       let contentEntryFieldData = await processDataForEntryField(field.data);
-      let contentTypeFieldName = "";
-      for (const [key, value] of blueprintMaps.blueprintFieldNameMap.entries()) {
-        if (key === field.blueprintFieldId) {
-          contentTypeFieldName = value;
-        }
-      }
+      let contentTypeFieldName = blueprintMaps.blueprintFieldNameMap.get(field.blueprintFieldId) || "";
       await db
         .insert(contentEntryField)
         .values({
@@ -95,7 +90,7 @@ const insertContentEntryFields = async (
           valueDate: contentEntryFieldData.valueDate,
           valueNumber: contentEntryFieldData.valueNumber,
           valueObjects: contentEntryFieldData.valueObjects,
-        })
+        } as any)
         .returning({
           id: contentEntryField.id,
           draftContent: contentEntryField.draftContent,
