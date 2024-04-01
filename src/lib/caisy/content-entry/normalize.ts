@@ -52,13 +52,13 @@ export const normalizeCaisyFieldEntry = (fieldType: BlueprintFieldType): Content
 
 export const normalizeCaisyContentTypeVariant = (blueprintVariant: String): ContentEntryContentTypeVariant => {
   switch (blueprintVariant) {
-    case BlueprintVariant.BlueprintVariantDocument:
+    case "DOCUMENT":
       return ContentEntryContentTypeVariant.Document;
-    case BlueprintVariant.BlueprintVariantAsset:
+    case "ASSET":
       return ContentEntryContentTypeVariant.Asset;
-    case BlueprintVariant.BlueprintVariantComponent:
+    case "COMPONENT":
       return ContentEntryContentTypeVariant.Component;
-    case BlueprintVariant.BlueprintVariantTemplate:
+    case "TEMPLATE":
       return ContentEntryContentTypeVariant.Template;
     default:
       return ContentEntryContentTypeVariant.Document;
@@ -91,7 +91,6 @@ export const normalizeCaisyContentEntry = (
       blueprintVariant = value;
     }
   }
-  console.log(` blueprintVariant`, blueprintVariant);
   return {
     documentId: document.documentId,
     title: document.title,

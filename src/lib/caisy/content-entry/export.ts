@@ -1,6 +1,7 @@
 import { CaisyRunOptions } from "../provider";
 import { normalizeCaisyContentEntry } from "./normalize";
 import { writeContentEntry, writePublishedContentEntryFields } from "../../common/writer/content-entry";
+import { ContentEntryFieldData } from "../../common/types/content-entry";
 import { get } from "http";
 import { BlueprintPaginationResult } from "../content-type/export";
 import { Maybe, Scalars } from "../../common/types/util";
@@ -10,7 +11,7 @@ interface ExtendedCaisyRunOptions extends CaisyRunOptions {
   blueprintDetailsMap: BlueprintPaginationResult;
 }
 
-const DocumentFieldMap: Map<string, Maybe<Scalars["Any"]>> = new Map<string, Maybe<Scalars["Any"]>>();
+const DocumentFieldMap: Map<string, ContentEntryFieldData> = new Map<string, ContentEntryFieldData>();
 export { DocumentFieldMap };
 export const paginateDocuments = async ({
   sdk,
