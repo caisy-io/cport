@@ -71,7 +71,7 @@ export type ContentEntryField = {
   updatedAt?: Maybe<Scalars["Time"]>;
 };
 
-type ContentEntryFieldData = {
+export type ContentEntryFieldData = {
   valueString?: string | null;
   valueBool?: boolean | null;
   valueKeywords?: string | null;

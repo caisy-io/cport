@@ -1,6 +1,11 @@
 import { db } from "../db";
 import { contentLocale, contentEntry, contentEntryField } from "../schema";
-import { ContentEntry, ContentEntryField, processDataForEntryField } from "../types/content-entry";
+import {
+  ContentEntry,
+  ContentEntryField,
+  processDataForEntryField,
+  ContentEntryFieldData,
+} from "../types/content-entry";
 import { contentLocaleSchema } from "../zod/content-entry";
 import { InferInsertModel } from "drizzle-orm";
 import { BlueprintPaginationResult } from "../../caisy/content-type/export";
@@ -96,11 +101,15 @@ const insertContentEntryFields = async (
 ) => {
   try {
     for (const field of fields) {
-      if (draftContent === 0) {
-        documentFieldMap.set(`${documentID}_${field.blueprintFieldId}_${field.documentFieldLocaleId}`, field.data);
-      }
       let contentEntryFieldData = await processDataForEntryField(field.data);
       let contentTypeFieldName = blueprintMaps.blueprintFieldNameMap.get(field.blueprintFieldId) || "";
+      if (draftContent === 1) {
+        documentFieldMap.set(
+          `${documentID}_${field.blueprintFieldId}_${field.documentFieldLocaleId}`,
+          contentEntryFieldData,
+        );
+      }
+
       await db
         .insert(contentEntryField)
         .values({
@@ -144,30 +153,47 @@ const insertContentEntryFields = async (
 
 function areDocumentFieldsMatching(
   document: ContentEntry,
-  documentFieldMap: Map<string, Maybe<Scalars["Any"]>>,
+  documentFieldMap: Map<string, ContentEntryFieldData>,
   blueprintMaps: BlueprintPaginationResult,
 ): void {
   for (const field of document.fields) {
-    const compositeKey = `${document.documentId}_${field.blueprintFieldId}_${field.documentFieldLocaleId}`;
-    const storedData = documentFieldMap.get(compositeKey);
-    const processedData = processDataForEntryField(field.data);
-
-    let actualDataValue;
-    if (processedData.valueString !== undefined) {
-      actualDataValue = processedData.valueString;
-    } else if (processedData.valueBool !== undefined) {
-      actualDataValue = String(processedData.valueBool);
-    } else if (processedData.valueNumber !== undefined) {
-      actualDataValue = String(processedData.valueNumber);
-    } else if (processedData.valueKeywords !== undefined) {
-      actualDataValue = processedData.valueKeywords;
-    } else if (processedData.valueDate !== undefined) {
-      actualDataValue = processedData.valueDate;
-    } else if (processedData.valueObjects !== undefined) {
-      actualDataValue = processedData.valueObjects;
+    let storedData = documentFieldMap.get(
+      `${document.documentId}_${field.blueprintFieldId}_${field.documentFieldLocaleId}`,
+    );
+    let processedData = processDataForEntryField(field.data);
+    if (
+      document.documentId === "ff9a2a5e-194f-4fd4-b640-1d2db0c56b58" &&
+      field.blueprintFieldId === "fae2c908-6100-4383-abd6-caaefb86c672" &&
+      field.documentFieldLocaleId === "4c2fe5e1-e5f9-4eea-90a1-e982cebf4ccf"
+    ) {
+      console.log("SAME:", isEquivalentData(processedData, storedData));
+      console.log("storedData", storedData);
+      console.log("processedData", processedData);
     }
-    if (actualDataValue !== storedData) {
+    if (isEquivalentData(processedData, storedData)) {
+      continue;
+    } else {
       insertContentEntryFields(document.fields, document.documentId, blueprintMaps, 0, documentFieldMap);
     }
   }
+}
+
+function isEquivalentData(data1: ContentEntryFieldData, data2: ContentEntryFieldData): boolean {
+  if (data1 == null || data2 == null) {
+    return data1 === data2;
+  }
+
+  const relevantKeys1 = Object.keys(data1).filter((key) => data1[key] !== undefined);
+  const relevantKeys2 = Object.keys(data2).filter((key) => data2[key] !== undefined);
+
+  if (relevantKeys1.length !== 1 || relevantKeys2.length !== 1) {
+    return false;
+  }
+
+  if (relevantKeys1[0] !== relevantKeys2[0]) {
+    return false;
+  }
+
+  const key = relevantKeys1[0];
+  return data1[key] === data2[key];
 }
