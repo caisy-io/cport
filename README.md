@@ -1,5 +1,7 @@
 # Cport Project
 
+If you encounter any issues or have suggestions for improvements, please open an issue or submit a pull request. Contributions are welcome!
+
 The cport project aims to provide an import/export tool for multiple headless CMS platforms. The project roadmap outlines the main areas of development and progress status.
 
 Here is a explainationen video of CPORT:
@@ -9,6 +11,12 @@ https://www.loom.com/share/Cport-Making-Data-Import-and-Export-Easy-fc94726ced04
 
 Very importat is this provider interface that every provider needs to implement: https://github.com/caisy-io/cport/blob/0dc3929afa285f80eef059366b0cfc7d20c44836/src/lib/common/types.ts
 ![provider](./assets/provider_interface.png)
+
+## ⚠️ **DISCLAIMER** ⚠️
+
+This project is currently in a very early stage of development and is considered a work in progress. Breaking changes are expected to occur frequently as the codebase evolves. **This project is not yet ready for production use.**
+
+The code is provided as-is, without any guarantees or warranties. Use at your own risk. We do not recommend using this project in production environments until it reaches a more stable state.
 
 ## Topics:
 
@@ -31,9 +39,9 @@ Below is a matrix-based table showing the progress for each headless CMS.
 | Headless CMS | Normalization function | Denormalization function | Export | Import |
 | ------------ | ---------------------- | ------------------------ | ------ | ------ |
 | Caisy        | 🚧                     | 🚧                       | 🚧     | 🚧     |
-| Contentful   | 🚧                     | ❌                       | 🚧     | ❌     |
-| Strapi       | 📅                     | 📅                       | 📅     | 📅     |
-| Prismic      | 🚧                     | ❌                       | 🚧     | ❌     |
+| Contentful   | 🚧                     | 🚧                       | 🚧     | 🚧     |
+| Strapi       | ❌                     | ❌                       | ❌     | ❌     |
+| Prismic      | 📅                     | 📅                       | 📅     | 📅     |
 
 ## Key:
 
