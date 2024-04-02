@@ -11,6 +11,10 @@ interface ExtendedCaisyRunOptions extends CaisyRunOptions {
   blueprintDetailsMap: BlueprintPaginationResult;
 }
 
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 const DocumentFieldMap: Map<string, ContentEntryFieldData> = new Map<string, ContentEntryFieldData>();
 export { DocumentFieldMap };
 export const paginateDocuments = async ({
@@ -53,6 +57,8 @@ export const paginateDocuments = async ({
       // });
     }),
   );
+
+  console.log("LENGTH: ", DocumentFieldMap.size);
 
   await Promise.all(
     allPublishedDocumentsResult.GetManyDocuments.connection.edges.map(async (document) => {

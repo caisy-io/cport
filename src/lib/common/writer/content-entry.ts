@@ -66,6 +66,7 @@ const insertContentEntry = async (contentEntryInput: ContentEntry) => {
       .insert(contentEntry)
       .values({
         id: contentEntryInput.documentId,
+        title: contentEntryInput.title,
         status: contentEntryInput.status,
         contentTypeId: contentEntryInput.blueprintId,
         contentTypeVariant: contentEntryInput.blueprintVariant,
@@ -73,6 +74,7 @@ const insertContentEntry = async (contentEntryInput: ContentEntry) => {
       })
       .returning({
         id: contentEntry.id,
+        title: contentEntry.title,
         status: contentEntry.status,
         contentTypeId: contentEntry.contentTypeId,
         contentTypeVariant: contentEntry.contentTypeVariant,
@@ -108,6 +110,16 @@ const insertContentEntryFields = async (
           `${documentID}_${field.blueprintFieldId}_${field.documentFieldLocaleId}`,
           contentEntryFieldData,
         );
+        if (
+          documentID === "ff9a2a5e-194f-4fd4-b640-1d2db0c56b58" &&
+          field.blueprintFieldId === "fae2c908-6100-4383-abd6-caaefb86c672" &&
+          field.documentFieldLocaleId === "4c2fe5e1-e5f9-4eea-90a1-e982cebf4ccf"
+        ) {
+          console.log(
+            "VALUE: ",
+            documentFieldMap.get(`${documentID}_${field.blueprintFieldId}_${field.documentFieldLocaleId}`),
+          );
+        }
       }
 
       await db
@@ -161,18 +173,7 @@ function areDocumentFieldsMatching(
       `${document.documentId}_${field.blueprintFieldId}_${field.documentFieldLocaleId}`,
     );
     let processedData = processDataForEntryField(field.data);
-    if (
-      document.documentId === "ff9a2a5e-194f-4fd4-b640-1d2db0c56b58" &&
-      field.blueprintFieldId === "fae2c908-6100-4383-abd6-caaefb86c672" &&
-      field.documentFieldLocaleId === "4c2fe5e1-e5f9-4eea-90a1-e982cebf4ccf"
-    ) {
-      console.log("SAME:", isEquivalentData(processedData, storedData));
-      console.log("storedData", storedData);
-      console.log("processedData", processedData);
-    }
-    if (isEquivalentData(processedData, storedData)) {
-      continue;
-    } else {
+    if (!isEquivalentData(processedData, storedData)) {
       insertContentEntryFields(document.fields, document.documentId, blueprintMaps, 0, documentFieldMap);
     }
   }
