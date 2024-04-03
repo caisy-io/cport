@@ -58,8 +58,6 @@ export const paginateDocuments = async ({
     }),
   );
 
-  console.log("LENGTH: ", DocumentFieldMap.size);
-
   await Promise.all(
     allPublishedDocumentsResult.GetManyDocuments.connection.edges.map(async (document) => {
       const contentEntry = normalizeCaisyContentEntry(document.node, blueprintDetailsMap);

@@ -7,7 +7,7 @@ import {
   ContentEntryFieldData,
 } from "../types/content-entry";
 import { contentLocaleSchema } from "../zod/content-entry";
-import { InferInsertModel } from "drizzle-orm";
+import { InferInsertModel, and, sql, eq, isNull } from "drizzle-orm";
 import { BlueprintPaginationResult } from "../../caisy/content-type/export";
 import { DocumentFieldMap } from "../../caisy/content-entry/export";
 import { DocumentWithFieldsResponse } from "@caisy/sdk";
@@ -110,16 +110,6 @@ const insertContentEntryFields = async (
           `${documentID}_${field.blueprintFieldId}_${field.documentFieldLocaleId}`,
           contentEntryFieldData,
         );
-        if (
-          documentID === "ff9a2a5e-194f-4fd4-b640-1d2db0c56b58" &&
-          field.blueprintFieldId === "fae2c908-6100-4383-abd6-caaefb86c672" &&
-          field.documentFieldLocaleId === "4c2fe5e1-e5f9-4eea-90a1-e982cebf4ccf"
-        ) {
-          console.log(
-            "VALUE: ",
-            documentFieldMap.get(`${documentID}_${field.blueprintFieldId}_${field.documentFieldLocaleId}`),
-          );
-        }
       }
 
       await db
@@ -163,18 +153,108 @@ const insertContentEntryFields = async (
   }
 };
 
-function areDocumentFieldsMatching(
+async function buildAndReturnQuery(
+  document: ContentEntry,
+  field: ContentEntryField, // Assuming you have a type for this
+  fieldData: ContentEntryFieldData,
+) {
+  if (fieldData.valueBool !== undefined) {
+    let dbRes = await db
+      .select()
+      .from(contentEntryField)
+      .where(
+        and(
+          eq(contentEntryField.contentEntryId, document.documentId),
+          eq(contentEntryField.contentEntryFieldLocaleId, field.documentFieldLocaleId),
+          eq(contentEntryField.contentTypeFieldId, field.blueprintFieldId),
+          eq(contentEntryField.valueBool, fieldData.valueBool),
+        ),
+      );
+    return dbRes.length > 0;
+  }
+  if (fieldData.valueString !== undefined) {
+    let dbRes = await db
+      .select()
+      .from(contentEntryField)
+      .where(
+        and(
+          eq(contentEntryField.contentEntryId, document.documentId),
+          eq(contentEntryField.contentEntryFieldLocaleId, field.documentFieldLocaleId),
+          eq(contentEntryField.contentTypeFieldId, field.blueprintFieldId),
+          eq(contentEntryField.valueString, fieldData.valueString),
+        ),
+      );
+    return dbRes.length > 0;
+  }
+  // if (fieldData.valueNumber !== undefined) {
+  //   let dbRes = await db.select().from(contentEntryField).where(
+  //     and(
+  //       eq(contentEntryField.contentEntryId, document.documentId),
+  //       eq(contentEntryField.contentEntryFieldLocaleId, field.documentFieldLocaleId),
+  //       eq(contentEntryField.contentTypeFieldId, field.blueprintFieldId),
+  //       eq(contentEntryField.valueNumber, fieldData.valueNumber),
+  //     )
+  //   );
+  //   return dbRes.length > 0;
+  // }
+  if (fieldData.valueKeywords !== undefined) {
+    let dbRes = await db
+      .select()
+      .from(contentEntryField)
+      .where(
+        and(
+          eq(contentEntryField.contentEntryId, document.documentId),
+          eq(contentEntryField.contentEntryFieldLocaleId, field.documentFieldLocaleId),
+          eq(contentEntryField.contentTypeFieldId, field.blueprintFieldId),
+          eq(contentEntryField.valueKeywords, fieldData.valueKeywords),
+        ),
+      );
+    return dbRes.length > 0;
+  }
+  if (fieldData.valueDate !== undefined) {
+    let dbRes = await db
+      .select()
+      .from(contentEntryField)
+      .where(
+        and(
+          eq(contentEntryField.contentEntryId, document.documentId),
+          eq(contentEntryField.contentEntryFieldLocaleId, field.documentFieldLocaleId),
+          eq(contentEntryField.contentTypeFieldId, field.blueprintFieldId),
+          eq(contentEntryField.valueDate, fieldData.valueDate),
+        ),
+      );
+    return dbRes.length > 0;
+  }
+  if (fieldData.valueObjects !== undefined) {
+    let dbRes = await db
+      .select()
+      .from(contentEntryField)
+      .where(
+        and(
+          eq(contentEntryField.contentEntryId, document.documentId),
+          eq(contentEntryField.contentEntryFieldLocaleId, field.documentFieldLocaleId),
+          eq(contentEntryField.contentTypeFieldId, field.blueprintFieldId),
+          eq(contentEntryField.valueObjects, fieldData.valueObjects),
+        ),
+      );
+    return dbRes.length > 0;
+  }
+}
+
+async function areDocumentFieldsMatching(
   document: ContentEntry,
   documentFieldMap: Map<string, ContentEntryFieldData>,
   blueprintMaps: BlueprintPaginationResult,
-): void {
+): Promise<void> {
   for (const field of document.fields) {
-    let storedData = documentFieldMap.get(
-      `${document.documentId}_${field.blueprintFieldId}_${field.documentFieldLocaleId}`,
-    );
-    let processedData = processDataForEntryField(field.data);
-    if (!isEquivalentData(processedData, storedData)) {
-      insertContentEntryFields(document.fields, document.documentId, blueprintMaps, 0, documentFieldMap);
+    try {
+      const fieldData = processDataForEntryField(field.data);
+      const hasResults = await buildAndReturnQuery(document, field, fieldData);
+      if (!hasResults) {
+        insertContentEntryFields(document.fields, document.documentId, blueprintMaps, 0, documentFieldMap);
+      }
+    } catch (error) {
+      console.error("Error processing field:", error);
     }
   }
 }
