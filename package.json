@@ -42,7 +42,8 @@
     "js-yaml": "^4.1.0",
     "json-stringify-safe": "^5.0.1",
     "node-fetch": "2",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "zod": "^3.22.4"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
