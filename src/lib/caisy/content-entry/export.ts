@@ -11,12 +11,9 @@ interface ExtendedCaisyRunOptions extends CaisyRunOptions {
   blueprintDetailsMap: BlueprintPaginationResult;
 }
 
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 const DocumentFieldMap: Map<string, ContentEntryFieldData> = new Map<string, ContentEntryFieldData>();
 export { DocumentFieldMap };
+
 export const paginateDocuments = async ({
   sdk,
   projectId,

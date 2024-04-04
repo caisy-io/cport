@@ -6,6 +6,7 @@ import { db } from "../common/db";
 import { contentLocale } from "../common/schema";
 import { exportCaisyContentTypes } from "./content-type/export";
 import { exportCaisyContentEntries } from "./content-entry/export";
+import { exportCaisyAssets } from "./asset-files/asset";
 
 export type CaisyProviderOptions = {
   token: string;
@@ -41,6 +42,13 @@ export const createCaisyProvider = ({ token, endpoint, projectId }: CaisyProvide
         onError,
         onProgress,
         blueprintDetailsMap: blueprintVariantsMap,
+      });
+
+      await exportCaisyAssets({
+        sdk,
+        projectId,
+        onError,
+        onProgress,
       });
       // await Promise.all([exportCaisyContentTypes({ sdk, projectId, onError, onProgress })]);
       // await Promise.all([exportCaisyContentEntries({ sdk, projectId, onError, onProgress })]);
