@@ -5,13 +5,13 @@ import { initSdk } from "@caisy/sdk";
 import { db } from "../common/db";
 import { contentLocale } from "../common/schema";
 import { exportCaisyContentTypes } from "./content-type/export";
+import { exportCaisyContentEntries } from "./content-entry/export";
 
 export type CaisyProviderOptions = {
   token: string;
   projectId: string;
   endpoint?: string;
 };
-
 export type CaisyRunOptions = {
   sdk: ReturnType<typeof initSdk>;
   projectId: string;
@@ -33,7 +33,17 @@ export const createCaisyProvider = ({ token, endpoint, projectId }: CaisyProvide
         exportCaisyTags({ sdk, projectId, onError, onProgress }),
         exportCaisyLocales({ sdk, projectId, onError, onProgress }),
       ]);
-      await Promise.all([exportCaisyContentTypes({ sdk, projectId, onError, onProgress })]);
+      const blueprintVariantsMap = await exportCaisyContentTypes({ sdk, projectId, onError, onProgress });
+
+      await exportCaisyContentEntries({
+        sdk,
+        projectId,
+        onError,
+        onProgress,
+        blueprintDetailsMap: blueprintVariantsMap,
+      });
+      // await Promise.all([exportCaisyContentTypes({ sdk, projectId, onError, onProgress })]);
+      // await Promise.all([exportCaisyContentEntries({ sdk, projectId, onError, onProgress })]);
 
       // TODO content entries + fields todo
       // DRAFT PUBLISHED CHANGED

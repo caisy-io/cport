@@ -119,13 +119,24 @@ export const contentEntryField = sqliteTable(
     valueString: text("value_string"),
     valueBool: integer("value_bool", { mode: "boolean" }),
     valueKeywords: text("value_keywords"),
-    valueDate: integer("value_date", { mode: "timestamp_ms" }),
+    valueDate: text("value_date"),
     valueNumber: text("value_number"),
     valueObjects: text("value_objects"),
   },
   (table) => {
     return {
       pk: primaryKey({ columns: [table.id, table.draftContent] }),
+      datax: unique().on(
+        table.contentEntryId,
+        table.contentTypeFieldId,
+        table.contentEntryFieldLocaleId,
+        table.valueBool,
+        table.valueKeywords,
+        table.valueDate,
+        table.valueNumber,
+        table.valueObjects,
+        table.valueString,
+      ),
     };
   },
 );
