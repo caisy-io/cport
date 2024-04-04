@@ -8,7 +8,8 @@
     "dev": "ts-node src/index.ts",
     "gen": "rm -rf cport.db && rm -rf ./drizzle && yarn drizzle-kit generate:sqlite",
     "build": "tsc",
-    "prepare": "husky"
+    "prepare": "husky",
+    "asset": "ts-node src/lib/caisy/asset-files/asset.ts"
   },
   "keywords": [],
   "author": "caisy",
@@ -28,6 +29,7 @@
     "@caisy/sdk": "^1.3.0-canary.2",
     "better-sqlite3": "^9.4.3",
     "chalk": "4.1.2",
+    "cheerio": "^1.0.0-rc.12",
     "cli-progress": "^3.12.0",
     "commander": "^10.0.0",
     "contentful": "^10.1.8",
@@ -39,6 +41,7 @@
     "inquirer": "^8.0.0",
     "js-yaml": "^4.1.0",
     "json-stringify-safe": "^5.0.1",
+    "node-fetch": "2",
     "ts-node": "^10.9.1"
   },
   "lint-staged": {

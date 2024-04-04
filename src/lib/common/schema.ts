@@ -130,6 +130,12 @@ export const contentEntryField = sqliteTable(
   },
 );
 
+export const assetFile = sqliteTable("asset_file", {
+  id: text("id").primaryKey(),
+  original_url: text("original_url"),
+  local_path: text("local_path"),
+});
+
 // table: content_entry_field
 // FOR CHANGED CONTENT
 //  blogPage-2_body 1 this is my changed content
