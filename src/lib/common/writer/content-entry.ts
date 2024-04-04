@@ -13,6 +13,8 @@ import { DocumentFieldMap } from "../../caisy/content-entry/export";
 import { DocumentWithFieldsResponse } from "@caisy/sdk";
 import { Maybe, Scalars } from "../types/util";
 
+const assetUrls = new Set<string>();
+export { assetUrls };
 export const writeContentLocale = async (locale: InferInsertModel<typeof contentLocale>) => {
   const input = contentLocaleSchema.parse(locale) as InferInsertModel<typeof contentLocale>;
 
@@ -110,6 +112,12 @@ const insertContentEntryFields = async (
           `${documentID}_${field.blueprintFieldId}_${field.documentFieldLocaleId}`,
           contentEntryFieldData,
         );
+      }
+      if (contentTypeFieldName === "src" && contentEntryFieldData.valueObjects !== undefined) {
+        const jsonObj = JSON.parse(contentEntryFieldData.valueObjects);
+
+        const url: string = jsonObj.url;
+        assetUrls.add(url);
       }
 
       await db
