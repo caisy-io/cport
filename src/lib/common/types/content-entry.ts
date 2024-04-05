@@ -80,11 +80,44 @@ export type ContentEntryFieldData = {
   valueObjects?: string | null;
 };
 
-export const processDataForEntryField = (data: Maybe<Scalars["Any"]>): ContentEntryFieldData => {
+export const processDataForEntryField = (
+  data: Maybe<Scalars["Any"]>,
+  fieldType: ContentEntryContentTypeFieldType,
+): ContentEntryFieldData => {
   if (data === null || data === undefined) {
     return {};
-  } else if (typeof data === "string") {
-    try {
+  }
+  switch (fieldType) {
+    case ContentEntryContentTypeFieldType.String:
+    case ContentEntryContentTypeFieldType.Color:
+      return {
+        valueString: data,
+        valueBool: undefined,
+        valueNumber: undefined,
+        valueKeywords: undefined,
+        valueDate: undefined,
+        valueObjects: undefined,
+      };
+    case ContentEntryContentTypeFieldType.Boolean:
+      return {
+        valueBool: data,
+        valueString: undefined,
+        valueNumber: undefined,
+        valueKeywords: undefined,
+        valueDate: undefined,
+        valueObjects: undefined,
+      };
+    case ContentEntryContentTypeFieldType.Int:
+    case ContentEntryContentTypeFieldType.Float:
+      return {
+        valueNumber: data,
+        valueString: undefined,
+        valueBool: undefined,
+        valueKeywords: undefined,
+        valueDate: undefined,
+        valueObjects: undefined,
+      };
+    case ContentEntryContentTypeFieldType.DateTime:
       const parsedDate = Date.parse(data);
       if (!isNaN(parsedDate)) {
         return {
@@ -96,67 +129,31 @@ export const processDataForEntryField = (data: Maybe<Scalars["Any"]>): ContentEn
           valueObjects: undefined,
         };
       }
-    } catch (e) {
-      // Not a date
-    }
-
-    try {
-      JSON.parse(data);
+    case ContentEntryContentTypeFieldType.Connection:
+    case ContentEntryContentTypeFieldType.Tag:
+    case ContentEntryContentTypeFieldType.Select:
       return {
-        valueObjects: data,
+        valueObjects: undefined,
+        valueString: undefined,
+        valueBool: undefined,
+        valueNumber: undefined,
+        valueKeywords: JSON.stringify(data),
+        valueDate: undefined,
+      };
+    case ContentEntryContentTypeFieldType.Extension:
+    case ContentEntryContentTypeFieldType.GeoPoint:
+    case ContentEntryContentTypeFieldType.RichText:
+    case ContentEntryContentTypeFieldType.File:
+    case ContentEntryContentTypeFieldType.Video:
+    case ContentEntryContentTypeFieldType.Code:
+      return {
+        valueObjects: JSON.stringify(data),
         valueString: undefined,
         valueBool: undefined,
         valueNumber: undefined,
         valueKeywords: undefined,
         valueDate: undefined,
       };
-    } catch (e) {
-      return {
-        valueString: data,
-        valueBool: undefined,
-        valueNumber: undefined,
-        valueKeywords: undefined,
-        valueDate: undefined,
-        valueObjects: undefined,
-      };
-    }
-  } else if (typeof data === "boolean") {
-    return {
-      valueBool: data,
-      valueString: undefined,
-      valueNumber: undefined,
-      valueKeywords: undefined,
-      valueDate: undefined,
-      valueObjects: undefined,
-    };
-  } else if (typeof data === "number") {
-    return {
-      valueNumber: data,
-      valueString: undefined,
-      valueBool: undefined,
-      valueKeywords: undefined,
-      valueDate: undefined,
-      valueObjects: undefined,
-    };
-  } else if (Array.isArray(data)) {
-    return {
-      valueObjects: undefined,
-      valueString: undefined,
-      valueBool: undefined,
-      valueNumber: undefined,
-      valueKeywords: JSON.stringify(data),
-      valueDate: undefined,
-    };
-  } else if (typeof data === "object") {
-    return {
-      valueObjects: JSON.stringify(data),
-      valueString: undefined,
-      valueBool: undefined,
-      valueNumber: undefined,
-      valueKeywords: undefined,
-      valueDate: undefined,
-    };
   }
-
   return {}; // Default case if none of the above matched
 };

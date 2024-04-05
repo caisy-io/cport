@@ -7,6 +7,14 @@ import path from "path";
 
 const RELATIVE_TARGET_DIR = "../../../../cport_assets";
 
+function cleanFilename(filename: string): string {
+  const withoutUuid = filename.substring(36);
+
+  const cleanName = withoutUuid.replace(/\?original$/, "");
+
+  return cleanName;
+}
+
 const downloadImage = async (url: string) => {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`Failed to fetch image: ${response.statusText}`);
@@ -14,9 +22,12 @@ const downloadImage = async (url: string) => {
 
   const uuid = uuidv4();
   const originalName = path.basename(url);
-  const newName = `${uuid}${originalName}`;
+  const clearName = cleanFilename(originalName);
+  console.log("clearName", clearName);
+  const newName = `${uuid}${clearName}`;
   const targetDir = path.resolve(__dirname, RELATIVE_TARGET_DIR);
   const filePath = path.join(targetDir, newName);
+  console.log("filePath", filePath);
 
   await fs.mkdir(targetDir, { recursive: true });
 

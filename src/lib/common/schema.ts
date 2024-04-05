@@ -126,17 +126,6 @@ export const contentEntryField = sqliteTable(
   (table) => {
     return {
       pk: primaryKey({ columns: [table.id, table.draftContent] }),
-      datax: unique().on(
-        table.contentEntryId,
-        table.contentTypeFieldId,
-        table.contentEntryFieldLocaleId,
-        table.valueBool,
-        table.valueKeywords,
-        table.valueDate,
-        table.valueNumber,
-        table.valueObjects,
-        table.valueString,
-      ),
     };
   },
 );
