@@ -105,7 +105,7 @@ const insertContentEntryFields = async (
 ) => {
   try {
     for (const field of fields) {
-      let contentEntryFieldData = await processDataForEntryField(field.data);
+      let contentEntryFieldData = await processDataForEntryField(field.data, field.type);
       let contentTypeFieldName = blueprintMaps.blueprintFieldNameMap.get(field.blueprintFieldId) || "";
       if (draftContent === 1) {
         documentFieldMap.set(
@@ -256,7 +256,7 @@ async function areDocumentFieldsMatching(
 ): Promise<void> {
   for (const field of document.fields) {
     try {
-      const fieldData = processDataForEntryField(field.data);
+      const fieldData = processDataForEntryField(field.data, field.type);
       const hasResults = await buildAndReturnQuery(document, field, fieldData);
       if (!hasResults) {
         insertContentEntryFields(document.fields, document.documentId, blueprintMaps, 0, documentFieldMap);
