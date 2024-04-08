@@ -1,5 +1,13 @@
 import { db } from "../db";
-import { contentLocale, contentEntry, contentEntryField } from "../schema";
+import Database from "better-sqlite3";
+const sqlite = new Database("cport.db");
+import {
+  contentLocale,
+  contentEntry,
+  contentEntryField,
+  contentEntryFieldPublished,
+  contentEntryFieldDraft,
+} from "../schema";
 import {
   ContentEntry,
   ContentEntryField,
@@ -37,30 +45,50 @@ export const writeContentLocale = async (locale: InferInsertModel<typeof content
   return dbRes;
 };
 
-export const writeContentEntry = async (
+// export const writeContentEntry = async (
+//   contentEntryInput: ContentEntry,
+//   blueprintMaps: BlueprintPaginationResult,
+//   documentFieldMap: typeof DocumentFieldMap,
+// ) => {
+//   const contentEntryResult = await insertContentEntry(contentEntryInput);
+//   await insertContentEntryFields(
+//     contentEntryInput.fields,
+//     contentEntryInput.documentId,
+//     blueprintMaps,
+//     1,
+//     documentFieldMap,
+//   );
+//   return contentEntryResult;
+// };
+
+export const writeContentEntryDraft = async (
   contentEntryInput: ContentEntry,
   blueprintMaps: BlueprintPaginationResult,
   documentFieldMap: typeof DocumentFieldMap,
 ) => {
   const contentEntryResult = await insertContentEntry(contentEntryInput);
-  await insertContentEntryFields(
-    contentEntryInput.fields,
-    contentEntryInput.documentId,
-    blueprintMaps,
-    1,
-    documentFieldMap,
-  );
+  await insertDraftContentEntryFields(contentEntryInput.fields, contentEntryInput.documentId, blueprintMaps);
   return contentEntryResult;
 };
 
-export const writePublishedContentEntryFields = async (
+export const writeContentEntryPublished = async (
   contentEntryInput: ContentEntry,
   blueprintMaps: BlueprintPaginationResult,
   documentFieldMap: typeof DocumentFieldMap,
 ) => {
-  await areDocumentFieldsMatching(contentEntryInput, documentFieldMap, blueprintMaps);
-  return;
+  const contentEntryResult = await insertContentEntry(contentEntryInput);
+  await insertPublishedContentEntryFields(contentEntryInput.fields, contentEntryInput.documentId, blueprintMaps);
+  return contentEntryResult;
 };
+
+// export const writePublishedContentEntryFields = async (
+//   contentEntryInput: ContentEntry,
+//   blueprintMaps: BlueprintPaginationResult,
+//   documentFieldMap: typeof DocumentFieldMap,
+// ) => {
+//   await areDocumentFieldsMatching(contentEntryInput, documentFieldMap, blueprintMaps);
+//   return;
+// };
 
 const insertContentEntry = async (contentEntryInput: ContentEntry) => {
   try {
@@ -82,6 +110,7 @@ const insertContentEntry = async (contentEntryInput: ContentEntry) => {
         contentTypeVariant: contentEntry.contentTypeVariant,
         previewImageUrl: contentEntry.previewImageUrl,
       })
+      .onConflictDoNothing()
       .execute();
   } catch (err) {
     console.log(` insertContentEntry`);
@@ -96,7 +125,57 @@ const insertContentEntry = async (contentEntryInput: ContentEntry) => {
 //   return contentEntryFieldsResult;
 // };
 
-const insertContentEntryFields = async (
+export const insertContentEntryFields = async () => {
+  try {
+    const insertStmt = sqlite.prepare(`
+      INSERT INTO content_entry_field (id, draft_content, content_type_field_type, content_entry_id, content_type_field_id, content_type_field_name, content_entry_field_locale_id, value_string, value_bool, value_keywords, value_date, value_number, value_objects)
+      SELECT temp.id, temp.draft_content, temp.content_type_field_type, temp.content_entry_id, temp.content_type_field_id, temp.content_type_field_name, temp.content_entry_field_locale_id, temp.value_string, temp.value_bool, temp.value_keywords, temp.value_date, temp.value_number, temp.value_objects
+      FROM content_entry_field_draft temp
+      WHERE NOT EXISTS (
+        SELECT 1 FROM content_entry_field as main
+        WHERE main.content_entry_id = temp.content_entry_id 
+        AND main.content_type_field_id = temp.content_type_field_id 
+        AND main.content_entry_field_locale_id = temp.content_entry_field_locale_id 
+        AND COALESCE(main.value_string, 'DUMMY_STRING') = COALESCE(temp.value_string, 'DUMMY_STRING') 
+        AND COALESCE(main.value_bool, -1) = COALESCE(temp.value_bool, -1) 
+        AND COALESCE(main.value_keywords, 'DUMMY_KEYWORDS') = COALESCE(temp.value_keywords, 'DUMMY_KEYWORDS') 
+        AND COALESCE(main.value_date, '1970-01-01') = COALESCE(temp.value_date, '1970-01-01') 
+        AND COALESCE(main.value_number, -9999) = COALESCE(temp.value_number, -9999) 
+        AND COALESCE(main.value_objects, 'DUMMY_OBJECTS') = COALESCE(temp.value_objects, 'DUMMY_OBJECTS')
+      );`);
+
+    insertStmt.run();
+    const insertStmt2 = sqlite.prepare(`
+      INSERT INTO content_entry_field (id, draft_content, content_type_field_type, content_entry_id, content_type_field_id, content_type_field_name, content_entry_field_locale_id, value_string, value_bool, value_keywords, value_date, value_number, value_objects)
+      SELECT temp.id, temp.draft_content, temp.content_type_field_type, temp.content_entry_id, temp.content_type_field_id, temp.content_type_field_name, temp.content_entry_field_locale_id, temp.value_string, temp.value_bool, temp.value_keywords, temp.value_date, temp.value_number, temp.value_objects
+      FROM content_entry_field_published temp
+      WHERE NOT EXISTS (
+        SELECT 1 FROM content_entry_field as main
+        WHERE main.content_entry_id = temp.content_entry_id 
+        AND main.content_type_field_id = temp.content_type_field_id 
+        AND main.content_entry_field_locale_id = temp.content_entry_field_locale_id 
+        AND COALESCE(main.value_string, 'DUMMY_STRING') = COALESCE(temp.value_string, 'DUMMY_STRING') 
+        AND COALESCE(main.value_bool, -1) = COALESCE(temp.value_bool, -1) 
+        AND COALESCE(main.value_keywords, 'DUMMY_KEYWORDS') = COALESCE(temp.value_keywords, 'DUMMY_KEYWORDS') 
+        AND COALESCE(main.value_date, '1970-01-01') = COALESCE(temp.value_date, '1970-01-01') 
+        AND COALESCE(main.value_number, -9999) = COALESCE(temp.value_number, -9999) 
+        AND COALESCE(main.value_objects, 'DUMMY_OBJECTS') = COALESCE(temp.value_objects, 'DUMMY_OBJECTS')
+      );`);
+
+    insertStmt2.run();
+
+    // Drop tables
+    sqlite.prepare(`DROP TABLE content_entry_field_draft;`).run();
+    sqlite.prepare(`DROP TABLE content_entry_field_published;`).run();
+
+    console.log("Operations successful");
+  } catch (err) {
+    console.error("Error in insertContentEntryFields", err);
+    throw err; // Or handle the error as appropriate
+  }
+};
+
+const insertContentEntryFieldsV0 = async (
   fields: ContentEntryField[],
   documentID: string,
   blueprintMaps: BlueprintPaginationResult,
@@ -157,6 +236,120 @@ const insertContentEntryFields = async (
     }
   } catch (err) {
     console.log(` insertContentEntryFields`);
+    throw new Error(err);
+  }
+};
+
+const insertPublishedContentEntryFields = async (
+  fields: ContentEntryField[],
+  documentID: string,
+  blueprintMaps: BlueprintPaginationResult,
+) => {
+  try {
+    for (const field of fields) {
+      let contentEntryFieldData = await processDataForEntryField(field.data, field.type);
+      let contentTypeFieldName = blueprintMaps.blueprintFieldNameMap.get(field.blueprintFieldId) || "";
+      if (contentTypeFieldName === "src" && contentEntryFieldData.valueObjects !== undefined) {
+        const jsonObj = JSON.parse(contentEntryFieldData.valueObjects);
+
+        const url: string = jsonObj.url;
+        assetUrls.add(url);
+      }
+
+      await db
+        .insert(contentEntryFieldPublished)
+        .values({
+          id: `${documentID}_${field.blueprintFieldId}_${field.documentFieldLocaleId}`,
+          draftContent: 0,
+          contentTypeFieldType: field.type,
+          contentEntryId: documentID,
+          contentTypeFieldId: field.blueprintFieldId,
+          contentTypeFieldName: contentTypeFieldName,
+          contentEntryFieldLocaleId: field.documentFieldLocaleId,
+          valueString: contentEntryFieldData.valueString,
+          valueBool: contentEntryFieldData.valueBool,
+          valueKeywords: contentEntryFieldData.valueKeywords,
+          valueDate: contentEntryFieldData.valueDate,
+          valueNumber: contentEntryFieldData.valueNumber,
+          valueObjects: contentEntryFieldData.valueObjects,
+        } as any)
+        .returning({
+          id: contentEntryField.id,
+          draftContent: contentEntryField.draftContent,
+          contentTypeFieldType: contentEntryField.contentTypeFieldType,
+          contentEntryId: contentEntryField.contentEntryId,
+          contentTypeFieldId: contentEntryField.contentTypeFieldId,
+          contentTypeFieldName: contentEntryField.contentTypeFieldName,
+          contentEntryFieldLocaleId: contentEntryField.contentEntryFieldLocaleId,
+          valueString: contentEntryField.valueString,
+          valueBool: contentEntryField.valueBool,
+          valueKeywords: contentEntryField.valueKeywords,
+          valueDate: contentEntryField.valueDate,
+          valueNumber: contentEntryField.valueNumber,
+          valueObjects: contentEntryField.valueObjects,
+        })
+        .onConflictDoNothing()
+        .execute();
+    }
+  } catch (err) {
+    console.log(` insertContentEntryFieldsPublished`);
+    throw new Error(err);
+  }
+};
+
+const insertDraftContentEntryFields = async (
+  fields: ContentEntryField[],
+  documentID: string,
+  blueprintMaps: BlueprintPaginationResult,
+) => {
+  try {
+    for (const field of fields) {
+      let contentEntryFieldData = await processDataForEntryField(field.data, field.type);
+      let contentTypeFieldName = blueprintMaps.blueprintFieldNameMap.get(field.blueprintFieldId) || "";
+      if (contentTypeFieldName === "src" && contentEntryFieldData.valueObjects !== undefined) {
+        const jsonObj = JSON.parse(contentEntryFieldData.valueObjects);
+
+        const url: string = jsonObj.url;
+        assetUrls.add(url);
+      }
+
+      await db
+        .insert(contentEntryFieldDraft)
+        .values({
+          id: `${documentID}_${field.blueprintFieldId}_${field.documentFieldLocaleId}`,
+          draftContent: 1,
+          contentTypeFieldType: field.type,
+          contentEntryId: documentID,
+          contentTypeFieldId: field.blueprintFieldId,
+          contentTypeFieldName: contentTypeFieldName,
+          contentEntryFieldLocaleId: field.documentFieldLocaleId,
+          valueString: contentEntryFieldData.valueString,
+          valueBool: contentEntryFieldData.valueBool,
+          valueKeywords: contentEntryFieldData.valueKeywords,
+          valueDate: contentEntryFieldData.valueDate,
+          valueNumber: contentEntryFieldData.valueNumber,
+          valueObjects: contentEntryFieldData.valueObjects,
+        } as any)
+        .returning({
+          id: contentEntryField.id,
+          draftContent: contentEntryField.draftContent,
+          contentTypeFieldType: contentEntryField.contentTypeFieldType,
+          contentEntryId: contentEntryField.contentEntryId,
+          contentTypeFieldId: contentEntryField.contentTypeFieldId,
+          contentTypeFieldName: contentEntryField.contentTypeFieldName,
+          contentEntryFieldLocaleId: contentEntryField.contentEntryFieldLocaleId,
+          valueString: contentEntryField.valueString,
+          valueBool: contentEntryField.valueBool,
+          valueKeywords: contentEntryField.valueKeywords,
+          valueDate: contentEntryField.valueDate,
+          valueNumber: contentEntryField.valueNumber,
+          valueObjects: contentEntryField.valueObjects,
+        })
+        .onConflictDoNothing()
+        .execute();
+    }
+  } catch (err) {
+    console.log(` insertContentEntryFieldsDraft`);
     throw new Error(err);
   }
 };
@@ -249,23 +442,23 @@ async function buildAndReturnQuery(
   }
 }
 
-async function areDocumentFieldsMatching(
-  document: ContentEntry,
-  documentFieldMap: Map<string, ContentEntryFieldData>,
-  blueprintMaps: BlueprintPaginationResult,
-): Promise<void> {
-  for (const field of document.fields) {
-    try {
-      const fieldData = processDataForEntryField(field.data, field.type);
-      const hasResults = await buildAndReturnQuery(document, field, fieldData);
-      if (!hasResults) {
-        insertContentEntryFields(document.fields, document.documentId, blueprintMaps, 0, documentFieldMap);
-      }
-    } catch (error) {
-      console.error("Error processing field:", error);
-    }
-  }
-}
+// async function areDocumentFieldsMatching(
+//   document: ContentEntry,
+//   documentFieldMap: Map<string, ContentEntryFieldData>,
+//   blueprintMaps: BlueprintPaginationResult,
+// ): Promise<void> {
+//   for (const field of document.fields) {
+//     try {
+//       const fieldData = processDataForEntryField(field.data, field.type);
+//       const hasResults = await buildAndReturnQuery(document, field, fieldData);
+//       if (!hasResults) {
+//         insertContentEntryFields(document.fields, document.documentId, blueprintMaps, 0, documentFieldMap);
+//       }
+//     } catch (error) {
+//       console.error("Error processing field:", error);
+//     }
+//   }
+// }
 
 function isEquivalentData(data1: ContentEntryFieldData, data2: ContentEntryFieldData): boolean {
   if (data1 == null || data2 == null) {

@@ -44,12 +44,13 @@ export const createCaisyProvider = ({ token, endpoint, projectId }: CaisyProvide
         blueprintDetailsMap: blueprintVariantsMap,
       });
 
-      await exportCaisyAssets({
-        sdk,
-        projectId,
-        onError,
-        onProgress,
-      });
+      // await exportCaisyAssets({
+      //   sdk,
+      //   projectId,
+      //   onError,
+      //   onProgress,
+      // });
+
       // await Promise.all([exportCaisyContentTypes({ sdk, projectId, onError, onProgress })]);
       // await Promise.all([exportCaisyContentEntries({ sdk, projectId, onError, onProgress })]);
 

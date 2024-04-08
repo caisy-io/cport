@@ -136,6 +136,54 @@ export const assetFile = sqliteTable("asset_file", {
   local_path: text("local_path"),
 });
 
+export const contentEntryFieldDraft = sqliteTable(
+  "content_entry_field_draft",
+  {
+    id: text("id"),
+    draftContent: integer("draft_content", { mode: "boolean" }),
+    contentTypeFieldType: text("content_type_field_type").notNull(),
+    contentEntryId: text("content_entry_id").notNull(),
+    contentTypeFieldId: text("content_type_field_id").notNull(),
+    contentTypeFieldName: text("content_type_field_name").notNull(),
+    contentEntryFieldLocaleId: text("content_entry_field_locale_id").notNull(),
+    valueString: text("value_string"),
+    valueBool: integer("value_bool", { mode: "boolean" }),
+    valueKeywords: text("value_keywords"),
+    valueDate: text("value_date"),
+    valueNumber: text("value_number"),
+    valueObjects: text("value_objects"),
+  },
+  (table) => {
+    return {
+      pk: primaryKey({ columns: [table.id, table.draftContent] }),
+    };
+  },
+);
+
+export const contentEntryFieldPublished = sqliteTable(
+  "content_entry_field_published",
+  {
+    id: text("id"),
+    draftContent: integer("draft_content", { mode: "boolean" }),
+    contentTypeFieldType: text("content_type_field_type").notNull(),
+    contentEntryId: text("content_entry_id").notNull(),
+    contentTypeFieldId: text("content_type_field_id").notNull(),
+    contentTypeFieldName: text("content_type_field_name").notNull(),
+    contentEntryFieldLocaleId: text("content_entry_field_locale_id").notNull(),
+    valueString: text("value_string"),
+    valueBool: integer("value_bool", { mode: "boolean" }),
+    valueKeywords: text("value_keywords"),
+    valueDate: text("value_date"),
+    valueNumber: text("value_number"),
+    valueObjects: text("value_objects"),
+  },
+  (table) => {
+    return {
+      pk: primaryKey({ columns: [table.id, table.draftContent] }),
+    };
+  },
+);
+
 // table: content_entry_field
 // FOR CHANGED CONTENT
 //  blogPage-2_body 1 this is my changed content
