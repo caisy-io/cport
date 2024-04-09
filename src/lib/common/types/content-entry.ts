@@ -157,3 +157,9 @@ export const processDataForEntryField = (
   }
   return {}; // Default case if none of the above matched
 };
+
+export type AssetFile = {
+  id?: Maybe<Scalars["String"]>;
+  originalUrl?: Maybe<Scalars["String"]>;
+  localPath?: Maybe<Scalars["String"]>;
+};

@@ -1,6 +1,4 @@
 import { db } from "../db";
-import Database from "better-sqlite3";
-const sqlite = new Database("cport.db");
 import {
   contentLocale,
   contentEntry,
@@ -127,46 +125,73 @@ const insertContentEntry = async (contentEntryInput: ContentEntry) => {
 
 export const insertContentEntryFields = async () => {
   try {
-    const insertStmt = sqlite.prepare(`
-      INSERT INTO content_entry_field (id, draft_content, content_type_field_type, content_entry_id, content_type_field_id, content_type_field_name, content_entry_field_locale_id, value_string, value_bool, value_keywords, value_date, value_number, value_objects)
-      SELECT temp.id, temp.draft_content, temp.content_type_field_type, temp.content_entry_id, temp.content_type_field_id, temp.content_type_field_name, temp.content_entry_field_locale_id, temp.value_string, temp.value_bool, temp.value_keywords, temp.value_date, temp.value_number, temp.value_objects
-      FROM content_entry_field_draft temp
-      WHERE NOT EXISTS (
-        SELECT 1 FROM content_entry_field as main
-        WHERE main.content_entry_id = temp.content_entry_id 
-        AND main.content_type_field_id = temp.content_type_field_id 
-        AND main.content_entry_field_locale_id = temp.content_entry_field_locale_id 
-        AND COALESCE(main.value_string, 'DUMMY_STRING') = COALESCE(temp.value_string, 'DUMMY_STRING') 
-        AND COALESCE(main.value_bool, -1) = COALESCE(temp.value_bool, -1) 
-        AND COALESCE(main.value_keywords, 'DUMMY_KEYWORDS') = COALESCE(temp.value_keywords, 'DUMMY_KEYWORDS') 
-        AND COALESCE(main.value_date, '1970-01-01') = COALESCE(temp.value_date, '1970-01-01') 
-        AND COALESCE(main.value_number, -9999) = COALESCE(temp.value_number, -9999) 
-        AND COALESCE(main.value_objects, 'DUMMY_OBJECTS') = COALESCE(temp.value_objects, 'DUMMY_OBJECTS')
-      );`);
+    const rawSQL = sql.raw(`
+    INSERT INTO content_entry_field (id, draft_content, content_type_field_type, content_entry_id, content_type_field_id, content_type_field_name, content_entry_field_locale_id, value_string, value_bool, value_keywords, value_date, value_number, value_objects)
+    SELECT temp.id, temp.draft_content, temp.content_type_field_type, temp.content_entry_id, temp.content_type_field_id, temp.content_type_field_name, temp.content_entry_field_locale_id, temp.value_string, temp.value_bool, temp.value_keywords, temp.value_date, temp.value_number, temp.value_objects
+    FROM content_entry_field_draft temp
+    WHERE NOT EXISTS (
+      SELECT 1 FROM content_entry_field as main
+      WHERE main.content_entry_id = temp.content_entry_id 
+      AND main.content_type_field_id = temp.content_type_field_id 
+      AND main.content_entry_field_locale_id = temp.content_entry_field_locale_id 
+      AND COALESCE(main.value_string, 'DUMMY_STRING') = COALESCE(temp.value_string, 'DUMMY_STRING') 
+      AND COALESCE(main.value_bool, -1) = COALESCE(temp.value_bool, -1) 
+      AND COALESCE(main.value_keywords, 'DUMMY_KEYWORDS') = COALESCE(temp.value_keywords, 'DUMMY_KEYWORDS') 
+      AND COALESCE(main.value_date, '1970-01-01') = COALESCE(temp.value_date, '1970-01-01') 
+      AND COALESCE(main.value_number, -9999) = COALESCE(temp.value_number, -9999) 
+      AND COALESCE(main.value_objects, 'DUMMY_OBJECTS') = COALESCE(temp.value_objects, 'DUMMY_OBJECTS')
+    );
+  `);
 
-    insertStmt.run();
-    const insertStmt2 = sqlite.prepare(`
-      INSERT INTO content_entry_field (id, draft_content, content_type_field_type, content_entry_id, content_type_field_id, content_type_field_name, content_entry_field_locale_id, value_string, value_bool, value_keywords, value_date, value_number, value_objects)
-      SELECT temp.id, temp.draft_content, temp.content_type_field_type, temp.content_entry_id, temp.content_type_field_id, temp.content_type_field_name, temp.content_entry_field_locale_id, temp.value_string, temp.value_bool, temp.value_keywords, temp.value_date, temp.value_number, temp.value_objects
-      FROM content_entry_field_published temp
-      WHERE NOT EXISTS (
-        SELECT 1 FROM content_entry_field as main
-        WHERE main.content_entry_id = temp.content_entry_id 
-        AND main.content_type_field_id = temp.content_type_field_id 
-        AND main.content_entry_field_locale_id = temp.content_entry_field_locale_id 
-        AND COALESCE(main.value_string, 'DUMMY_STRING') = COALESCE(temp.value_string, 'DUMMY_STRING') 
-        AND COALESCE(main.value_bool, -1) = COALESCE(temp.value_bool, -1) 
-        AND COALESCE(main.value_keywords, 'DUMMY_KEYWORDS') = COALESCE(temp.value_keywords, 'DUMMY_KEYWORDS') 
-        AND COALESCE(main.value_date, '1970-01-01') = COALESCE(temp.value_date, '1970-01-01') 
-        AND COALESCE(main.value_number, -9999) = COALESCE(temp.value_number, -9999) 
-        AND COALESCE(main.value_objects, 'DUMMY_OBJECTS') = COALESCE(temp.value_objects, 'DUMMY_OBJECTS')
-      );`);
+    try {
+      await db.run(rawSQL);
+      console.log("Insert operation completed successfully.");
+    } catch (err) {
+      console.error("Error executing insertContentEntryFieldsWithDrizzle:", err);
+      throw err;
+    }
+    const rawSQL2 =
+      sql.raw(` INSERT INTO content_entry_field (id, draft_content, content_type_field_type, content_entry_id, content_type_field_id, content_type_field_name, content_entry_field_locale_id, value_string, value_bool, value_keywords, value_date, value_number, value_objects)
+    SELECT temp.id, temp.draft_content, temp.content_type_field_type, temp.content_entry_id, temp.content_type_field_id, temp.content_type_field_name, temp.content_entry_field_locale_id, temp.value_string, temp.value_bool, temp.value_keywords, temp.value_date, temp.value_number, temp.value_objects
+    FROM content_entry_field_published temp
+    WHERE NOT EXISTS (
+      SELECT 1 FROM content_entry_field as main
+      WHERE main.content_entry_id = temp.content_entry_id 
+      AND main.content_type_field_id = temp.content_type_field_id 
+      AND main.content_entry_field_locale_id = temp.content_entry_field_locale_id 
+      AND COALESCE(main.value_string, 'DUMMY_STRING') = COALESCE(temp.value_string, 'DUMMY_STRING') 
+      AND COALESCE(main.value_bool, -1) = COALESCE(temp.value_bool, -1) 
+      AND COALESCE(main.value_keywords, 'DUMMY_KEYWORDS') = COALESCE(temp.value_keywords, 'DUMMY_KEYWORDS') 
+      AND COALESCE(main.value_date, '1970-01-01') = COALESCE(temp.value_date, '1970-01-01') 
+      AND COALESCE(main.value_number, -9999) = COALESCE(temp.value_number, -9999) 
+      AND COALESCE(main.value_objects, 'DUMMY_OBJECTS') = COALESCE(temp.value_objects, 'DUMMY_OBJECTS')
+    );`);
+    try {
+      await db.run(rawSQL2);
+      console.log("Insert operation2 completed successfully.");
+    } catch (err) {
+      console.error("Error executing insertContentEntryFieldsWithDrizzle2:", err);
+      throw err;
+    }
 
-    insertStmt2.run();
-
-    // Drop tables
-    sqlite.prepare(`DROP TABLE content_entry_field_draft;`).run();
-    sqlite.prepare(`DROP TABLE content_entry_field_published;`).run();
+    const rawSQLDrop = sql.raw(`DROP TABLE content_entry_field_draft;`);
+    try {
+      await db.run(rawSQLDrop);
+      console.log("Drop operation completed successfully.");
+    } catch (err) {
+      console.error("Error executing insertContentEntryFieldsWithDrizzle3:", err);
+      throw err;
+    }
+    const rawSQLDrop2 = sql.raw(`DROP TABLE content_entry_field_published;`);
+    try {
+      await db.run(rawSQLDrop2);
+      console.log("Drop operation2 completed successfully.");
+    } catch (err) {
+      console.error("Error executing insertContentEntryFieldsWithDrizzle4:", err);
+      throw err;
+    }
+    // sqlite.prepare(`DROP TABLE content_entry_field_draft;`).run();
+    // sqlite.prepare(`DROP TABLE content_entry_field_published;`).run();
 
     console.log("Operations successful");
   } catch (err) {
