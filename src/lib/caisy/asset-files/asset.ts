@@ -9,34 +9,34 @@ import { assetFile } from "../../common/schema";
 import { AssetFile } from "../../common/types/content-entry";
 
 const RELATIVE_TARGET_DIR = "../../../../cport_assets";
-const MAX_RETRY_ATTEMPTS = 3; // Maximum number of retry attempts
-const RETRY_DELAY = 1000; // Delay between retries in milliseconds
+const MAX_RETRY_ATTEMPTS = 3;
+const RETRY_DELAY = 1000;
+const MAX_CONCURRENT_DOWNLOADS = 100;
 
 function cleanFilename(url: string): string {
-  // Remove query parameters, if any
   let path = url.split("?")[0];
 
-  // Split the path into segments
   let segments = path.split("/");
 
-  // Extract the last segment as the filename
   let filename = segments.pop();
 
-  // Check if the filename is preceded by a UUID, considering the second last segment now
-  // UUIDs are 36 characters long, including hyphens
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
   if (uuidRegex.test(segments[segments.length - 1])) {
-    // If the preceding segment is a UUID, we've already popped the filename
-    // So, we don't need to adjust the filename variable
   } else {
-    // If there's no UUID directly before the filename, check if the filename itself contains UUID
     if (uuidRegex.test(filename.substring(0, 36))) {
-      // If the filename starts with UUID, strip the UUID from the filename
       filename = filename.substring(36);
     }
   }
 
   return filename || "";
+}
+
+function chunkArray(array, chunkSize) {
+  const chunks = [];
+  for (let i = 0; i < array.length; i += chunkSize) {
+    chunks.push(array.slice(i, i + chunkSize));
+  }
+  return chunks;
 }
 
 const downloadImage = async (url: string, attempt = 1) => {
@@ -51,13 +51,12 @@ const downloadImage = async (url: string, attempt = 1) => {
 
     const targetDir = path.resolve(__dirname, RELATIVE_TARGET_DIR + `/${uuid}`);
     const filePath = path.join(targetDir, clearName);
-    console.log("filePath", filePath);
 
     await fs.mkdir(targetDir, { recursive: true });
 
     await fs.writeFile(filePath, buffer);
-    console.log(`Image saved as ${clearName}`);
-    await insertCportAsset({ id: uuid, originalUrl: url, localPath: filePath });
+    const localPath = extractPathAfterMarker(filePath);
+    await insertCportAsset({ id: uuid, originalUrl: url, localPath: localPath });
   } catch (error) {
     console.error(`Failed to download image from ${url}: ${error}`);
     if (attempt < MAX_RETRY_ATTEMPTS) {
@@ -66,11 +65,21 @@ const downloadImage = async (url: string, attempt = 1) => {
       await downloadImage(url, attempt + 1);
     } else {
       console.error(`Failed to download image after ${MAX_RETRY_ATTEMPTS} attempts`);
-      // Handle the final failure case here, e.g., by logging, throwing an error, etc.
       throw error;
     }
   }
+  return;
 };
+
+function extractPathAfterMarker(fullPath: string): string {
+  const marker = "cport_assets";
+  const parts = fullPath.split(marker);
+  if (parts.length > 1) {
+    return marker + parts[1];
+  } else {
+    return fullPath;
+  }
+}
 
 const insertCportAsset = async (assetFileInput: AssetFile) => {
   try {
@@ -101,15 +110,16 @@ export const assetFiles = async ({
   onProgress,
   onError,
 }: CaisyRunOptions & { after: string | null }) => {
-  const downloadPromises = Array.from(assetUrls).map(async (url) => {
-    const modifiedUrl = `${url}?original`;
-    try {
-      await downloadImage(modifiedUrl);
-    } catch (error) {
-      console.error(`Failed to download image from ${url}:`, error);
-    }
-  });
-  await Promise.all(downloadPromises);
+  const urls = Array.from(assetUrls).map((url) => `${url}?original`);
+
+  const urlChunks = chunkArray(urls, MAX_CONCURRENT_DOWNLOADS);
+
+  // Process each chunk sequentially
+  for (const chunk of urlChunks) {
+    await Promise.all(chunk.map((url) => downloadImage(url))).catch((error) => {
+      console.error(`An error occurred during image downloads in a chunk:`, error);
+    });
+  }
 };
 
 export const exportCaisyAssets = async ({ sdk, projectId, onError, onProgress }: CaisyRunOptions): Promise<void> => {

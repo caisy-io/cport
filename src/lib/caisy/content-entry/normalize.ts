@@ -85,7 +85,6 @@ export const normalizeCaisyContentEntry = (
   blueprintVariantsMap: BlueprintPaginationResult,
 ): ContentEntry => {
   let blueprintVariant: string;
-  let BlueprintFieldType: string;
   for (const [key, value] of blueprintVariantsMap.blueprintMap.entries()) {
     if (key === document.blueprintId) {
       blueprintVariant = value;

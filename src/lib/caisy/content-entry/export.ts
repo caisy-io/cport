@@ -5,18 +5,12 @@ import {
   writeContentEntryPublished,
   insertContentEntryFields,
 } from "../../common/writer/content-entry";
-import { ContentEntryFieldData } from "../../common/types/content-entry";
-import { get } from "http";
 import { BlueprintPaginationResult } from "../content-type/export";
-import { Maybe, Scalars } from "../../common/types/util";
 
 import { GetDocumentMode } from "@caisy/sdk";
 interface ExtendedCaisyRunOptions extends CaisyRunOptions {
   blueprintDetailsMap: BlueprintPaginationResult;
 }
-
-const DocumentFieldMap: Map<string, ContentEntryFieldData> = new Map<string, ContentEntryFieldData>();
-export { DocumentFieldMap };
 
 export const paginateDocuments = async ({
   sdk,
@@ -51,46 +45,16 @@ export const paginateDocuments = async ({
   await Promise.all(
     allDocumentsResult.GetManyDocuments.connection.edges.map(async (document) => {
       const contentEntry = normalizeCaisyContentEntry(document.node, blueprintDetailsMap);
-      // console.log("contentType", JSON.stringify(contentType, null, 2));
-      await writeContentEntryDraft(contentEntry, blueprintDetailsMap, DocumentFieldMap);
-      // await ().catch((e) => {
-      //   onError({ step: "tag", error: e, meta: tag.node });
-      // });
+      await writeContentEntryDraft(contentEntry, blueprintDetailsMap);
     }),
   );
 
   await Promise.all(
     allPublishedDocumentsResult.GetManyDocuments.connection.edges.map(async (document) => {
       const contentEntry = normalizeCaisyContentEntry(document.node, blueprintDetailsMap);
-      // console.log("contentType", JSON.stringify(contentType, null, 2));
-      await writeContentEntryPublished(contentEntry, blueprintDetailsMap, DocumentFieldMap);
-      // await ().catch((e) => {
-      //   onError({ step: "tag", error: e, meta: tag.node });
-      // });
+      await writeContentEntryPublished(contentEntry, blueprintDetailsMap);
     }),
   );
-
-  // await Promise.all(
-  //   allDocumentsResult.GetManyDocuments.connection.edges.map(async (document) => {
-  //     const contentEntry = normalizeCaisyContentEntry(document.node, blueprintDetailsMap);
-  //     // console.log("contentType", JSON.stringify(contentType, null, 2));
-  //     await writeContentEntry(contentEntry, blueprintDetailsMap, DocumentFieldMap);
-  //     // await ().catch((e) => {
-  //     //   onError({ step: "tag", error: e, meta: tag.node });
-  //     // });
-  //   }),
-  // );
-
-  // await Promise.all(
-  //   allPublishedDocumentsResult.GetManyDocuments.connection.edges.map(async (document) => {
-  //     const contentEntry = normalizeCaisyContentEntry(document.node, blueprintDetailsMap);
-  //     // console.log("contentType", JSON.stringify(contentType, null, 2));
-  //     await writePublishedContentEntryFields(contentEntry, blueprintDetailsMap, DocumentFieldMap);
-  //     // await ().catch((e) => {
-  //     //   onError({ step: "tag", error: e, meta: tag.node });
-  //     // });
-  //   }),
-  // );
 
   if (hasNextPage) {
     await paginateDocuments({
