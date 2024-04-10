@@ -2,8 +2,6 @@ import { Provider, ProviderProcess } from "../common/types";
 import { exportCaisyTags } from "./tag/export";
 import { exportCaisyLocales } from "./locale/export";
 import { initSdk } from "@caisy/sdk";
-import { db } from "../common/db";
-import { contentLocale } from "../common/schema";
 import { exportCaisyContentTypes } from "./content-type/export";
 import { exportCaisyContentEntries } from "./content-entry/export";
 import { exportCaisyAssets } from "./asset-files/asset";
@@ -53,13 +51,6 @@ export const createCaisyProvider = ({ token, endpoint, projectId }: CaisyProvide
 
       // await Promise.all([exportCaisyContentTypes({ sdk, projectId, onError, onProgress })]);
       // await Promise.all([exportCaisyContentEntries({ sdk, projectId, onError, onProgress })]);
-
-      // TODO content entries + fields todo
-      // DRAFT PUBLISHED CHANGED
-
-      // we do not loose data if its changed
-      // we should store this is my changed content
-      // and this is my published content
     },
     checkCredentials: async (): Promise<boolean> => {
       try {
