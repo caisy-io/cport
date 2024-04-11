@@ -48,6 +48,41 @@ export const normalizeCaisyFieldType = (fieldType: BlueprintFieldType): ContentF
   }
 };
 
+export const denormalizeCaisyFieldType = (fieldType: String): BlueprintFieldType => {
+  switch (fieldType) {
+    case ContentFieldType.Boolean:
+      return BlueprintFieldType.BlueprintFieldTypeBoolean;
+    case ContentFieldType.Code:
+      return BlueprintFieldType.BlueprintFieldTypeCode;
+    case ContentFieldType.Color:
+      return BlueprintFieldType.BlueprintFieldTypeColor;
+    case ContentFieldType.Connection:
+      return BlueprintFieldType.BlueprintFieldTypeConnection;
+    case ContentFieldType.Datetime:
+      return BlueprintFieldType.BlueprintFieldTypeDatetime;
+    case ContentFieldType.Extension:
+      return BlueprintFieldType.BlueprintFieldTypeExtension;
+    case ContentFieldType.File:
+      return BlueprintFieldType.BlueprintFieldTypeFile;
+    case ContentFieldType.Float:
+      return BlueprintFieldType.BlueprintFieldTypeFloat;
+    case ContentFieldType.Geopoint:
+      return BlueprintFieldType.BlueprintFieldTypeGeopoint;
+    case ContentFieldType.Int:
+      return BlueprintFieldType.BlueprintFieldTypeInt;
+    case ContentFieldType.Richtext:
+      return BlueprintFieldType.BlueprintFieldTypeRichtext;
+    case ContentFieldType.Select:
+      return BlueprintFieldType.BlueprintFieldTypeSelect;
+    case ContentFieldType.String:
+      return BlueprintFieldType.BlueprintFieldTypeString;
+    case ContentFieldType.Tag:
+      return BlueprintFieldType.BlueprintFieldTypeTag;
+    default:
+      throw new Error(`Unsupported field type: ${fieldType}`);
+  }
+};
+
 export const normalizeCaisyFieldOptions = (fieldType: BlueprintFieldOptions): ContentTypeFieldOptions => {
   return {
     uniqueGlobal: fieldType.uniqueGlobal,
@@ -81,6 +116,39 @@ export const normalizeCaisyFieldOptions = (fieldType: BlueprintFieldOptions): Co
   };
 };
 
+export const denormalizeCaisyFieldOptions = (fieldType: ContentTypeFieldOptions): BlueprintFieldOptions => {
+  return {
+    uniqueGlobal: fieldType.uniqueGlobal,
+    uniqueLocal: fieldType.uniqueLocal,
+    float: fieldType.float,
+    int: fieldType.int,
+    string: fieldType.string,
+    datetime: fieldType.datetime,
+    extension: fieldType.extension,
+    disableInApi: fieldType.disableInApi,
+    disableInUi: fieldType.disableInUi,
+    external: fieldType.external,
+    file: fieldType.file,
+    localized: fieldType.localized,
+    primary: fieldType.primary,
+    required: fieldType.required,
+    code: fieldType.code,
+    richtext: fieldType.richtext,
+    select: fieldType.select,
+    tag: fieldType.tag,
+    video: fieldType.video,
+    ...(fieldType.connection
+      ? {
+          connection: {
+            connectedIds: fieldType.connection.connectedIds,
+            visualization: denormalizeCaisyConnectionFieldVisualization(fieldType.connection.visualization),
+            variant: denormalizeCaisyContentTypeVariant(fieldType.connection.variant),
+          },
+        }
+      : {}),
+  };
+};
+
 export const normalizeCaisyContentTypeVariant = (blueprintVariant: BlueprintVariant): ContentTypeVariant => {
   switch (blueprintVariant) {
     case BlueprintVariant.BlueprintVariantDocument:
@@ -96,6 +164,21 @@ export const normalizeCaisyContentTypeVariant = (blueprintVariant: BlueprintVari
   }
 };
 
+export const denormalizeCaisyContentTypeVariant = (blueprintVariant: string): BlueprintVariant => {
+  switch (blueprintVariant) {
+    case ContentTypeVariant.Document:
+      return BlueprintVariant.BlueprintVariantDocument;
+    case ContentTypeVariant.Asset:
+      return BlueprintVariant.BlueprintVariantAsset;
+    case ContentTypeVariant.Component:
+      return BlueprintVariant.BlueprintVariantComponent;
+    case ContentTypeVariant.Template:
+      return BlueprintVariant.BlueprintVariantTemplate;
+    default:
+      return BlueprintVariant.BlueprintVariantDocument;
+  }
+};
+
 export const normalizeCaisyConnectionFieldVisualization = (
   visualization: BlueprintFieldConnectionVisualization,
 ): ContentTypeFieldConnectionVisualization => {
@@ -108,6 +191,21 @@ export const normalizeCaisyConnectionFieldVisualization = (
       return ContentTypeFieldConnectionVisualization.Grid;
     default:
       return ContentTypeFieldConnectionVisualization.Deafult;
+  }
+};
+
+export const denormalizeCaisyConnectionFieldVisualization = (
+  visualization: ContentTypeFieldConnectionVisualization,
+): BlueprintFieldConnectionVisualization => {
+  switch (visualization) {
+    case ContentTypeFieldConnectionVisualization.Deafult:
+      return BlueprintFieldConnectionVisualization.BlueprintFieldConnectionVisualizationDeafult;
+    case ContentTypeFieldConnectionVisualization.Inline:
+      return BlueprintFieldConnectionVisualization.BlueprintFieldConnectionVisualizationInline;
+    case ContentTypeFieldConnectionVisualization.Grid:
+      return BlueprintFieldConnectionVisualization.BlueprintFieldConnectionVisualizationGrid;
+    default:
+      return BlueprintFieldConnectionVisualization.BlueprintFieldConnectionVisualizationDeafult;
   }
 };
 
