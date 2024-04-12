@@ -1,6 +1,8 @@
 import { Provider, ProviderProcess } from "../common/types";
 import { exportCaisyTags } from "./tag/export";
 import { exportCaisyLocales } from "./locale/export";
+import { importCaisyTags } from "./tag/import";
+import { importCaisyBlueprints } from "./content-type/import";
 import { initSdk } from "@caisy/sdk";
 import { exportCaisyContentTypes } from "./content-type/export";
 import { exportCaisyContentEntries } from "./content-entry/export";
@@ -24,6 +26,11 @@ export const createCaisyProvider = ({ token, endpoint, projectId }: CaisyProvide
     name: "caisy",
     import: async ({ onError, onProgress }): Promise<void> => {
       console.log("Importing data from Caisy...");
+      await Promise.all([
+        importCaisyTags({ sdk, projectId, onError, onProgress }),
+        importCaisyBlueprints({ sdk, projectId, onError, onProgress }),
+      ]);
+      console.log("Successfully imported all data.");
     },
     export: async ({ onError, onProgress }): Promise<void> => {
       console.log("Exporting data from Caisy...");

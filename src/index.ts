@@ -56,7 +56,12 @@ async function run(): Promise<void> {
         console.log(chalk.red("Invalid credentials for Contentful"));
         return;
       }
-      await provider.export({ onError, onProgress });
+      if (options.import) {
+        await provider.import({ onError, onProgress });
+      } else if (options.export) {
+        await provider.export({ onError, onProgress });
+      }
+      // await provider.export({ onError, onProgress });
     }
   }
 
