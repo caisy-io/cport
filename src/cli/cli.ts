@@ -7,14 +7,14 @@ import { CaisyProviderOptions } from "../lib/caisy/provider";
 
 program
   .version("0.0.1")
-  .option("-i, --import", "import data")
-  .option("-e, --export", "export data")
+  // .option("-i, --import", "import data")
+  // .option("-e, --export", "export data")
   .option("-m, --migrate", "migrate data directly from one provider to another")
   .option("-o, --outputPath <outputPath>", "output data storage location")
   .option("-I, --importPath <inputPath>", "input data storage location")
   .option("-t, --token <token>", "access token")
   .option("-P, --source <provider>", "source provider")
-  .option("-P, --target <provider>", "source provider")
+  .option("-P, --target <provider>", "target provider")
   .option("-c, --config <configFile>", "path to the configuration file")
   .option(
     "-s, --set <set>",
