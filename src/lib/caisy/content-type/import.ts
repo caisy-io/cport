@@ -38,19 +38,23 @@ async function fetchBlueprintsFromDatabase({ sdk, projectId, onProgress, onError
     return acc;
   }, {});
 
-  // Generate blueprint inputs
-  blueprintRows.forEach((row) => {
-    const blueprintGroupInputs = blueprintGroupRows.map((groupRow) => ({
+  // Map groups by blueprint ID for correct blueprint association
+  const groupsByBlueprintId = blueprintGroupRows.reduce((acc, groupRow) => {
+    (acc[groupRow.contentTypeId] = acc[groupRow.contentTypeId] || []).push({
       blueprintGroupId: groupRow.id,
       name: groupRow.name,
       fields: fieldsByGroupId[groupRow.id] || [],
-    }));
+    });
+    return acc;
+  }, {});
 
+  // Generate blueprint inputs using mapped groups
+  blueprintRows.forEach((row) => {
     blueprintInputs.push({
       blueprintId: row.id,
       name: row.name,
       variant: denormalizeCaisyContentTypeVariant(row.variant),
-      groups: blueprintGroupInputs,
+      groups: groupsByBlueprintId[row.id] || [],
       description: row.description,
       exposeMutations: row.exposeMutations,
       previewImageUrl: row.previewImageUrl,
@@ -59,7 +63,8 @@ async function fetchBlueprintsFromDatabase({ sdk, projectId, onProgress, onError
       title: row.title,
     });
   });
-
+  const fs = require("fs");
+  const logStream = fs.createWriteStream("logs.txt", { flags: "a" });
   try {
     const result = await sdk.PutManyBlueprints({
       input: {
