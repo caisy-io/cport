@@ -1,17 +1,18 @@
 import { Provider, ProviderProcess } from "../common/types";
 import { exportCaisyTags } from "./tag/export";
 import { exportCaisyLocales } from "./locale/export";
+import { importCaisyTags } from "./tag/import";
+import { importCaisyBlueprints } from "./content-type/import";
 import { initSdk } from "@caisy/sdk";
-import { db } from "../common/db";
-import { contentLocale } from "../common/schema";
 import { exportCaisyContentTypes } from "./content-type/export";
+import { exportCaisyContentEntries } from "./content-entry/export";
+import { exportCaisyAssets } from "./asset-files/asset";
 
 export type CaisyProviderOptions = {
   token: string;
   projectId: string;
   endpoint?: string;
 };
-
 export type CaisyRunOptions = {
   sdk: ReturnType<typeof initSdk>;
   projectId: string;
@@ -25,6 +26,11 @@ export const createCaisyProvider = ({ token, endpoint, projectId }: CaisyProvide
     name: "caisy",
     import: async ({ onError, onProgress }): Promise<void> => {
       console.log("Importing data from Caisy...");
+      await Promise.all([
+        importCaisyTags({ sdk, projectId, onError, onProgress }),
+        importCaisyBlueprints({ sdk, projectId, onError, onProgress }),
+      ]);
+      console.log("Successfully imported all data.");
     },
     export: async ({ onError, onProgress }): Promise<void> => {
       console.log("Exporting data from Caisy...");
@@ -33,14 +39,25 @@ export const createCaisyProvider = ({ token, endpoint, projectId }: CaisyProvide
         exportCaisyTags({ sdk, projectId, onError, onProgress }),
         exportCaisyLocales({ sdk, projectId, onError, onProgress }),
       ]);
-      await Promise.all([exportCaisyContentTypes({ sdk, projectId, onError, onProgress })]);
+      const blueprintVariantsMap = await exportCaisyContentTypes({ sdk, projectId, onError, onProgress });
 
-      // TODO content entries + fields todo
-      // DRAFT PUBLISHED CHANGED
+      await exportCaisyContentEntries({
+        sdk,
+        projectId,
+        onError,
+        onProgress,
+        blueprintDetailsMap: blueprintVariantsMap,
+      });
 
-      // we do not loose data if its changed
-      // we should store this is my changed content
-      // and this is my published content
+      await exportCaisyAssets({
+        sdk,
+        projectId,
+        onError,
+        onProgress,
+      });
+
+      // await Promise.all([exportCaisyContentTypes({ sdk, projectId, onError, onProgress })]);
+      // await Promise.all([exportCaisyContentEntries({ sdk, projectId, onError, onProgress })]);
     },
     checkCredentials: async (): Promise<boolean> => {
       try {

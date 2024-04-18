@@ -85,6 +85,10 @@ yarn
 
 ```bash
 yarn dev
-yarn gen && yarn dev --export --source caisy --config config.yaml
-yarn gen && yarn dev --export --source contentful --config config.yaml
+
+yarn gen && yarn dev --source caisy --config config.yaml
+yarn gen && yarn dev --source contentful --config config.yaml
+
+yarn dev --target=caisy --config config.yaml
+yarn dev --target=contentful --config config.yaml
 ```
