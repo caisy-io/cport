@@ -50,6 +50,76 @@ export const normalizeCaisyFieldEntry = (fieldType: BlueprintFieldType): Content
   }
 };
 
+export const fromStringToCaisyContentFieldType = (fieldType: string): ContentEntryContentTypeFieldType => {
+  switch (fieldType) {
+    case "boolean":
+      return ContentEntryContentTypeFieldType.Boolean;
+    case "code":
+      return ContentEntryContentTypeFieldType.Code;
+    case "color":
+      return ContentEntryContentTypeFieldType.Color;
+    case "connection":
+      return ContentEntryContentTypeFieldType.Connection;
+    case "datetime":
+      return ContentEntryContentTypeFieldType.DateTime;
+    case "extension":
+      return ContentEntryContentTypeFieldType.Extension;
+    case "file":
+      return ContentEntryContentTypeFieldType.File;
+    case "float":
+      return ContentEntryContentTypeFieldType.Float;
+    case "geo_point":
+      return ContentEntryContentTypeFieldType.GeoPoint;
+    case "int":
+      return ContentEntryContentTypeFieldType.Int;
+    case "rich_text":
+      return ContentEntryContentTypeFieldType.RichText;
+    case "select":
+      return ContentEntryContentTypeFieldType.Select;
+    case "string":
+      return ContentEntryContentTypeFieldType.String;
+    case "tag":
+      return ContentEntryContentTypeFieldType.Tag;
+    default:
+      throw new Error(`Unsupported field type: ${fieldType}`);
+  }
+};
+
+export const fromStringToCaisyBlueprintFieldType = (fieldType: string): BlueprintFieldType => {
+  switch (fieldType) {
+    case "boolean":
+      return BlueprintFieldType.BlueprintFieldTypeBoolean;
+    case "code":
+      return BlueprintFieldType.BlueprintFieldTypeCode;
+    case "color":
+      return BlueprintFieldType.BlueprintFieldTypeColor;
+    case "connection":
+      return BlueprintFieldType.BlueprintFieldTypeConnection;
+    case "datetime":
+      return BlueprintFieldType.BlueprintFieldTypeDatetime;
+    case "extension":
+      return BlueprintFieldType.BlueprintFieldTypeExtension;
+    case "file":
+      return BlueprintFieldType.BlueprintFieldTypeFile;
+    case "float":
+      return BlueprintFieldType.BlueprintFieldTypeFloat;
+    case "geo_point":
+      return BlueprintFieldType.BlueprintFieldTypeGeopoint;
+    case "int":
+      return BlueprintFieldType.BlueprintFieldTypeInt;
+    case "rich_text":
+      return BlueprintFieldType.BlueprintFieldTypeRichtext;
+    case "select":
+      return BlueprintFieldType.BlueprintFieldTypeSelect;
+    case "string":
+      return BlueprintFieldType.BlueprintFieldTypeString;
+    case "tag":
+      return BlueprintFieldType.BlueprintFieldTypeTag;
+    default:
+      throw new Error(`Unsupported field type: ${fieldType}`);
+  }
+};
+
 export const normalizeCaisyContentTypeVariant = (blueprintVariant: String): ContentEntryContentTypeVariant => {
   switch (blueprintVariant) {
     case "DOCUMENT":
