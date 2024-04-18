@@ -19,6 +19,8 @@ async function run(): Promise<void> {
 
   const answers = await inquirer.prompt(questions);
 
+  console.log(` options`, options);
+
   const action = (options?.import && "import") || (options?.export && "export") || answers.action;
   const accessToken = options.token || answers.token;
   const outputPath = options.outputPath || answers.outputPath || "./output";
@@ -32,6 +34,7 @@ async function run(): Promise<void> {
   };
 
   if (options.config || options.migrate) {
+    // EXPORT
     if (options.source === "caisy") {
       const provider = createCaisyProvider({
         token: options.caisy.token,
@@ -46,7 +49,6 @@ async function run(): Promise<void> {
       await provider.export({ onError, onProgress });
     }
     if (options.source === "contentful") {
-      console.log(` options.contentful`, options.contentful);
       const provider = createContentfulProvider({
         token: `${options.contentful.token}`,
         spaceId: `${options.contentful.spaceId}`,
@@ -57,6 +59,33 @@ async function run(): Promise<void> {
         return;
       }
       await provider.export({ onError, onProgress });
+    }
+
+    // IMPORT
+    if (options.target === "caisy") {
+      const provider = createCaisyProvider({
+        token: options.caisy.token,
+        projectId: options.caisy.projectId,
+        endpoint: options.caisy.endpoint,
+      });
+
+      if (!(await provider.checkCredentials())) {
+        console.log(chalk.red("Invalid credentials for Caisy"));
+        return;
+      }
+      await provider.import({ onError, onProgress });
+    }
+    if (options.target === "contentful") {
+      const provider = createContentfulProvider({
+        token: `${options.contentful.token}`,
+        spaceId: `${options.contentful.spaceId}`,
+      });
+
+      if (!(await provider.checkCredentials())) {
+        console.log(chalk.red("Invalid credentials for Contentful"));
+        return;
+      }
+      await provider.import({ onError, onProgress });
     }
   }
 
