@@ -101,6 +101,7 @@ async function fetchDocumentsFromDatabase({ sdk, projectId, onProgress, onError 
         fromStringToCaisyContentFieldType(fieldRow.contentTypeFieldType),
       ),
       type: fromStringToCaisyBlueprintFieldType(fieldRow.contentTypeFieldType),
+      blueprintFieldName: fieldRow.contentTypeFieldName,
     });
     return acc;
   }, {});

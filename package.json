@@ -26,7 +26,7 @@
     "typescript": "^4.9.4"
   },
   "dependencies": {
-    "@caisy/sdk": "^1.3.0-canary.2",
+    "@caisy/sdk": "^1.3.2",
     "better-sqlite3": "^9.4.3",
     "chalk": "4.1.2",
     "cheerio": "^1.0.0-rc.12",
