@@ -18,6 +18,7 @@ import {
   contentTypeField,
   contentTypeGroup,
 } from "../../common/schema";
+import { sql, count, inArray } from "drizzle-orm";
 import {
   denormalizeCaisyContentTypeVariant,
   denormalizeCaisyContentEntryStatus,
@@ -28,135 +29,135 @@ import {
 import { time } from "console";
 import { processDataForCaisyDocumentField, ContentEntryFieldData } from "../../common/types/content-entry";
 
+const PAGE_LIMIT = 100;
+
 async function fetchDocumentsFromDatabase({ sdk, projectId, onProgress, onError }: CaisyRunOptions): Promise<void> {
-  const documentLocalesInputs: DocumentFieldLocaleUpsertInputInput[] = [];
-  const documentInputs: DocumentWithFieldsInput[] = [];
+  try {
+    const documentLocalesInputs = await fetchDocumentLocales();
+    const changeSet = await submitLocaleChanges(documentLocalesInputs, sdk, projectId);
+
+    const totalDocumentsResult = await db.select({ count: count() }).from(contentEntry);
+    const totalDocuments = totalDocumentsResult[0].count;
+
+    let pageIndex = 0;
+    const pageSize = PAGE_LIMIT;
+
+    while (pageIndex * pageSize < totalDocuments) {
+      const documentRows = await db
+        .select()
+        .from(contentEntry)
+        .offset(pageIndex * pageSize)
+        .limit(pageSize)
+        .execute();
+
+      const documentIds = documentRows.map((doc) => doc.id);
+      const documentFieldRows = await fetchDocumentFieldsByDocumentIds(documentIds);
+      const fieldsByDocumentId = documentFieldRows.reduce((acc, field) => {
+        let documentFieldLocaleID = field.contentEntryFieldLocaleId;
+        changeSet.forEach((changeSetRes) => {
+          if (changeSetRes.sourceDocumentFieldLocaleId === documentFieldLocaleID) {
+            documentFieldLocaleID = changeSetRes.targetDocumentFieldLocaleId;
+          }
+        });
+        const entryData = {
+          valueString: field.valueString,
+          valueBool: field.valueBool,
+          valueDate: field.valueDate,
+          valueNumber: +field.valueNumber,
+          valueKeywords: field.valueKeywords,
+          valueObjects: field.valueObjects,
+        };
+        const fieldData = {
+          blueprintFieldId: field.contentTypeFieldId,
+          documentFieldLocaleId: documentFieldLocaleID,
+          data: processDataForCaisyDocumentField(
+            entryData,
+            fromStringToCaisyContentFieldType(field.contentTypeFieldType),
+          ),
+          type: fromStringToCaisyBlueprintFieldType(field.contentTypeFieldType),
+          blueprintFieldName: field.contentTypeFieldName,
+        };
+
+        (acc[field.contentEntryId] = acc[field.contentEntryId] || []).push(fieldData);
+        return acc;
+      }, {});
+
+      const documentInputs = documentRows.map((doc) => ({
+        documentId: doc.id,
+        blueprintId: doc.contentTypeId,
+        title: doc.title,
+        previewImageUrl: doc.previewImageUrl,
+        statusId: denormalizeCaisyContentEntryStatus(doc.status),
+        projectId: projectId,
+        blueprintVariant: denormalizeCaisyContentTypeVariant(doc.contentTypeVariant),
+        fields: fieldsByDocumentId[doc.id] || [],
+      }));
+      await submitDocumentChanges(documentInputs, sdk, projectId);
+
+      pageIndex++;
+    }
+  } catch (error) {
+    console.error("Error fetching or importing documents:", error);
+    onError?.({ error, step: "fetchDocuments", meta: {} });
+  }
+}
+
+async function fetchDocumentLocales() {
   const documentLocaleRows = await db.select().from(contentLocale).execute();
-  const documentRows = await db.select().from(contentEntry).execute();
-  const documentFieldRows = await db.select().from(contentEntryField).execute();
+  return documentLocaleRows.map((localeRow) => ({
+    documentFieldLocaleId: localeRow.id,
+    apiName: localeRow.apiName,
+    allowEmptyRequired: localeRow.allowEmptyRequired,
+    default: localeRow.default,
+    disableEditing: localeRow.disableEditing,
+    disableInResponse: localeRow.disableInResponse,
+    fallbackLocaleId: localeRow.fallbackLocaleId,
+    flag: localeRow.flag,
+    title: localeRow.title,
+  }));
+}
 
-  documentLocaleRows.forEach((localeRow) => {
-    documentLocalesInputs.push({
-      documentFieldLocaleId: localeRow.id,
-      apiName: localeRow.apiName,
-      allowEmptyRequired: localeRow.allowEmptyRequired,
-      default: localeRow.default,
-      disableEditing: localeRow.disableEditing,
-      disableInResponse: localeRow.disableInResponse,
-      fallbackLocaleId: localeRow.fallbackLocaleId,
-      flag: localeRow.flag,
-      title: localeRow.title,
-    });
-  });
+async function fetchDocumentFieldsByDocumentIds(documentIds: string[]): Promise<any[]> {
+  const documentFieldRows = db
+    .select()
+    .from(contentEntryField)
+    .where(inArray(contentEntryField.contentEntryId, documentIds))
+    .execute();
+  return documentFieldRows;
+}
+
+async function submitLocaleChanges(documentLocalesInputs, sdk, projectId) {
   let changeSet: DocumentFieldLocaleChangeSet[] = [];
-  try {
-    const result = await sdk.PutManyDocumentFieldLocales({
-      input: {
-        projectId: projectId,
-        documentFieldLocaleInputs: documentLocalesInputs,
-      },
-    });
-    if (result.PutManyDocumentFieldLocales.errors.length > 0) {
-      console.error("Failed to import document field locales:", result.PutManyDocumentFieldLocales.errors);
-      result.PutManyDocumentFieldLocales.errors.forEach((error) => {
-        console.error("Error:", error.errorMessage);
-        console.error("ID:", error.documentFieldLocaleId);
-      });
-    } else {
-      console.log("Successfully imported all document field locales.");
-    }
-    result.PutManyDocumentFieldLocales.changeSet.forEach((changeSetRes) => {
-      changeSet.push(changeSetRes);
-    });
-  } catch (error) {
-    console.error("Failed to import document field locales due to an unexpected error:", error);
-  }
-
-  const fieldsByDocumentId = documentFieldRows.reduce((acc, fieldRow) => {
-    let entryData: ContentEntryFieldData = {
-      valueString: undefined,
-      valueBool: undefined,
-      valueDate: undefined,
-      valueNumber: undefined,
-      valueKeywords: undefined,
-      valueObjects: undefined,
-    };
-    let documentFieldLocaleID = fieldRow.contentEntryFieldLocaleId;
-    changeSet.forEach((changeSetRes) => {
-      if (changeSetRes.sourceDocumentFieldLocaleId === documentFieldLocaleID) {
-        documentFieldLocaleID = changeSetRes.targetDocumentFieldLocaleId;
-      }
-    });
-    entryData.valueString = fieldRow.valueString;
-    entryData.valueBool = fieldRow.valueBool;
-    entryData.valueDate = fieldRow.valueDate;
-    entryData.valueNumber = +fieldRow.valueNumber;
-    entryData.valueKeywords = fieldRow.valueKeywords;
-    entryData.valueObjects = fieldRow.valueObjects;
-    (acc[fieldRow.contentEntryId] = acc[fieldRow.contentEntryId] || []).push({
-      blueprintFieldId: fieldRow.contentTypeFieldId,
-      documentFieldLocaleId: documentFieldLocaleID,
-      data: processDataForCaisyDocumentField(
-        entryData,
-        fromStringToCaisyContentFieldType(fieldRow.contentTypeFieldType),
-      ),
-      type: fromStringToCaisyBlueprintFieldType(fieldRow.contentTypeFieldType),
-      blueprintFieldName: fieldRow.contentTypeFieldName,
-    });
-    return acc;
-  }, {});
-
-  documentRows.forEach((row) => {
-    documentInputs.push({
-      documentId: row.id,
-      blueprintId: row.contentTypeId,
-      title: row.title,
-      previewImageUrl: row.previewImageUrl,
-      statusId: denormalizeCaisyContentEntryStatus(row.status),
-      projectId: projectId,
-      blueprintVariant: denormalizeCaisyContentTypeVariant(row.contentTypeVariant),
-      fields: fieldsByDocumentId[row.id] || [],
-    });
+  const result = await sdk.PutManyDocumentFieldLocales({
+    input: {
+      projectId,
+      documentFieldLocaleInputs: documentLocalesInputs,
+    },
   });
 
-  try {
-    const result = await sdk.PutManyDocumentFieldLocales({
-      input: {
-        projectId: projectId,
-        documentFieldLocaleInputs: documentLocalesInputs,
-      },
-    });
-    if (result.PutManyDocumentFieldLocales.errors.length > 0) {
-      console.error("Failed to import document field locales:", result.PutManyDocumentFieldLocales.errors);
-      result.PutManyDocumentFieldLocales.errors.forEach((error) => {
-        console.error("Error:", error.errorMessage);
-        console.error("ID:", error.documentFieldLocaleId);
-      });
-    } else {
-      console.log("Successfully imported all document field locales.");
-    }
-  } catch (error) {
-    console.error("Failed to import document field locales due to an unexpected error:", error);
+  if (result.PutManyDocumentFieldLocales.errors.length > 0) {
+    console.error("Failed to import document field locales:", result.PutManyDocumentFieldLocales.errors);
+  } else {
+    console.log("Successfully imported all document field locales.");
   }
+  result.PutManyDocumentFieldLocales.changeSet.forEach((changeSetRes) => {
+    changeSet.push(changeSetRes);
+  });
+  return changeSet;
+}
 
-  try {
-    const result = await sdk.PutManyDocuments({
-      input: {
-        projectId: projectId,
-        documentInputs: documentInputs,
-      },
-    });
-    if (result.PutManyDocuments.errors.length > 0) {
-      console.error("Failed to import documents:", result.PutManyDocuments.errors);
-      result.PutManyDocuments.errors.forEach((error) => {
-        console.error("Error:", error.errorMessage);
-        console.error("ID:", error.documentId);
-      });
-    } else {
-      console.log("Successfully imported all documents.");
-    }
-  } catch (error) {
-    console.error("Failed to import documents due to an unexpected error:", error);
+async function submitDocumentChanges(documentInputs, sdk, projectId) {
+  const result = await sdk.PutManyDocuments({
+    input: {
+      projectId,
+      documentInputs,
+    },
+  });
+
+  if (result.PutManyDocuments.errors.length > 0) {
+    console.error("Failed to import documents:", result.PutManyDocuments.errors);
+  } else {
+    console.log("Successfully imported all documents.");
   }
 }
 
