@@ -18,7 +18,7 @@ export const createContentfulProvider = ({ token, spaceId }: ContentfulProviderO
   console.log(` { token, spaceId }`, { token, spaceId });
 
   return {
-    name: "caisy",
+    name: "contentful",
     import: async ({ onError, onProgress }): Promise<void> => {
       console.log("Importing data from Contentful...");
     },
