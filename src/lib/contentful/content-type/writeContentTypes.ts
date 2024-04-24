@@ -55,7 +55,7 @@ const normalizeContentfulFieldOptions = (field: ContentTypeField): ContentTypeFi
   };
 };
 
-const normalizeContentfulContentTypeVariant = (sys: any): ContentTypeVariant => {
+export const normalizeContentfulContentTypeVariant = (sys: any): ContentTypeVariant => {
   if (sys.contentType?.sys?.id === "asset") {
     return ContentTypeVariant.Asset;
   }

@@ -53,7 +53,7 @@ export const writeContentEntryPublished = async (
   return contentEntryResult;
 };
 
-const insertContentEntry = async (contentEntryInput: ContentEntry) => {
+export const insertContentEntry = async (contentEntryInput: ContentEntry) => {
   try {
     return await db
       .insert(contentEntry)
