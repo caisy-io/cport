@@ -2,7 +2,8 @@ import { Provider, ProviderProcess } from "../common/types";
 import contentfulExport from "contentful-export";
 import { ContentfulExport } from "./types";
 import { writeContentTypes } from "./content-type/writeContentTypes";
-import { ContentType } from "contentful";
+import { writeContentEntries, writeContentLocales } from "./content-entry/writeContentEntries";
+import { ContentType, Entry, Locale } from "contentful";
 import fs from "fs";
 
 export type ContentfulProviderOptions = {
@@ -36,6 +37,8 @@ export const createContentfulProvider = ({ token, spaceId }: ContentfulProviderO
       // fs.writeFileSync("contentful-export.json", JSON.stringify(exportRes, null, 2));
 
       await writeContentTypes(exportRes.contentTypes as unknown as ContentType[]);
+      await writeContentLocales(exportRes.locales as unknown as Locale[]);
+      await writeContentEntries(exportRes.entries as unknown as Entry[]);
 
       // export tags
       // await Promise.all([
