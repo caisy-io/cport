@@ -9,10 +9,10 @@
   dependencies:
     regenerator-runtime "^0.14.0"
 
-"@caisy/sdk@^1.3.0-canary.2":
-  version "1.3.0-canary.2"
-  resolved "https://registry.yarnpkg.com/@caisy/sdk/-/sdk-1.3.0-canary.2.tgz#c07d9815a14dec2afa4239ba34e4ee4fff820df6"
-  integrity sha512-1M/ID4OT9QdbHSINgrLKSvq/aRvhgh32sbbLP5MkD/Kdp9QVkhC+9ZA7/8eT3Y98++04i4VTGZ9Mr5wWrkcVkw==
+"@caisy/sdk@^1.3.2":
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/@caisy/sdk/-/sdk-1.3.2.tgz#8aa19ac971c5b6190967f376b72b4bb39f1b6d09"
+  integrity sha512-0FYt5fkFP7dtoxNNMahDGePGK/QjYoKFl2W1IDzjUrWztBY1l9tPwc1pbcVA4TfkpuHX2xcsZHrREDhwal/t4g==
   dependencies:
     graphql "15.8.0"
     graphql-tag "^2.12.6"
