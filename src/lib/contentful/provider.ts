@@ -1,9 +1,9 @@
 import { Provider, ProviderProcess } from "../common/types";
 import contentfulExport from "contentful-export";
-import fs from "fs";
 import { ContentfulExport } from "./types";
 import { writeContentTypes } from "./content-type/writeContentTypes";
 import { ContentType } from "contentful";
+import fs from "fs";
 
 export type ContentfulProviderOptions = {
   token: string;
@@ -28,14 +28,15 @@ export const createContentfulProvider = ({ token, spaceId }: ContentfulProviderO
         spaceId: spaceId,
         managementToken: token,
       };
-      const fileContent = fs.readFileSync("contentful-export.json");
-      const content = JSON.parse(fileContent.toString());
+      // const fileContent = fs.readFileSync("contentful-export.json");
+      // const content = JSON.parse(fileContent.toString());
 
-      const exportRes = content ? content : ((await contentfulExport(options)) as ContentfulExport);
+      const exportRes = (await contentfulExport(options)) as ContentfulExport;
+      // const content = JSON.parse(exportRes.toString());
+      // fs.writeFileSync("contentful-export.json", JSON.stringify(exportRes, null, 2));
 
       await writeContentTypes(exportRes.contentTypes as unknown as ContentType[]);
 
-      fs.writeFileSync("contentful-export.json", JSON.stringify(exportRes, null, 2));
       // export tags
       // await Promise.all([
       //   exportContentfulTags({ sdk, projectId, onError, onProgress }),
