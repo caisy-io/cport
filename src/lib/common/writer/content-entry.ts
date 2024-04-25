@@ -53,6 +53,12 @@ export const writeContentEntryPublished = async (
   return contentEntryResult;
 };
 
+export const writeContentfulEntry = async (contentEntryInput: ContentEntry) => {
+  const contentEntryResult = await insertContentEntry(contentEntryInput);
+  await insertContentfulEntryField(contentEntryInput.fields, contentEntryInput.documentId);
+  return contentEntryResult;
+};
+
 export const insertContentEntry = async (contentEntryInput: ContentEntry) => {
   try {
     return await db
@@ -77,6 +83,60 @@ export const insertContentEntry = async (contentEntryInput: ContentEntry) => {
       .execute();
   } catch (err) {
     console.log(` insertContentEntry`);
+    throw new Error(err);
+  }
+};
+
+export const insertContentfulEntryField = async (fields: ContentEntryField[], documentID: string) => {
+  try {
+    for (const field of fields) {
+      let contentEntryFieldData = await processDataForEntryField(field.data, field.type);
+      // let contentTypeFieldName = blueprintMaps.blueprintFieldNameMap.get(field.blueprintFieldId) || "";
+      let contentTypeFieldName = "";
+      if (contentTypeFieldName === "src" && contentEntryFieldData.valueObjects !== undefined) {
+        const jsonObj = JSON.parse(contentEntryFieldData.valueObjects);
+
+        const url: string = jsonObj.url;
+        assetUrls.add(url);
+      }
+
+      await db
+        .insert(contentEntryFieldDraft)
+        .values({
+          id: `${documentID}_${field.blueprintFieldId}_${field.documentFieldLocaleId}`,
+          draftContent: 1,
+          contentTypeFieldType: field.type,
+          contentEntryId: documentID,
+          contentTypeFieldId: field.blueprintFieldId,
+          contentTypeFieldName: contentTypeFieldName,
+          contentEntryFieldLocaleId: field.documentFieldLocaleId,
+          valueString: contentEntryFieldData.valueString,
+          valueBool: contentEntryFieldData.valueBool,
+          valueKeywords: contentEntryFieldData.valueKeywords,
+          valueDate: contentEntryFieldData.valueDate,
+          valueNumber: contentEntryFieldData.valueNumber,
+          valueObjects: contentEntryFieldData.valueObjects,
+        } as any)
+        .returning({
+          id: contentEntryField.id,
+          draftContent: contentEntryField.draftContent,
+          contentTypeFieldType: contentEntryField.contentTypeFieldType,
+          contentEntryId: contentEntryField.contentEntryId,
+          contentTypeFieldId: contentEntryField.contentTypeFieldId,
+          contentTypeFieldName: contentEntryField.contentTypeFieldName,
+          contentEntryFieldLocaleId: contentEntryField.contentEntryFieldLocaleId,
+          valueString: contentEntryField.valueString,
+          valueBool: contentEntryField.valueBool,
+          valueKeywords: contentEntryField.valueKeywords,
+          valueDate: contentEntryField.valueDate,
+          valueNumber: contentEntryField.valueNumber,
+          valueObjects: contentEntryField.valueObjects,
+        })
+        .onConflictDoNothing()
+        .execute();
+    }
+  } catch (err) {
+    console.log(` insertContentEntryFields`);
     throw new Error(err);
   }
 };

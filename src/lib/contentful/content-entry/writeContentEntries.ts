@@ -26,7 +26,7 @@ import {
 import { InferInsertModel } from "drizzle-orm";
 
 import { contentLocale } from "../../common/schema";
-import { insertContentEntry, writeContentLocale } from "../../common/writer/content-entry";
+import { insertContentEntry, writeContentLocale, insertContentfulEntryField } from "../../common/writer/content-entry";
 
 import { writeContentType } from "../../common/writer/content-type";
 import { writeContentEntryDraft } from "../../common/writer/content-entry";
@@ -60,17 +60,45 @@ const normalizeContentfulEntry = (entry: Entry<any>): ContentEntry => {
   //     // type: normalizeContentfulFieldType(entry.fields[fieldKey]),
   //   };
   // });
+  const titleField =
+    entry.fields.internalName && entry.fields.internalName["en-US"]
+      ? entry.fields.internalName["en-US"]
+      : "No Title Provided";
+
+  // Extracting the preview image URL if available, using 'en-US' as a default
+  const previewImageUrl =
+    entry.fields.image && entry.fields.image["en-US"] ? entry.fields.image["en-US"].url : undefined;
+
+  const fields: ContentEntryField[] = [];
+
+  // Process each field for each locale
+  Object.keys(entry.fields).forEach((fieldKey) => {
+    const locales = Object.keys(entry.fields[fieldKey]);
+    locales.forEach((locale) => {
+      const fieldData = entry.fields[fieldKey][locale];
+      fields.push({
+        id: `${entry.sys.id}_${fieldKey}_${locale}`,
+        blueprintFieldId: fieldKey,
+        createdAt: entry.sys.createdAt,
+        data: fieldData, // You can apply a transformation or normalization function here if needed
+        documentFieldLocaleId: locale,
+        // lastUpdatedByUserId: entry.sys.updatedBy.sys.id,
+        type: fieldData, // Simplified type extraction
+        updatedAt: entry.sys.updatedAt,
+      });
+    });
+  });
 
   return {
     documentId: entry.sys.id,
-    title: entry.fields.title && entry.fields.title["en-US"] ? entry.fields.title["en-US"] : entry.sys.id,
+    title: titleField,
     blueprintVariant: normalizeContentfulContentTypeVariant(entry.sys.contentType.sys),
-    previewImageUrl: entry.fields.image && entry.fields.image["en-US"] ? entry.fields.image["en-US"].url : "",
-    status: ContentEntryStatus.Draft,
+    previewImageUrl: previewImageUrl,
+    status: ContentEntryStatus.Draft, // Assuming all entries are initially in draft status
     blueprintId: entry.sys.contentType.sys.id,
     createdAt: entry.sys.createdAt,
     updatedAt: entry.sys.updatedAt,
-    // fields: fields,
+    fields: fields,
   };
 };
 
@@ -103,6 +131,7 @@ export const writeContentEntries = async (contentEntries: Entry[]) => {
       const normalizedContentEntry = normalizeContentfulEntry(contentEntry);
       console.info(JSON.stringify(normalizedContentEntry, null, 2));
       await insertContentEntry(normalizedContentEntry);
+      await insertContentfulEntryField(normalizedContentEntry.fields, normalizedContentEntry.documentId);
     } catch (e) {
       const normalizedContentEntry = normalizeContentfulEntry(contentEntry);
       console.error(JSON.stringify(normalizedContentEntry, null, 2));
@@ -119,7 +148,8 @@ export const writeContentLocales = async (contentLocales: Locale[]) => {
       await writeContentLocale(normalizedContentLocale);
     } catch (e) {
       const normalizedContentLocale = normalizeContentfulLocale(contentLocale);
-      console.error(JSON.stringify(normalizedContentLocale, null, 2));
+      // console.error(JSON.stringify(normalizedContentLocale, null, 2));
+      console.error("Error inserting content entry fields", e);
       throw new Error(`Error writing content locale: ${e}`);
     }
   }
