@@ -10,6 +10,7 @@ import { ContentEntry, ContentEntryField, processDataForEntryField } from "../ty
 import { contentLocaleSchema } from "../zod/content-entry";
 import { InferInsertModel, and, sql, eq, isNull } from "drizzle-orm";
 import { BlueprintPaginationResult } from "../../caisy/content-type/export";
+import { ContentFieldNameMap } from "../../contentful/content-type/writeContentTypes";
 
 const assetUrls = new Set<string>();
 export { assetUrls };
@@ -92,7 +93,7 @@ export const insertContentfulEntryField = async (fields: ContentEntryField[], do
     for (const field of fields) {
       let contentEntryFieldData = await processDataForEntryField(field.data, field.type);
       // let contentTypeFieldName = blueprintMaps.blueprintFieldNameMap.get(field.blueprintFieldId) || "";
-      let contentTypeFieldName = "";
+      let contentTypeFieldName = ContentFieldNameMap.get(field.blueprintFieldId) || "";
       if (contentTypeFieldName === "src" && contentEntryFieldData.valueObjects !== undefined) {
         const jsonObj = JSON.parse(contentEntryFieldData.valueObjects);
 
@@ -101,7 +102,7 @@ export const insertContentfulEntryField = async (fields: ContentEntryField[], do
       }
 
       await db
-        .insert(contentEntryFieldDraft)
+        .insert(contentEntryField)
         .values({
           id: `${documentID}_${field.blueprintFieldId}_${field.documentFieldLocaleId}`,
           draftContent: 1,

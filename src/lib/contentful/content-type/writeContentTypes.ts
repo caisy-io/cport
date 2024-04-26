@@ -9,6 +9,12 @@ import {
 
 import { writeContentType } from "../../common/writer/content-type";
 
+import { ContentEntryContentTypeFieldType } from "../../common/types/content-entry";
+
+const ContentFieldTypeMap = new Map<string, ContentEntryContentTypeFieldType>();
+const ContentFieldNameMap = new Map<string, string>();
+export { ContentFieldTypeMap, ContentFieldNameMap };
+
 const normalizeContentfulFieldType = (type: ContentTypeFieldType): ContentFieldType => {
   switch (type) {
     case "Boolean":
@@ -35,6 +41,37 @@ const normalizeContentfulFieldType = (type: ContentTypeFieldType): ContentFieldT
       return ContentFieldType.Geopoint;
     case "Object":
       return ContentFieldType.Extension;
+    default:
+      throw new Error(`Unsupported field type: ${type}`);
+  }
+};
+
+const normalizeContentEntryContentTypeFieldType = (type: ContentTypeFieldType): ContentEntryContentTypeFieldType => {
+  switch (type) {
+    case "Boolean":
+      return ContentEntryContentTypeFieldType.Boolean;
+    case "Symbol":
+      return ContentEntryContentTypeFieldType.String;
+    case "Text":
+      return ContentEntryContentTypeFieldType.String;
+    case "Integer":
+      return ContentEntryContentTypeFieldType.Int;
+    case "Number":
+      return ContentEntryContentTypeFieldType.Float;
+    case "Date":
+      return ContentEntryContentTypeFieldType.DateTime;
+    case "Link":
+      return ContentEntryContentTypeFieldType.Connection;
+    case "ResourceLink":
+      return ContentEntryContentTypeFieldType.Connection;
+    case "Array":
+      return ContentEntryContentTypeFieldType.Array;
+    case "RichText":
+      return ContentEntryContentTypeFieldType.RichText;
+    case "Location":
+      return ContentEntryContentTypeFieldType.GeoPoint;
+    case "Object":
+      return ContentEntryContentTypeFieldType.Extension;
     default:
       throw new Error(`Unsupported field type: ${type}`);
   }
@@ -76,6 +113,8 @@ const normalizeContentfulContentType = (contentType: ContentType): CommonContent
         position: 0,
         contentTypeId: contentType.sys.id,
         fields: contentType.fields.map((field, index) => {
+          ContentFieldTypeMap.set(field.id, normalizeContentEntryContentTypeFieldType(field.type));
+          ContentFieldNameMap.set(field.id, field.name);
           return {
             id: contentType.sys.id + "_" + field.id,
             name: field.id,

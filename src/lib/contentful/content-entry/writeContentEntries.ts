@@ -24,6 +24,7 @@ import {
   ContentEntryStatus,
 } from "../../common/types/content-entry";
 import { InferInsertModel } from "drizzle-orm";
+import { ContentFieldTypeMap, ContentFieldNameMap } from "../content-type/writeContentTypes";
 
 import { contentLocale } from "../../common/schema";
 import { insertContentEntry, writeContentLocale, insertContentfulEntryField } from "../../common/writer/content-entry";
@@ -46,20 +47,6 @@ const normalizeContentfulLocale = (locale: Locale): InferInsertModel<typeof cont
 };
 
 const normalizeContentfulEntry = (entry: Entry<any>): ContentEntry => {
-  // const fields = Object.keys(entry.fields).map((fieldKey) => {
-  //   const fieldValue = entry.fields[fieldKey];
-  //   // Access specific locales if necessary, here assuming 'en-US'
-  //   const value = typeof fieldValue === "object" && fieldValue["en-US"] ? fieldValue["en-US"] : fieldValue;
-
-  //   return {
-  //     blueprintFieldId: entry.sys.id + " " + value,
-  //     createdAt: entry.sys.createdAt,
-  //     documentFieldLocaleId: "some-locale-id",
-  //     data: value,
-  //     updatedAt: entry.sys.updatedAt,
-  //     // type: normalizeContentfulFieldType(entry.fields[fieldKey]),
-  //   };
-  // });
   const titleField =
     entry.fields.internalName && entry.fields.internalName["en-US"]
       ? entry.fields.internalName["en-US"]
@@ -80,10 +67,10 @@ const normalizeContentfulEntry = (entry: Entry<any>): ContentEntry => {
         id: `${entry.sys.id}_${fieldKey}_${locale}`,
         blueprintFieldId: fieldKey,
         createdAt: entry.sys.createdAt,
-        data: fieldData, // You can apply a transformation or normalization function here if needed
+        data: fieldData,
         documentFieldLocaleId: locale,
         // lastUpdatedByUserId: entry.sys.updatedBy.sys.id,
-        type: fieldData, // Simplified type extraction
+        type: ContentFieldTypeMap.get(fieldKey as string),
         updatedAt: entry.sys.updatedAt,
       });
     });
@@ -102,39 +89,16 @@ const normalizeContentfulEntry = (entry: Entry<any>): ContentEntry => {
   };
 };
 
-// const normalizeContentfulEntry2 = (entry: Entry): ContentEntry => {
-//   return {
-//     documentId: entry.sys.id,
-//     title: entry.sys.id,
-//     blueprintVariant: normalizeContentfulContentTypeVariant(entry.sys.contentType.sys),
-//     // previewImageUrl:
-//     status: ContentEntryStatus.Draft,
-//     blueprintId: entry.sys.contentType.sys.id,
-//     createdAt: entry.sys.createdAt,
-//     updatedAt: entry.sys.updatedAt,
-//     fields: entry.fields.map((field) => {
-//       return {
-//         blueprintFieldId: field.blueprintFieldId,
-//         createdAt: field.createdAt,
-//         documentFieldLocaleId: field.documentFieldLocaleId,
-//         data: field.data,
-//         updatedAt: field.updatedAt,
-//         type: normalizeCaisyFieldEntry(field.type),
-//       };
-//     }),
-//   };
-// };
-
 export const writeContentEntries = async (contentEntries: Entry[]) => {
   for (const contentEntry of contentEntries) {
     try {
       const normalizedContentEntry = normalizeContentfulEntry(contentEntry);
-      console.info(JSON.stringify(normalizedContentEntry, null, 2));
+      // console.info(JSON.stringify(normalizedContentEntry, null, 2));
       await insertContentEntry(normalizedContentEntry);
       await insertContentfulEntryField(normalizedContentEntry.fields, normalizedContentEntry.documentId);
     } catch (e) {
       const normalizedContentEntry = normalizeContentfulEntry(contentEntry);
-      console.error(JSON.stringify(normalizedContentEntry, null, 2));
+      // console.error(JSON.stringify(normalizedContentEntry, null, 2));
       throw new Error(`Error writing content type: ${e}`);
     }
   }
@@ -144,7 +108,7 @@ export const writeContentLocales = async (contentLocales: Locale[]) => {
   for (const contentLocale of contentLocales) {
     try {
       const normalizedContentLocale = normalizeContentfulLocale(contentLocale);
-      console.info(JSON.stringify(normalizedContentLocale, null, 2));
+      // console.info(JSON.stringify(normalizedContentLocale, null, 2));
       await writeContentLocale(normalizedContentLocale);
     } catch (e) {
       const normalizedContentLocale = normalizeContentfulLocale(contentLocale);
