@@ -30,6 +30,7 @@ export enum ContentEntryContentTypeFieldType {
   GeoPoint = "geo_point",
   RichText = "rich_text",
   Float = "float",
+  Array = "array",
 }
 
 export enum ContentEntryStatus {
