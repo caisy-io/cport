@@ -81,6 +81,61 @@ export type ContentEntryFieldData = {
   valueObjects?: string | null;
 };
 
+const processRichText = (richTextData) => {
+  const content = [];
+
+  // Handle top-level structure differently if needed
+  if (richTextData && richTextData.content) {
+    richTextData.content.forEach((node) => {
+      const processedNode = processNode(node);
+      if (processedNode) content.push(processedNode);
+    });
+  }
+
+  return { type: richTextData.type || "doc", content }; // Dynamically assign the type if it's specified in the data
+};
+
+// Process individual nodes in the rich text
+function processNode(node) {
+  switch (node.nodeType) {
+    case "paragraph":
+      return {
+        type: "paragraph",
+        children: node.content ? node.content.flatMap((subNode) => processNode(subNode)) : [],
+      };
+    case "text":
+      return {
+        text: node.value,
+        type: "text",
+      };
+    case "embedded-entry-block":
+      // Handle embedded entries like images or other linked content
+      return {
+        type: "embedded-entry",
+        attrs: {
+          id: node.data.target.sys.id,
+          type: node.data.target.sys.type,
+        },
+      };
+    default:
+      // Recursively handle generic cases or other node types
+      if (node.content) {
+        return node.content.flatMap((subNode) => processNode(subNode));
+      }
+      return null;
+  }
+}
+
+const processConnectionData = (connectionData) => {
+  if (Array.isArray(connectionData)) {
+    return connectionData.map((link) => formatId(link.sys.id)).join(", ");
+  } else if (connectionData && connectionData.sys) {
+    return formatId(connectionData.sys.id);
+  }
+  return null;
+};
+const formatId = (id) => `{${id}}`;
+
 export const processDataForEntryField = (
   data: Maybe<Scalars["Any"]>,
   fieldType: ContentEntryContentTypeFieldType,
@@ -138,7 +193,7 @@ export const processDataForEntryField = (
         valueString: undefined,
         valueBool: undefined,
         valueNumber: undefined,
-        valueKeywords: JSON.stringify(data),
+        valueKeywords: processConnectionData(data),
         valueDate: undefined,
       };
     case ContentEntryContentTypeFieldType.Extension:
@@ -147,6 +202,16 @@ export const processDataForEntryField = (
     case ContentEntryContentTypeFieldType.File:
     case ContentEntryContentTypeFieldType.Video:
     case ContentEntryContentTypeFieldType.Code:
+      if (fieldType === ContentEntryContentTypeFieldType.RichText) {
+        return {
+          valueObjects: JSON.stringify(processRichText(data)),
+          valueString: undefined,
+          valueBool: undefined,
+          valueNumber: undefined,
+          valueKeywords: undefined,
+          valueDate: undefined,
+        };
+      }
       return {
         valueObjects: JSON.stringify(data),
         valueString: undefined,

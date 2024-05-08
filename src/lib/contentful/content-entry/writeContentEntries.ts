@@ -62,7 +62,7 @@ const normalizeContentfulEntry = (entry: Entry<any>): ContentEntry => {
   Object.keys(entry.fields).forEach((fieldKey) => {
     const locales = Object.keys(entry.fields[fieldKey]);
     locales.forEach((locale) => {
-      const fieldData = entry.fields[fieldKey][locale];
+      let fieldData = entry.fields[fieldKey][locale];
       fields.push({
         id: `${entry.sys.id}_${fieldKey}_${locale}`,
         blueprintFieldId: fieldKey,
