@@ -42,6 +42,8 @@ export type OptionsShared = {
   contentful?: {
     spaceId?: string;
     token?: string;
+    deliveryToken?: string;
+    previewToken?: string;
   };
 };
 export type OptionsInput = OptionsShared & {

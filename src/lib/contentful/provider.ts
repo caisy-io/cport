@@ -3,11 +3,13 @@ import contentfulExport from "contentful-export";
 import { ContentfulExport } from "./types";
 import { writeContentTypes } from "./content-type/writeContentTypes";
 import { writeContentEntries, writeContentLocales } from "./content-entry/writeContentEntries";
-import { ContentType, Entry, Locale } from "contentful";
+import { ContentType, Entry, Locale, createClient } from "contentful";
 import fs from "fs";
 
 export type ContentfulProviderOptions = {
   token: string;
+  deliveryToken: string;
+  previewToken: string;
   spaceId: string;
 };
 
@@ -15,9 +17,23 @@ export type ContentfulRunOptions = {
   spaceId: string;
 } & ProviderProcess;
 
-export const createContentfulProvider = ({ token, spaceId }: ContentfulProviderOptions): Provider => {
+export const createContentfulProvider = ({
+  token,
+  deliveryToken,
+  previewToken,
+  spaceId,
+}: ContentfulProviderOptions): Provider => {
   console.log(` { token, spaceId }`, { token, spaceId });
+  const deliveryClient = createClient({
+    space: spaceId,
+    accessToken: deliveryToken,
+  });
 
+  const previewClient = createClient({
+    space: spaceId,
+    accessToken: previewToken,
+    host: "preview.contentful.com",
+  });
   return {
     name: "contentful",
     import: async ({ onError, onProgress }): Promise<void> => {
@@ -28,11 +44,30 @@ export const createContentfulProvider = ({ token, spaceId }: ContentfulProviderO
       const options = {
         spaceId: spaceId,
         managementToken: token,
+        includeDrafts: true,
+        host: "preview.contentful.com",
       };
       // const fileContent = fs.readFileSync("contentful-export.json");
       // const content = JSON.parse(fileContent.toString());
 
       const exportRes = (await contentfulExport(options)) as ContentfulExport;
+
+      try {
+        const publishedEntries = await deliveryClient.getEntries();
+        console.log("Fetched published entries:", publishedEntries.items.length);
+
+        const draftEntries = await previewClient.getEntries();
+        console.log("Fetched draft and changed entries:", draftEntries.items.length);
+
+        await processEntries([...publishedEntries.items, ...draftEntries.items]);
+
+        async function processEntries(entries) {
+          console.log("Processing entries...");
+        }
+      } catch (error) {
+        console.error("Failed to export data from Contentful:", error);
+        onError?.(error);
+      }
       // const content = JSON.parse(exportRes.toString());
       // fs.writeFileSync("contentful-export.json", JSON.stringify(exportRes, null, 2));
 

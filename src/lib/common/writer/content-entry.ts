@@ -6,7 +6,12 @@ import {
   contentEntryFieldPublished,
   contentEntryFieldDraft,
 } from "../schema";
-import { ContentEntry, ContentEntryField, processDataForEntryField } from "../types/content-entry";
+import {
+  ContentEntry,
+  ContentEntryField,
+  processDataForEntryField,
+  processDataForContentfulEntryField,
+} from "../types/content-entry";
 import { contentLocaleSchema } from "../zod/content-entry";
 import { InferInsertModel, and, sql, eq, isNull } from "drizzle-orm";
 import { BlueprintPaginationResult } from "../../caisy/content-type/export";
@@ -91,7 +96,7 @@ export const insertContentEntry = async (contentEntryInput: ContentEntry) => {
 export const insertContentfulEntryField = async (fields: ContentEntryField[], documentID: string) => {
   try {
     for (const field of fields) {
-      let contentEntryFieldData = await processDataForEntryField(field.data, field.type);
+      let contentEntryFieldData = await processDataForContentfulEntryField(field.data, field.type);
       // let contentTypeFieldName = blueprintMaps.blueprintFieldNameMap.get(field.blueprintFieldId) || "";
       let contentTypeFieldName = ContentFieldNameMap.get(field.blueprintFieldId) || "";
       if (contentTypeFieldName === "src" && contentEntryFieldData.valueObjects !== undefined) {
