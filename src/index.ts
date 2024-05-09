@@ -51,6 +51,8 @@ async function run(): Promise<void> {
     if (options.source === "contentful") {
       const provider = createContentfulProvider({
         token: `${options.contentful.token}`,
+        deliveryToken: `${options.contentful.deliveryToken}`,
+        previewToken: `${options.contentful.previewToken}`,
         spaceId: `${options.contentful.spaceId}`,
       });
 
@@ -78,6 +80,8 @@ async function run(): Promise<void> {
     if (options.target === "contentful") {
       const provider = createContentfulProvider({
         token: `${options.contentful.token}`,
+        deliveryToken: `${options.contentful.deliveryToken}`,
+        previewToken: `${options.contentful.previewToken}`,
         spaceId: `${options.contentful.spaceId}`,
       });
 
