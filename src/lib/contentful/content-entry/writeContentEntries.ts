@@ -46,7 +46,7 @@ const normalizeContentfulLocale = (locale: Locale): InferInsertModel<typeof cont
   };
 };
 
-const normalizeContentfulEntry = (entry: Entry<any>): ContentEntry => {
+const normalizeContentfulEntry = (entry: Entry<any>, draftContent: Number): ContentEntry => {
   const titleField =
     entry.fields.internalName && entry.fields.internalName["en-US"]
       ? entry.fields.internalName["en-US"]
@@ -57,9 +57,39 @@ const normalizeContentfulEntry = (entry: Entry<any>): ContentEntry => {
     entry.fields.image && entry.fields.image["en-US"] ? entry.fields.image["en-US"].url : undefined;
 
   const fields: ContentEntryField[] = [];
-
+  let entryStatus = ContentEntryStatus.Published;
+  if (draftContent === 1) {
+    entryStatus = ContentEntryStatus.Draft;
+    Object.keys(entry.fields).forEach((fieldKey) => {
+      const locale = entry.sys.locale;
+      let fieldData = entry.fields[fieldKey];
+      fields.push({
+        id: `${entry.sys.id}_${fieldKey}_${locale}`,
+        blueprintFieldId: fieldKey,
+        createdAt: entry.sys.createdAt,
+        data: fieldData,
+        documentFieldLocaleId: locale,
+        // lastUpdatedByUserId: entry.sys.updatedBy.sys.id,
+        type: ContentFieldTypeMap.get(fieldKey as string),
+        updatedAt: entry.sys.updatedAt,
+      });
+    });
+    return {
+      documentId: entry.sys.id,
+      title: titleField,
+      blueprintVariant: normalizeContentfulContentTypeVariant(entry.sys.contentType.sys),
+      previewImageUrl: previewImageUrl,
+      status: entryStatus,
+      blueprintId: entry.sys.contentType.sys.id,
+      createdAt: entry.sys.createdAt,
+      updatedAt: entry.sys.updatedAt,
+      fields: fields,
+    };
+  }
   // Process each field for each locale
   Object.keys(entry.fields).forEach((fieldKey) => {
+    console.log(fieldKey);
+    console.log(Object.keys(entry.fields));
     const locales = Object.keys(entry.fields[fieldKey]);
     locales.forEach((locale) => {
       let fieldData = entry.fields[fieldKey][locale];
@@ -81,7 +111,7 @@ const normalizeContentfulEntry = (entry: Entry<any>): ContentEntry => {
     title: titleField,
     blueprintVariant: normalizeContentfulContentTypeVariant(entry.sys.contentType.sys),
     previewImageUrl: previewImageUrl,
-    status: ContentEntryStatus.Draft, // Assuming all entries are initially in draft status
+    status: entryStatus,
     blueprintId: entry.sys.contentType.sys.id,
     createdAt: entry.sys.createdAt,
     updatedAt: entry.sys.updatedAt,
@@ -89,15 +119,15 @@ const normalizeContentfulEntry = (entry: Entry<any>): ContentEntry => {
   };
 };
 
-export const writeContentEntries = async (contentEntries: Entry[]) => {
+export const writeContentEntries = async (contentEntries: Entry[], draftContent: Number) => {
   for (const contentEntry of contentEntries) {
     try {
-      const normalizedContentEntry = normalizeContentfulEntry(contentEntry);
+      const normalizedContentEntry = normalizeContentfulEntry(contentEntry, draftContent);
       // console.info(JSON.stringify(normalizedContentEntry, null, 2));
       await insertContentEntry(normalizedContentEntry);
       await insertContentfulEntryField(normalizedContentEntry.fields, normalizedContentEntry.documentId);
     } catch (e) {
-      const normalizedContentEntry = normalizeContentfulEntry(contentEntry);
+      const normalizedContentEntry = normalizeContentfulEntry(contentEntry, draftContent);
       // console.error(JSON.stringify(normalizedContentEntry, null, 2));
       throw new Error(`Error writing content type: ${e}`);
     }
