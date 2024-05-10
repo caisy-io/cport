@@ -17,22 +17,26 @@ export type ContentfulRunOptions = {
   spaceId: string;
 } & ProviderProcess;
 
-export const createContentfulProvider = ({
-  token,
-  deliveryToken,
-  previewToken,
-  spaceId,
-}: ContentfulProviderOptions): Provider => {
-  console.log(` { token, spaceId }`, { token, spaceId });
-  const deliveryClient = createClient({
-    space: spaceId,
-    accessToken: deliveryToken,
-  });
+function filterUniqueEntries(publishedEntries: Entry[], previewEntries: Entry[]): Entry[] {
+  const publishedIds = new Set(publishedEntries.map((entry) => entry.sys.id));
+  return previewEntries.filter((entry) => !publishedIds.has(entry.sys.id));
+}
 
-  const previewClient = createClient({
+export const createContentfulProvider = ({ token, spaceId, previewToken }: ContentfulProviderOptions): Provider => {
+  console.log(` { token, spaceId}`, { token, spaceId });
+  const client = createClient({
     space: spaceId,
     accessToken: previewToken,
     host: "preview.contentful.com",
+  });
+
+  // Example usage
+  // let draftEntries = client.getEntries()
+  //   .then((entries) => console.log(entries))
+  //   .catch((error) => console.error(error));
+  let allEntries = [];
+  client.getEntries().then((response) => {
+    allEntries = response.items;
   });
   return {
     name: "contentful",
@@ -44,36 +48,18 @@ export const createContentfulProvider = ({
       const options = {
         spaceId: spaceId,
         managementToken: token,
-        includeDrafts: true,
-        host: "preview.contentful.com",
       };
-      // const fileContent = fs.readFileSync("contentful-export.json");
-      // const content = JSON.parse(fileContent.toString());
 
       const exportRes = (await contentfulExport(options)) as ContentfulExport;
-
-      try {
-        const publishedEntries = await deliveryClient.getEntries();
-        console.log("Fetched published entries:", publishedEntries.items.length);
-
-        const draftEntries = await previewClient.getEntries();
-        console.log("Fetched draft and changed entries:", draftEntries.items.length);
-
-        await processEntries([...publishedEntries.items, ...draftEntries.items]);
-
-        async function processEntries(entries) {
-          console.log("Processing entries...");
-        }
-      } catch (error) {
-        console.error("Failed to export data from Contentful:", error);
-        onError?.(error);
-      }
-      // const content = JSON.parse(exportRes.toString());
-      // fs.writeFileSync("contentful-export.json", JSON.stringify(exportRes, null, 2));
-
       await writeContentTypes(exportRes.contentTypes as unknown as ContentType[]);
       await writeContentLocales(exportRes.locales as unknown as Locale[]);
-      await writeContentEntries(exportRes.entries as unknown as Entry[]);
+      await writeContentEntries(exportRes.entries as unknown as Entry[], 0);
+      const uniquePreviewEntries = filterUniqueEntries(
+        exportRes.entries as unknown as Entry[],
+        allEntries as unknown as Entry[],
+      );
+      console.log(` uniquePreviewEntries`, uniquePreviewEntries);
+      await writeContentEntries(uniquePreviewEntries as unknown as Entry[], 1);
 
       // export tags
       // await Promise.all([
