@@ -23,7 +23,7 @@ import {
   ContentEntryFieldData,
   ContentEntryStatus,
 } from "../../common/types/content-entry";
-import { InferInsertModel } from "drizzle-orm";
+import { InferInsertModel, is } from "drizzle-orm";
 import { ContentFieldTypeMap, ContentFieldNameMap } from "../content-type/writeContentTypes";
 
 import { contentLocale } from "../../common/schema";
@@ -46,6 +46,18 @@ const normalizeContentfulLocale = (locale: Locale): InferInsertModel<typeof cont
   };
 };
 
+function isDraft(entity) {
+  return !entity.sys.publishedVersion;
+}
+
+function isChanged(entity) {
+  return !!entity.sys.publishedVersion && entity.sys.version >= entity.sys.publishedVersion + 2;
+}
+
+function isPublished(entity) {
+  return !!entity.sys.publishedVersion && entity.sys.version == entity.sys.publishedVersion + 1;
+}
+
 const normalizeContentfulEntry = (entry: Entry<any>, draftContent: Number): ContentEntry => {
   const titleField =
     entry.fields.internalName && entry.fields.internalName["en-US"]
@@ -58,38 +70,15 @@ const normalizeContentfulEntry = (entry: Entry<any>, draftContent: Number): Cont
 
   const fields: ContentEntryField[] = [];
   let entryStatus = ContentEntryStatus.Published;
-  if (draftContent === 1) {
+  if (isDraft(entry) === true) {
     entryStatus = ContentEntryStatus.Draft;
-    Object.keys(entry.fields).forEach((fieldKey) => {
-      const locale = entry.sys.locale;
-      let fieldData = entry.fields[fieldKey];
-      fields.push({
-        id: `${entry.sys.id}_${fieldKey}_${locale}`,
-        blueprintFieldId: fieldKey,
-        createdAt: entry.sys.createdAt,
-        data: fieldData,
-        documentFieldLocaleId: locale,
-        // lastUpdatedByUserId: entry.sys.updatedBy.sys.id,
-        type: ContentFieldTypeMap.get(fieldKey as string),
-        updatedAt: entry.sys.updatedAt,
-      });
-    });
-    return {
-      documentId: entry.sys.id,
-      title: titleField,
-      blueprintVariant: normalizeContentfulContentTypeVariant(entry.sys.contentType.sys),
-      previewImageUrl: previewImageUrl,
-      status: entryStatus,
-      blueprintId: entry.sys.contentType.sys.id,
-      createdAt: entry.sys.createdAt,
-      updatedAt: entry.sys.updatedAt,
-      fields: fields,
-    };
   }
+  if (isChanged(entry) === true) {
+    entryStatus = ContentEntryStatus.Changed;
+  }
+
   // Process each field for each locale
   Object.keys(entry.fields).forEach((fieldKey) => {
-    console.log(fieldKey);
-    console.log(Object.keys(entry.fields));
     const locales = Object.keys(entry.fields[fieldKey]);
     locales.forEach((locale) => {
       let fieldData = entry.fields[fieldKey][locale];
@@ -125,7 +114,15 @@ export const writeContentEntries = async (contentEntries: Entry[], draftContent:
       const normalizedContentEntry = normalizeContentfulEntry(contentEntry, draftContent);
       // console.info(JSON.stringify(normalizedContentEntry, null, 2));
       await insertContentEntry(normalizedContentEntry);
-      await insertContentfulEntryField(normalizedContentEntry.fields, normalizedContentEntry.documentId);
+      if (
+        normalizedContentEntry.status === ContentEntryStatus.Draft ||
+        normalizedContentEntry.status === ContentEntryStatus.Changed
+      ) {
+        await insertContentfulEntryField(normalizedContentEntry.fields, normalizedContentEntry.documentId, 1);
+      } else {
+        await insertContentfulEntryField(normalizedContentEntry.fields, normalizedContentEntry.documentId, 0);
+      }
+      // await insertContentfulEntryField(normalizedContentEntry.fields, normalizedContentEntry.documentId);
     } catch (e) {
       const normalizedContentEntry = normalizeContentfulEntry(contentEntry, draftContent);
       // console.error(JSON.stringify(normalizedContentEntry, null, 2));

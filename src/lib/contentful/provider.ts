@@ -38,6 +38,7 @@ export const createContentfulProvider = ({ token, spaceId, previewToken }: Conte
   client.getEntries().then((response) => {
     allEntries = response.items;
   });
+
   return {
     name: "contentful",
     import: async ({ onError, onProgress }): Promise<void> => {
@@ -85,3 +86,15 @@ export const createContentfulProvider = ({ token, spaceId, previewToken }: Conte
     },
   };
 };
+
+function isDraft(entity) {
+  return !entity.sys.publishedVersion;
+}
+
+function isChanged(entity) {
+  return !!entity.sys.publishedVersion && entity.sys.version >= entity.sys.publishedVersion + 2;
+}
+
+function isPublished(entity) {
+  return !!entity.sys.publishedVersion && entity.sys.version == entity.sys.publishedVersion + 1;
+}

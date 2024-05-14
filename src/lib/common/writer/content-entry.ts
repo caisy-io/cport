@@ -59,12 +59,6 @@ export const writeContentEntryPublished = async (
   return contentEntryResult;
 };
 
-export const writeContentfulEntry = async (contentEntryInput: ContentEntry) => {
-  const contentEntryResult = await insertContentEntry(contentEntryInput);
-  await insertContentfulEntryField(contentEntryInput.fields, contentEntryInput.documentId);
-  return contentEntryResult;
-};
-
 export const insertContentEntry = async (contentEntryInput: ContentEntry) => {
   try {
     return await db
@@ -93,7 +87,11 @@ export const insertContentEntry = async (contentEntryInput: ContentEntry) => {
   }
 };
 
-export const insertContentfulEntryField = async (fields: ContentEntryField[], documentID: string) => {
+export const insertContentfulEntryField = async (
+  fields: ContentEntryField[],
+  documentID: string,
+  draftContent: Number,
+) => {
   try {
     for (const field of fields) {
       let contentEntryFieldData = await processDataForContentfulEntryField(field.data, field.type);
@@ -110,7 +108,7 @@ export const insertContentfulEntryField = async (fields: ContentEntryField[], do
         .insert(contentEntryField)
         .values({
           id: `${documentID}_${field.blueprintFieldId}_${field.documentFieldLocaleId}`,
-          draftContent: 1,
+          draftContent: draftContent,
           contentTypeFieldType: field.type,
           contentEntryId: documentID,
           contentTypeFieldId: field.blueprintFieldId,
