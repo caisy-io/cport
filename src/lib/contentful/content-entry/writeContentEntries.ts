@@ -59,6 +59,7 @@ function isPublished(entity) {
 }
 
 const normalizeContentfulEntry = (entry: Entry<any>, draftContent: Number): ContentEntry => {
+  console.log("Draft Content: ", entry.fields);
   const titleField =
     entry.fields.internalName && entry.fields.internalName["en-US"]
       ? entry.fields.internalName["en-US"]
@@ -79,22 +80,19 @@ const normalizeContentfulEntry = (entry: Entry<any>, draftContent: Number): Cont
 
   // Process each field for each locale
   Object.keys(entry.fields).forEach((fieldKey) => {
-    const locales = Object.keys(entry.fields[fieldKey]);
-    locales.forEach((locale) => {
-      let fieldData = entry.fields[fieldKey][locale];
-      fields.push({
-        id: `${entry.sys.id}_${fieldKey}_${locale}`,
-        blueprintFieldId: fieldKey,
-        createdAt: entry.sys.createdAt,
-        data: fieldData,
-        documentFieldLocaleId: locale,
-        // lastUpdatedByUserId: entry.sys.updatedBy.sys.id,
-        type: ContentFieldTypeMap.get(fieldKey as string),
-        updatedAt: entry.sys.updatedAt,
-      });
+    const locale = entry.sys.locale;
+    let fieldData = entry.fields[fieldKey];
+    fields.push({
+      id: `${entry.sys.id}_${fieldKey}_${locale}`,
+      blueprintFieldId: fieldKey,
+      createdAt: entry.sys.createdAt,
+      data: fieldData,
+      documentFieldLocaleId: locale,
+      // lastUpdatedByUserId: entry.sys.updatedBy.sys.id,
+      type: ContentFieldTypeMap.get(fieldKey as string),
+      updatedAt: entry.sys.updatedAt,
     });
   });
-
   return {
     documentId: entry.sys.id,
     title: titleField,
