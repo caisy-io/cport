@@ -22,21 +22,88 @@ function filterUniqueEntries(publishedEntries: Entry[], previewEntries: Entry[])
   return previewEntries.filter((entry) => !publishedIds.has(entry.sys.id));
 }
 
-export const createContentfulProvider = ({ token, spaceId, previewToken }: ContentfulProviderOptions): Provider => {
-  console.log(` { token, spaceId}`, { token, spaceId });
-  const client = createClient({
+// export const createContentfulProvider = ({ token, spaceId, previewToken }: ContentfulProviderOptions): Provider => {
+//   console.log(` { token, spaceId}`, { token, spaceId });
+//   const client = createClient({
+//     space: spaceId,
+//     accessToken: previewToken,
+//     host: "preview.contentful.com",
+//   });
+
+//   // Example usage
+//   // let draftEntries = client.getEntries()
+//   //   .then((entries) => console.log(entries))
+//   //   .catch((error) => console.error(error));
+//   let allEntries = [];
+//   client.getEntries().then((response) => {
+//     allEntries = response.items;
+//   });
+
+//   return {
+//     name: "contentful",
+//     import: async ({ onError, onProgress }): Promise<void> => {
+//       console.log("Importing data from Contentful...");
+//     },
+//     export: async ({ onError, onProgress }): Promise<void> => {
+//       console.log("Exporting data from Contentful...");
+//       const options = {
+//         spaceId: spaceId,
+//         managementToken: token,
+//       };
+
+// const exportRes = (await contentfulExport(options)) as ContentfulExport;
+// await writeContentTypes(exportRes.contentTypes as unknown as ContentType[]);
+// await writeContentLocales(exportRes.locales as unknown as Locale[]);
+// await writeContentEntries(exportRes.entries as unknown as Entry[], 0);
+// const uniquePreviewEntries = filterUniqueEntries(
+//   exportRes.entries as unknown as Entry[],
+//   allEntries as unknown as Entry[],
+// );
+// console.log(` uniquePreviewEntries`, uniquePreviewEntries);
+// await writeContentEntries(uniquePreviewEntries as unknown as Entry[], 1);
+
+//       // export tags
+//       // await Promise.all([
+//       //   exportContentfulTags({ sdk, projectId, onError, onProgress }),
+//       //   exportContentfulLocales({ sdk, projectId, onError, onProgress }),
+//       // ]);
+//       // await Promise.all([exportContentfulContentTypes({ sdk, projectId, onError, onProgress })]);
+
+//       // await db
+//       //   .select()
+//       //   .from(contentLocale)
+//       //   .then(function (rows) {
+//       //     console.log(` rows`, rows);
+//       //   });
+//     },
+//     checkCredentials: async (): Promise<boolean> => {
+//       try {
+//         return true;
+//       } catch (e) {
+//         console.error(` caisy checkCredentials e`, e);
+//         return false;
+//       }
+//     },
+//   };
+// };
+
+export const createContentfulProvider = ({
+  deliveryToken,
+  spaceId,
+  previewToken,
+  token,
+}: ContentfulProviderOptions): Provider => {
+  // Client for Published Entries
+  const deliveryClient = createClient({
+    space: spaceId,
+    accessToken: deliveryToken,
+    environment: "master",
+  });
+
+  const previewClient = createClient({
     space: spaceId,
     accessToken: previewToken,
     host: "preview.contentful.com",
-  });
-
-  // Example usage
-  // let draftEntries = client.getEntries()
-  //   .then((entries) => console.log(entries))
-  //   .catch((error) => console.error(error));
-  let allEntries = [];
-  client.getEntries().then((response) => {
-    allEntries = response.items;
   });
 
   return {
@@ -46,41 +113,52 @@ export const createContentfulProvider = ({ token, spaceId, previewToken }: Conte
     },
     export: async ({ onError, onProgress }): Promise<void> => {
       console.log("Exporting data from Contentful...");
+
+      let publishedEntries = [];
+      let previewEntries = [];
+
+      const contentTypes = await deliveryClient.getContentTypes();
+      const locales = await deliveryClient.getLocales();
+
+      // Fetch published entries
+      try {
+        const response = await deliveryClient.getEntries();
+        publishedEntries = response.items;
+        console.log("Fetched published entries:", publishedEntries.length);
+      } catch (error) {
+        console.error("Error fetching published entries:", error);
+      }
+
+      // Fetch preview entries
+      try {
+        const response = await previewClient.getEntries();
+        previewEntries = response.items;
+        console.log("Fetched preview entries:", previewEntries.length);
+      } catch (error) {
+        console.error("Error fetching preview entries:", error);
+      }
+
+      // Filter out duplicates: Get only unique entries from preview that are not in published
+      const uniquePreviewEntries = filterUniqueEntries(publishedEntries, previewEntries);
+      console.log(`Unique preview entries:`, uniquePreviewEntries.length);
+
+      // Process and save entries
+      console.log(publishedEntries);
       const options = {
         spaceId: spaceId,
         managementToken: token,
       };
-
       const exportRes = (await contentfulExport(options)) as ContentfulExport;
       await writeContentTypes(exportRes.contentTypes as unknown as ContentType[]);
       await writeContentLocales(exportRes.locales as unknown as Locale[]);
-      await writeContentEntries(exportRes.entries as unknown as Entry[], 0);
-      const uniquePreviewEntries = filterUniqueEntries(
-        exportRes.entries as unknown as Entry[],
-        allEntries as unknown as Entry[],
-      );
-      console.log(` uniquePreviewEntries`, uniquePreviewEntries);
+      await writeContentEntries(publishedEntries as unknown as Entry[], 0);
       await writeContentEntries(uniquePreviewEntries as unknown as Entry[], 1);
-
-      // export tags
-      // await Promise.all([
-      //   exportContentfulTags({ sdk, projectId, onError, onProgress }),
-      //   exportContentfulLocales({ sdk, projectId, onError, onProgress }),
-      // ]);
-      // await Promise.all([exportContentfulContentTypes({ sdk, projectId, onError, onProgress })]);
-
-      // await db
-      //   .select()
-      //   .from(contentLocale)
-      //   .then(function (rows) {
-      //     console.log(` rows`, rows);
-      //   });
     },
     checkCredentials: async (): Promise<boolean> => {
       try {
-        return true;
+        return true; // You might want to validate by making a test API call
       } catch (e) {
-        console.error(` caisy checkCredentials e`, e);
+        console.error(`Check credentials failed`, e);
         return false;
       }
     },
