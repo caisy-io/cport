@@ -13,79 +13,52 @@ export type ContentfulProviderOptions = {
   spaceId: string;
 };
 
-export type ContentfulRunOptions = {
-  spaceId: string;
-} & ProviderProcess;
+function deepEqual(obj1, obj2, excludeKeys = new Set(["createdAt", "updatedAt", "revision"]), seen = new Set()) {
+  if (seen.has(obj1) || seen.has(obj2)) {
+    return true;
+  }
+  seen.add(obj1);
+  seen.add(obj2);
 
-function filterUniqueEntries(publishedEntries: Entry[], previewEntries: Entry[]): Entry[] {
-  const publishedIds = new Set(publishedEntries.map((entry) => entry.sys.id));
-  return previewEntries.filter((entry) => !publishedIds.has(entry.sys.id));
+  if (obj1 === obj2) {
+    return true;
+  }
+
+  if (typeof obj1 !== "object" || obj1 === null || typeof obj2 !== "object" || obj2 === null) {
+    return false;
+  }
+
+  const keys1 = Object.keys(obj1).filter((key) => !excludeKeys.has(key));
+  const keys2 = Object.keys(obj2).filter((key) => !excludeKeys.has(key));
+
+  if (keys1.length !== keys2.length) {
+    return false;
+  }
+
+  for (const key of keys1) {
+    if (!keys2.includes(key)) {
+      return false;
+    }
+    if (typeof obj1[key] === "object" && typeof obj2[key] === "object") {
+      if (!deepEqual(obj1[key], obj2[key], excludeKeys, seen)) {
+        return false;
+      }
+    } else if (obj1[key] !== obj2[key]) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
-// export const createContentfulProvider = ({ token, spaceId, previewToken }: ContentfulProviderOptions): Provider => {
-//   console.log(` { token, spaceId}`, { token, spaceId });
-//   const client = createClient({
-//     space: spaceId,
-//     accessToken: previewToken,
-//     host: "preview.contentful.com",
-//   });
+function filterUniqueEntries(publishedEntries, previewEntries) {
+  const publishedMap = new Map(publishedEntries.map((entry) => [entry.sys.id, entry.fields]));
 
-//   // Example usage
-//   // let draftEntries = client.getEntries()
-//   //   .then((entries) => console.log(entries))
-//   //   .catch((error) => console.error(error));
-//   let allEntries = [];
-//   client.getEntries().then((response) => {
-//     allEntries = response.items;
-//   });
-
-//   return {
-//     name: "contentful",
-//     import: async ({ onError, onProgress }): Promise<void> => {
-//       console.log("Importing data from Contentful...");
-//     },
-//     export: async ({ onError, onProgress }): Promise<void> => {
-//       console.log("Exporting data from Contentful...");
-//       const options = {
-//         spaceId: spaceId,
-//         managementToken: token,
-//       };
-
-// const exportRes = (await contentfulExport(options)) as ContentfulExport;
-// await writeContentTypes(exportRes.contentTypes as unknown as ContentType[]);
-// await writeContentLocales(exportRes.locales as unknown as Locale[]);
-// await writeContentEntries(exportRes.entries as unknown as Entry[], 0);
-// const uniquePreviewEntries = filterUniqueEntries(
-//   exportRes.entries as unknown as Entry[],
-//   allEntries as unknown as Entry[],
-// );
-// console.log(` uniquePreviewEntries`, uniquePreviewEntries);
-// await writeContentEntries(uniquePreviewEntries as unknown as Entry[], 1);
-
-//       // export tags
-//       // await Promise.all([
-//       //   exportContentfulTags({ sdk, projectId, onError, onProgress }),
-//       //   exportContentfulLocales({ sdk, projectId, onError, onProgress }),
-//       // ]);
-//       // await Promise.all([exportContentfulContentTypes({ sdk, projectId, onError, onProgress })]);
-
-//       // await db
-//       //   .select()
-//       //   .from(contentLocale)
-//       //   .then(function (rows) {
-//       //     console.log(` rows`, rows);
-//       //   });
-//     },
-//     checkCredentials: async (): Promise<boolean> => {
-//       try {
-//         return true;
-//       } catch (e) {
-//         console.error(` caisy checkCredentials e`, e);
-//         return false;
-//       }
-//     },
-//   };
-// };
+  return previewEntries.filter((previewEntry) => {
+    const publishedFields = publishedMap.get(previewEntry.sys.id);
+    return !publishedFields || !deepEqual(publishedFields, previewEntry.fields);
+  });
+}
 
 export const createContentfulProvider = ({
   deliveryToken,
@@ -117,9 +90,6 @@ export const createContentfulProvider = ({
       let publishedEntries = [];
       let previewEntries = [];
 
-      const contentTypes = await deliveryClient.getContentTypes();
-      const locales = await deliveryClient.getLocales();
-
       // Fetch published entries
       try {
         const response = await deliveryClient.getEntries();
@@ -143,7 +113,6 @@ export const createContentfulProvider = ({
       console.log(`Unique preview entries:`, uniquePreviewEntries.length);
 
       // Process and save entries
-      console.log(publishedEntries);
       const options = {
         spaceId: spaceId,
         managementToken: token,
