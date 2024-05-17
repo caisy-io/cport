@@ -59,23 +59,25 @@ function isPublished(entity) {
 }
 
 const normalizeContentfulEntry = (entry: Entry<any>, draftContent: Number): ContentEntry => {
-  console.log("Draft Content: ", entry.fields);
   const titleField =
-    entry.fields.internalName && entry.fields.internalName["en-US"]
-      ? entry.fields.internalName["en-US"]
-      : "No Title Provided";
+    typeof entry.fields.internalName === "string"
+      ? entry.fields.internalName
+      : entry.fields.internalName["en-US"] || "No Title Provided";
 
-  // Extracting the preview image URL if available, using 'en-US' as a default
   const previewImageUrl =
     entry.fields.image && entry.fields.image["en-US"] ? entry.fields.image["en-US"].url : undefined;
 
   const fields: ContentEntryField[] = [];
   let entryStatus = ContentEntryStatus.Published;
-  if (isDraft(entry) === true) {
-    entryStatus = ContentEntryStatus.Draft;
-  }
-  if (isChanged(entry) === true) {
-    entryStatus = ContentEntryStatus.Changed;
+  if (draftContent !== 0) {
+    if (isDraft(entry) === true) {
+      // console.log("Draft Content: ", entry.fields.internalName);
+      entryStatus = ContentEntryStatus.Draft;
+    }
+    if (isChanged(entry) === true) {
+      // console.log("Changed Content: ", entry.fields.internalName);
+      entryStatus = ContentEntryStatus.Changed;
+    }
   }
 
   // Process each field for each locale
