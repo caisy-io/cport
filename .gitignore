@@ -14,3 +14,5 @@ drizzle/**/**
 contentful-export*
 cport_assets
 logs.txt
+uniquePreviewEntries.json
+publishedEntries.json

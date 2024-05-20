@@ -86,32 +86,6 @@ export const createContentfulProvider = ({
     },
     export: async ({ onError, onProgress }): Promise<void> => {
       console.log("Exporting data from Contentful...");
-
-      let publishedEntries = [];
-      let previewEntries = [];
-
-      // Fetch published entries
-      try {
-        const response = await deliveryClient.getEntries();
-        publishedEntries = response.items;
-        console.log("Fetched published entries:", publishedEntries.length);
-      } catch (error) {
-        console.error("Error fetching published entries:", error);
-      }
-
-      // Fetch preview entries
-      try {
-        const response = await previewClient.getEntries();
-        previewEntries = response.items;
-        console.log("Fetched preview entries:", previewEntries.length);
-      } catch (error) {
-        console.error("Error fetching preview entries:", error);
-      }
-
-      // Filter out duplicates: Get only unique entries from preview that are not in published
-      const uniquePreviewEntries = filterUniqueEntries(publishedEntries, previewEntries);
-      console.log(`Unique preview entries:`, uniquePreviewEntries.length);
-
       // Process and save entries
       const options = {
         spaceId: spaceId,
@@ -120,8 +94,38 @@ export const createContentfulProvider = ({
       const exportRes = (await contentfulExport(options)) as ContentfulExport;
       await writeContentTypes(exportRes.contentTypes as unknown as ContentType[]);
       await writeContentLocales(exportRes.locales as unknown as Locale[]);
-      await writeContentEntries(publishedEntries as unknown as Entry[], 0);
-      await writeContentEntries(uniquePreviewEntries as unknown as Entry[], 1);
+      exportRes.assets.forEach((asset) => {
+        console.log("Asset:", asset);
+      });
+      let publishedEntries = [];
+      let previewEntries = [];
+      let allPublishedEntries = [];
+      let allUniquePreviewEntries = [];
+      for (const locale of exportRes.locales) {
+        try {
+          const response = await deliveryClient.getEntries({ locale: locale.code });
+          publishedEntries = response.items;
+          allPublishedEntries.push(...publishedEntries);
+          console.log("Fetched published entries:", publishedEntries.length);
+        } catch (error) {
+          console.error("Error fetching published entries:", error);
+        }
+
+        // Fetch preview entries
+        try {
+          const response = await previewClient.getEntries({ locale: locale.code });
+          previewEntries = response.items;
+          console.log("Fetched preview entries:", previewEntries.length);
+        } catch (error) {
+          console.error("Error fetching preview entries:", error);
+        }
+        const uniquePreviewEntries = filterUniqueEntries(publishedEntries, previewEntries);
+        allUniquePreviewEntries.push(...uniquePreviewEntries);
+        console.log(`Unique preview entries:`, uniquePreviewEntries.length);
+      }
+
+      await writeContentEntries(allPublishedEntries as unknown as Entry[], 0);
+      await writeContentEntries(allUniquePreviewEntries as unknown as Entry[], 1);
     },
     checkCredentials: async (): Promise<boolean> => {
       try {
