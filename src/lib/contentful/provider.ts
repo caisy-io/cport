@@ -5,6 +5,7 @@ import { writeContentTypes } from "./content-type/writeContentTypes";
 import { writeContentEntries, writeContentLocales } from "./content-entry/writeContentEntries";
 import { ContentType, Entry, Locale, createClient } from "contentful";
 import fs from "fs";
+import { writeAssets } from "./asset-files/asset";
 
 export type ContentfulProviderOptions = {
   token: string;
@@ -94,9 +95,7 @@ export const createContentfulProvider = ({
       const exportRes = (await contentfulExport(options)) as ContentfulExport;
       await writeContentTypes(exportRes.contentTypes as unknown as ContentType[]);
       await writeContentLocales(exportRes.locales as unknown as Locale[]);
-      exportRes.assets.forEach((asset) => {
-        console.log("Asset:", asset);
-      });
+      await writeAssets(exportRes.assets);
       let publishedEntries = [];
       let previewEntries = [];
       let allPublishedEntries = [];

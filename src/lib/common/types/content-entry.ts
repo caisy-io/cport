@@ -284,7 +284,7 @@ export const processDataForContentfulEntryField = (
     case ContentEntryContentTypeFieldType.Code:
       if (fieldType === ContentEntryContentTypeFieldType.RichText) {
         return {
-          valueObjects: JSON.stringify(processRichText(data)),
+          valueObjects: convertRichTextToHtml(data),
           valueString: undefined,
           valueBool: undefined,
           valueNumber: undefined,
