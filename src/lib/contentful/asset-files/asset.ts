@@ -1,5 +1,4 @@
 import { assetUrls } from "../../common/writer/content-entry";
-import { CaisyRunOptions } from "../provider";
 import fetch from "node-fetch";
 import { promises as fs } from "fs";
 import { v4 as uuidv4 } from "uuid";
@@ -8,61 +7,60 @@ import { db } from "../../common/db";
 import { assetFile } from "../../common/schema";
 import { AssetFile } from "../../common/types/content-entry";
 
-const RELATIVE_TARGET_DIR = "../../../../cport_assets/caisy";
+const RELATIVE_TARGET_DIR = "../../../../cport_assets/contentful";
 const MAX_RETRY_ATTEMPTS = 3;
 const RETRY_DELAY = 1000;
 const MAX_CONCURRENT_DOWNLOADS = 100;
 
-function cleanFilename(url: string): string {
-  let path = url.split("?")[0];
+// function cleanFilename(url: string): string {
+//   let path = url.split("?")[0];
 
-  let segments = path.split("/");
+//   let segments = path.split("/");
 
-  let filename = segments.pop();
+//   let filename = segments.pop();
 
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  if (uuidRegex.test(segments[segments.length - 1])) {
-  } else {
-    if (uuidRegex.test(filename.substring(0, 36))) {
-      filename = filename.substring(36);
-    }
-  }
+//   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+//   if (uuidRegex.test(segments[segments.length - 1])) {
+//   } else {
+//     if (uuidRegex.test(filename.substring(0, 36))) {
+//       filename = filename.substring(36);
+//     }
+//   }
 
-  return filename || "";
-}
+//   return filename || "";
+// }
 
-function chunkArray(array, chunkSize) {
-  const chunks = [];
-  for (let i = 0; i < array.length; i += chunkSize) {
-    chunks.push(array.slice(i, i + chunkSize));
-  }
-  return chunks;
-}
+// function chunkArray(array, chunkSize) {
+//   const chunks = [];
+//   for (let i = 0; i < array.length; i += chunkSize) {
+//     chunks.push(array.slice(i, i + chunkSize));
+//   }
+//   return chunks;
+// }
 
-const downloadImage = async (url: string, attempt = 1) => {
+const downloadImage = async (url: string, assetId: string, attempt = 1) => {
   try {
     const response = await fetch(url);
     if (!response.ok) throw new Error(`Failed to fetch image: ${response.statusText}`);
     const buffer = await response.buffer();
 
-    const uuid = uuidv4();
     const originalName = path.basename(url);
-    const clearName = cleanFilename(originalName);
+    // const clearName = cleanFilename(originalName);
 
-    const targetDir = path.resolve(__dirname, RELATIVE_TARGET_DIR + `/${uuid}`);
-    const filePath = path.join(targetDir, clearName);
+    const targetDir = path.resolve(__dirname, RELATIVE_TARGET_DIR + `/${assetId}`);
+    const filePath = path.join(targetDir, originalName);
 
     await fs.mkdir(targetDir, { recursive: true });
 
     await fs.writeFile(filePath, buffer);
     const localPath = extractPathAfterMarker(filePath);
-    await insertCportAsset({ id: uuid, originalUrl: url, localPath: localPath });
+    await insertCportAsset({ id: assetId, originalUrl: url, localPath: localPath });
   } catch (error) {
     console.error(`Failed to download image from ${url}: ${error}`);
     if (attempt < MAX_RETRY_ATTEMPTS) {
       console.log(`Retrying... Attempt ${attempt + 1} of ${MAX_RETRY_ATTEMPTS}`);
       await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
-      await downloadImage(url, attempt + 1);
+      await downloadImage(url, assetId, attempt + 1);
     } else {
       console.error(`Failed to download image after ${MAX_RETRY_ATTEMPTS} attempts`);
       throw error;
@@ -103,31 +101,17 @@ const insertCportAsset = async (assetFileInput: AssetFile) => {
   }
 };
 
-export const assetFiles = async ({
-  sdk,
-  projectId,
-  after,
-  onProgress,
-  onError,
-}: CaisyRunOptions & { after: string | null }) => {
-  const urls = Array.from(assetUrls).map((url) => `${url}?original`);
-
-  const urlChunks = chunkArray(urls, MAX_CONCURRENT_DOWNLOADS);
-
-  // Process each chunk sequentially
-  for (const chunk of urlChunks) {
-    await Promise.all(chunk.map((url) => downloadImage(url))).catch((error) => {
-      console.error(`An error occurred during image downloads in a chunk:`, error);
-    });
+export const writeAssets = async (assets: any[]) => {
+  for (const asset of assets) {
+    let assetUrl = await getAssetUrl(asset);
+    await downloadImage(assetUrl, asset.sys.id);
   }
 };
 
-export const exportCaisyAssets = async ({ sdk, projectId, onError, onProgress }: CaisyRunOptions): Promise<void> => {
-  await assetFiles({
-    sdk,
-    projectId,
-    onError,
-    onProgress,
-    after: null,
-  });
-};
+async function getAssetUrl(asset: any) {
+  if (asset && asset.fields && asset.fields.file && asset.fields.file["en-US"]) {
+    const fileUrl = asset.fields.file["en-US"].url;
+    return `https:${fileUrl}`;
+  }
+  return null;
+}
