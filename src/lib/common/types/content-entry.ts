@@ -1,6 +1,6 @@
 import { Maybe, Scalars } from "./util";
 import { documentToHtmlString } from "@contentful/rich-text-html-renderer";
-import { BLOCKS, INLINES, MARKS } from "@contentful/rich-text-types";
+import { BLOCKS, INLINES, MARKS, Document } from "@contentful/rich-text-types";
 
 export enum ContentEntryContentTypeVariant {
   Unspecified = "unspecified",
@@ -310,70 +310,45 @@ export type AssetFile = {
   localPath?: Maybe<Scalars["String"]>;
 };
 
-const customComponentRenderer = (node) => {
-  switch (node.nodeType) {
-    case BLOCKS.EMBEDDED_ENTRY:
-      return `<div class="embedded-entry">${node.data.target.fields.title}</div>`;
-
-    case BLOCKS.EMBEDDED_ASSET:
-      if (node.data.target.fields.file.contentType.startsWith("image/")) {
-        return `<img src="${node.data.target.fields.file.url}" alt="${node.data.target.fields.title || "Embedded Image"}" />`;
-      }
-      return `<a href="${node.data.target.fields.file.url}">Download ${node.data.target.fields.title}</a>`;
-
-    default:
-      return `Rendered: ${node.nodeType}`;
-  }
-};
-const options = {
-  renderNode: {
-    [BLOCKS.DOCUMENT]: (node) =>
-      `<div>${node.content.map((child) => documentToHtmlString(child, options)).join("")}</div>`,
-    [BLOCKS.PARAGRAPH]: (node) =>
-      `<p>${node.content.map((child) => documentToHtmlString(child, options)).join("")}</p>`,
-    [BLOCKS.HEADING_1]: (node) =>
-      `<h1>${node.content.map((child) => documentToHtmlString(child, options)).join("")}</h1>`,
-    [BLOCKS.HEADING_2]: (node) =>
-      `<h2>${node.content.map((child) => documentToHtmlString(child, options)).join("")}</h2>`,
-    [BLOCKS.HEADING_3]: (node) =>
-      `<h3>${node.content.map((child) => documentToHtmlString(child, options)).join("")}</h3>`,
-    [BLOCKS.HEADING_4]: (node) =>
-      `<h4>${node.content.map((child) => documentToHtmlString(child, options)).join("")}</h4>`,
-    [BLOCKS.HEADING_5]: (node) =>
-      `<h5>${node.content.map((child) => documentToHtmlString(child, options)).join("")}</h5>`,
-    [BLOCKS.HEADING_6]: (node) =>
-      `<h6>${node.content.map((child) => documentToHtmlString(child, options)).join("")}</h6>`,
-    [BLOCKS.UL_LIST]: (node) =>
-      `<ul>${node.content.map((child) => documentToHtmlString(child, options)).join("")}</ul>`,
-    [BLOCKS.OL_LIST]: (node) =>
-      `<ol>${node.content.map((child) => documentToHtmlString(child, options)).join("")}</ol>`,
-    [BLOCKS.LIST_ITEM]: (node) =>
-      `<li>${node.content.map((child) => documentToHtmlString(child, options)).join("")}</li>`,
-    [BLOCKS.QUOTE]: (node) =>
-      `<blockquote>${node.content.map((child) => documentToHtmlString(child, options)).join("")}</blockquote>`,
-    [BLOCKS.HR]: () => `<hr/>`,
-    [BLOCKS.EMBEDDED_ENTRY]: (node) => `<div>${customComponentRenderer(node)}</div>`,
-    [BLOCKS.EMBEDDED_ASSET]: (node) =>
-      `<img src="${node.data.target.fields.file.url}" alt="${node.data.target.fields.title}"/>`,
-    [BLOCKS.EMBEDDED_RESOURCE]: (node) => `<div>Embedded Resource: ${node.data.target.id}</div>`,
-    [INLINES.EMBEDDED_ENTRY]: (node) => `<span>Inline Entry: ${node.data.target.id}</span>`,
-    [INLINES.HYPERLINK]: (node) =>
-      `<a href="${node.data.uri}">${node.content.map((child) => documentToHtmlString(child, options)).join("")}</a>`,
-    [INLINES.ENTRY_HYPERLINK]: (node) =>
-      `<a href="/entries/${node.data.target.id}">${node.content.map((child) => documentToHtmlString(child, options)).join("")}</a>`,
-    [INLINES.ASSET_HYPERLINK]: (node) =>
-      `<a href="${node.data.target.fields.file.url}">${node.content.map((child) => documentToHtmlString(child, options)).join("")}</a>`,
-  },
-  renderMark: {
-    [MARKS.BOLD]: (text) => `<strong>${text}</strong>`,
-    [MARKS.ITALIC]: (text) => `<em>${text}</em>`,
-    [MARKS.UNDERLINE]: (text) => `<u>${text}</u>`,
-    [MARKS.CODE]: (text) => `<code>${text}</code>`,
-    [MARKS.SUPERSCRIPT]: (text) => `<sup>${text}</sup>`,
-    [MARKS.SUBSCRIPT]: (text) => `<sub>${text}</sub>`,
-  },
+const customComponentRenderer = (node: any): string => {
+  return `Embedded entry with ID: ${node.data.target.sys.id}`;
 };
 
-const convertRichTextToHtml = (document) => {
-  return documentToHtmlString(document, options);
+const convertRichTextToHtml = (richTextDocument: Document): string => {
+  const options = {
+    renderMark: {
+      [MARKS.BOLD]: (text: string) => `<strong>${text}</strong>`,
+      [MARKS.ITALIC]: (text: string) => `<em>${text}</em>`,
+      [MARKS.UNDERLINE]: (text: string) => `<u>${text}</u>`,
+      [MARKS.CODE]: (text: string) => `<code>${text}</code>`,
+    },
+    renderNode: {
+      [BLOCKS.DOCUMENT]: (node: any, next: any) => `<div>${next(node.content)}</div>`,
+      [BLOCKS.PARAGRAPH]: (node: any, next: any) => `<p>${next(node.content)}</p>`,
+      [BLOCKS.HEADING_1]: (node: any, next: any) => `<h1>${next(node.content)}</h1>`,
+      [BLOCKS.HEADING_2]: (node: any, next: any) => `<h2>${next(node.content)}</h2>`,
+      [BLOCKS.HEADING_3]: (node: any, next: any) => `<h3>${next(node.content)}</h3>`,
+      [BLOCKS.HEADING_4]: (node: any, next: any) => `<h4>${next(node.content)}</h4>`,
+      [BLOCKS.HEADING_5]: (node: any, next: any) => `<h5>${next(node.content)}</h5>`,
+      [BLOCKS.HEADING_6]: (node: any, next: any) => `<h6>${next(node.content)}</h6>`,
+      [BLOCKS.UL_LIST]: (node: any, next: any) => `<ul>${next(node.content)}</ul>`,
+      [BLOCKS.OL_LIST]: (node: any, next: any) => `<ol>${next(node.content)}</ol>`,
+      [BLOCKS.LIST_ITEM]: (node: any, next: any) => `<li>${next(node.content)}</li>`,
+      [BLOCKS.QUOTE]: (node: any, next: any) => `<blockquote>${next(node.content)}</blockquote>`,
+      [BLOCKS.EMBEDDED_ENTRY]: (node: any) => `<div>${customComponentRenderer(node)}</div>`,
+      [BLOCKS.EMBEDDED_ASSET]: (node: any) =>
+        `<img src="${node.data.target.fields.file.url}" alt="${node.data.target.fields.title}" />`,
+      [INLINES.HYPERLINK]: (node: any, next: any) => `<a href="${node.data.uri}">${next(node.content)}</a>`,
+      [INLINES.ENTRY_HYPERLINK]: (node: any, next: any) =>
+        `<a href="/entry/${node.data.target.sys.id}">${next(node.content)}</a>`,
+      [INLINES.ASSET_HYPERLINK]: (node: any, next: any) =>
+        `<a href="${node.data.target.fields.file.url}">${next(node.content)}</a>`,
+    },
+  };
+
+  return documentToHtmlString(richTextDocument, options);
 };
+
+// const convertRichTextToHtml = (document) => {
+//   return documentToHtmlString(document);
+// };
