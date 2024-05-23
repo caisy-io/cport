@@ -71,16 +71,13 @@ const normalizeContentfulEntry = (entry: Entry<any>, draftContent: Number): Cont
   let entryStatus = ContentEntryStatus.Published;
   if (draftContent !== 0) {
     if (isDraft(entry) === true) {
-      // console.log("Draft Content: ", entry.fields.internalName);
       entryStatus = ContentEntryStatus.Draft;
     }
     if (isChanged(entry) === true) {
-      // console.log("Changed Content: ", entry.fields.internalName);
       entryStatus = ContentEntryStatus.Changed;
     }
   }
 
-  // Process each field for each locale
   Object.keys(entry.fields).forEach((fieldKey) => {
     const locale = entry.sys.locale;
     let fieldData = entry.fields[fieldKey];
@@ -90,7 +87,6 @@ const normalizeContentfulEntry = (entry: Entry<any>, draftContent: Number): Cont
       createdAt: entry.sys.createdAt,
       data: fieldData,
       documentFieldLocaleId: locale,
-      // lastUpdatedByUserId: entry.sys.updatedBy.sys.id,
       type: ContentFieldTypeMap.get(fieldKey as string),
       updatedAt: entry.sys.updatedAt,
     });

@@ -310,10 +310,6 @@ export type AssetFile = {
   localPath?: Maybe<Scalars["String"]>;
 };
 
-const customComponentRenderer = (node: any): string => {
-  return `Embedded entry with ID: ${node.data.target.sys.id}`;
-};
-
 const convertRichTextToHtml = (richTextDocument: Document): string => {
   const options = {
     renderMark: {
@@ -335,7 +331,7 @@ const convertRichTextToHtml = (richTextDocument: Document): string => {
       [BLOCKS.OL_LIST]: (node: any, next: any) => `<ol>${next(node.content)}</ol>`,
       [BLOCKS.LIST_ITEM]: (node: any, next: any) => `<li>${next(node.content)}</li>`,
       [BLOCKS.QUOTE]: (node: any, next: any) => `<blockquote>${next(node.content)}</blockquote>`,
-      [BLOCKS.EMBEDDED_ENTRY]: (node: any) => `<div>${customComponentRenderer(node)}</div>`,
+      [BLOCKS.EMBEDDED_ENTRY]: (node: any) => `<div data-entry-id="${node.data.target.sys.id}"></div>`,
       [BLOCKS.EMBEDDED_ASSET]: (node: any) =>
         `<img src="${node.data.target.fields.file.url}" alt="${node.data.target.fields.title}" />`,
       [INLINES.HYPERLINK]: (node: any, next: any) => `<a href="${node.data.uri}">${next(node.content)}</a>`,

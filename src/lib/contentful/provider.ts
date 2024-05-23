@@ -4,6 +4,7 @@ import { ContentfulExport } from "./types";
 import { writeContentTypes } from "./content-type/writeContentTypes";
 import { writeContentEntries, writeContentLocales } from "./content-entry/writeContentEntries";
 import { ContentType, Entry, Locale, createClient } from "contentful";
+import { adjustContentfulContentEntryFields } from "./../common/writer/content-entry";
 import fs from "fs";
 import { writeAssets } from "./asset-files/asset";
 
@@ -125,6 +126,7 @@ export const createContentfulProvider = ({
 
       await writeContentEntries(allPublishedEntries as unknown as Entry[], 0);
       await writeContentEntries(allUniquePreviewEntries as unknown as Entry[], 1);
+      await adjustContentfulContentEntryFields();
     },
     checkCredentials: async (): Promise<boolean> => {
       try {
@@ -136,15 +138,3 @@ export const createContentfulProvider = ({
     },
   };
 };
-
-function isDraft(entity) {
-  return !entity.sys.publishedVersion;
-}
-
-function isChanged(entity) {
-  return !!entity.sys.publishedVersion && entity.sys.version >= entity.sys.publishedVersion + 2;
-}
-
-function isPublished(entity) {
-  return !!entity.sys.publishedVersion && entity.sys.version == entity.sys.publishedVersion + 1;
-}

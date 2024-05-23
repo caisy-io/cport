@@ -145,6 +145,70 @@ export const insertContentfulEntryField = async (
   }
 };
 
+export const adjustContentfulContentEntryFields = async () => {
+  try {
+    const rawSQL = sql.raw(`
+    DELETE FROM content_entry_field
+    WHERE id IN (
+        SELECT ce.id
+        FROM content_entry_field ce
+        INNER JOIN (
+            SELECT
+                content_entry_id,
+                content_type_field_id,
+                MAX(CASE WHEN l."default" THEN content_entry_field_locale_id ELSE NULL END) AS default_locale,
+                COALESCE(value_string, 'DUMMY_STRING') as value_string,
+                COALESCE(value_bool, 'DUMMY_BOOL') as value_bool,
+                COALESCE(value_keywords, 'DUMMY_KEYWORDS') as value_keywords,
+                COALESCE(value_date, '1970-01-01') as value_date,
+                COALESCE(value_number, -9999) as value_number,
+                COALESCE(value_objects, 'DUMMY_OBJECTS') as value_objects
+            FROM content_entry_field
+            INNER JOIN content_locale l ON content_entry_field.content_entry_field_locale_id = l.api_name
+            GROUP BY content_entry_id, content_type_field_id, value_string, value_bool, value_keywords, value_date, value_number, value_objects
+            HAVING COUNT(*) > 1
+        ) dup ON ce.content_entry_id = dup.content_entry_id
+            AND ce.content_type_field_id = dup.content_type_field_id
+            AND COALESCE(ce.value_string, 'DUMMY_STRING') = dup.value_string
+            AND COALESCE(ce.value_bool, 'DUMMY_BOOL') = dup.value_bool
+            AND COALESCE(ce.value_keywords, 'DUMMY_KEYWORDS') = dup.value_keywords
+            AND COALESCE(ce.value_date, '1970-01-01') = dup.value_date
+            AND COALESCE(ce.value_number, -9999) = dup.value_number
+            AND COALESCE(ce.value_objects, 'DUMMY_OBJECTS') = dup.value_objects
+            AND ce.content_entry_field_locale_id != dup.default_locale
+    );
+`);
+
+    try {
+      await db.run(rawSQL);
+      console.log("Adjust operation completed successfully.");
+    } catch (err) {
+      console.error("Error executing AdjustContentfulContentEntryFieldsWithDrizzle:", err);
+      throw err;
+    }
+    const rawSQLDrop = sql.raw(`DROP TABLE content_entry_field_draft;`);
+    try {
+      await db.run(rawSQLDrop);
+      console.log("Drop operation completed successfully.");
+    } catch (err) {
+      console.error("Error executing insertContentEntryFieldsWithDrizzle3:", err);
+      throw err;
+    }
+    const rawSQLDrop2 = sql.raw(`DROP TABLE content_entry_field_published;`);
+    try {
+      await db.run(rawSQLDrop2);
+      console.log("Drop operation2 completed successfully.");
+    } catch (err) {
+      console.error("Error executing insertContentEntryFieldsWithDrizzle4:", err);
+      throw err;
+    }
+    console.log("Operations successful");
+  } catch (err) {
+    console.error("Error in insertContentEntryFields", err);
+    throw err;
+  }
+};
+
 export const insertContentEntryFields = async () => {
   try {
     const rawSQL = sql.raw(`
