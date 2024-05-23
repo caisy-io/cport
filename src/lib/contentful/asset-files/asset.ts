@@ -10,33 +10,6 @@ import { AssetFile } from "../../common/types/content-entry";
 const RELATIVE_TARGET_DIR = "../../../../cport_assets/contentful";
 const MAX_RETRY_ATTEMPTS = 3;
 const RETRY_DELAY = 1000;
-const MAX_CONCURRENT_DOWNLOADS = 100;
-
-// function cleanFilename(url: string): string {
-//   let path = url.split("?")[0];
-
-//   let segments = path.split("/");
-
-//   let filename = segments.pop();
-
-//   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-//   if (uuidRegex.test(segments[segments.length - 1])) {
-//   } else {
-//     if (uuidRegex.test(filename.substring(0, 36))) {
-//       filename = filename.substring(36);
-//     }
-//   }
-
-//   return filename || "";
-// }
-
-// function chunkArray(array, chunkSize) {
-//   const chunks = [];
-//   for (let i = 0; i < array.length; i += chunkSize) {
-//     chunks.push(array.slice(i, i + chunkSize));
-//   }
-//   return chunks;
-// }
 
 const downloadImage = async (url: string, assetId: string, attempt = 1) => {
   try {
@@ -45,7 +18,6 @@ const downloadImage = async (url: string, assetId: string, attempt = 1) => {
     const buffer = await response.buffer();
 
     const originalName = path.basename(url);
-    // const clearName = cleanFilename(originalName);
 
     const targetDir = path.resolve(__dirname, RELATIVE_TARGET_DIR + `/${assetId}`);
     const filePath = path.join(targetDir, originalName);

@@ -1,11 +1,10 @@
-import { Provider, ProviderProcess } from "../common/types";
+import { Provider } from "../common/types";
 import contentfulExport from "contentful-export";
 import { ContentfulExport } from "./types";
 import { writeContentTypes } from "./content-type/writeContentTypes";
 import { writeContentEntries, writeContentLocales } from "./content-entry/writeContentEntries";
 import { ContentType, Entry, Locale, createClient } from "contentful";
 import { adjustContentfulContentEntryFields } from "./../common/writer/content-entry";
-import fs from "fs";
 import { writeAssets } from "./asset-files/asset";
 
 export type ContentfulProviderOptions = {
@@ -68,7 +67,6 @@ export const createContentfulProvider = ({
   previewToken,
   token,
 }: ContentfulProviderOptions): Provider => {
-  // Client for Published Entries
   const deliveryClient = createClient({
     space: spaceId,
     accessToken: deliveryToken,
