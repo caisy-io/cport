@@ -55,9 +55,6 @@ export const createCaisyProvider = ({ token, endpoint, projectId }: CaisyProvide
         onError,
         onProgress,
       });
-
-      // await Promise.all([exportCaisyContentTypes({ sdk, projectId, onError, onProgress })]);
-      // await Promise.all([exportCaisyContentEntries({ sdk, projectId, onError, onProgress })]);
     },
     checkCredentials: async (): Promise<boolean> => {
       try {

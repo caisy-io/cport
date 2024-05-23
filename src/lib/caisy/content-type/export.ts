@@ -41,11 +41,7 @@ export const paginateBlueprints = async ({
         });
       });
       blueprintMap.set(contentType.id, contentType.variant);
-      // console.log("contentType", JSON.stringify(contentType, null, 2));
       await writeContentType(contentType);
-      // await ().catch((e) => {
-      //   onError({ step: "tag", error: e, meta: tag.node });
-      // });
     }),
   );
 
