@@ -7,6 +7,7 @@ import { initSdk } from "@caisy/sdk";
 import { exportCaisyContentTypes } from "./content-type/export";
 import { exportCaisyContentEntries } from "./content-entry/export";
 import { exportCaisyAssets } from "./asset-files/asset";
+import { importCaisyDocuments } from "./content-entry/import";
 
 export type CaisyProviderOptions = {
   token: string;
@@ -29,6 +30,7 @@ export const createCaisyProvider = ({ token, endpoint, projectId }: CaisyProvide
       await Promise.all([
         importCaisyTags({ sdk, projectId, onError, onProgress }),
         importCaisyBlueprints({ sdk, projectId, onError, onProgress }),
+        importCaisyDocuments({ sdk, projectId, onError, onProgress }),
       ]);
       console.log("Successfully imported all data.");
     },
