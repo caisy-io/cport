@@ -1,32 +1,15 @@
 import { db } from "../../common/db";
-import {
-  initSdk,
-  PutManyDocumentFieldLocalesRequestInput,
-  DocumentFieldLocaleUpsertInputInput,
-  DocumentWithFieldsInput,
-  DocumentFieldInput,
-  ReferenceType,
-  DocumentFieldLocaleChangeSetFragmentDoc,
-  DocumentFieldLocaleChangeSet,
-} from "@caisy/sdk";
+import { DocumentFieldLocaleChangeSet } from "@caisy/sdk";
 import { CaisyRunOptions } from "../provider";
-import {
-  contentEntry,
-  contentEntryField,
-  contentLocale,
-  contentType,
-  contentTypeField,
-  contentTypeGroup,
-} from "../../common/schema";
+import { contentEntry, contentEntryField, contentLocale } from "../../common/schema";
 import { sql, count, inArray } from "drizzle-orm";
 import {
   denormalizeCaisyContentTypeVariant,
   denormalizeCaisyContentEntryStatus,
-  denormalizeCaisyFieldEntry,
   fromStringToCaisyContentFieldType,
   fromStringToCaisyBlueprintFieldType,
 } from "./normalize";
-import { time } from "console";
+import { blueprintChangeSet } from "./../content-type/import";
 import { processDataForCaisyDocumentField, ContentEntryFieldData } from "../../common/types/content-entry";
 
 const PAGE_LIMIT = 100;
@@ -37,6 +20,7 @@ async function fetchDocumentsFromDatabase({ sdk, projectId, onProgress, onError 
     const changeSet = await submitLocaleChanges(documentLocalesInputs, sdk, projectId);
 
     const totalDocumentsResult = await db.select({ count: count() }).from(contentEntry);
+    console.log("Total documents to import:", totalDocumentsResult[0].count);
     const totalDocuments = totalDocumentsResult[0].count;
 
     let pageIndex = 0;
@@ -52,6 +36,7 @@ async function fetchDocumentsFromDatabase({ sdk, projectId, onProgress, onError 
 
       const documentIds = documentRows.map((doc) => doc.id);
       const documentFieldRows = await fetchDocumentFieldsByDocumentIds(documentIds);
+      console.log("Fetched documents fields:", documentFieldRows.length);
       const fieldsByDocumentId = documentFieldRows.reduce((acc, field) => {
         let documentFieldLocaleID = field.contentEntryFieldLocaleId;
         changeSet.forEach((changeSetRes) => {
@@ -92,6 +77,23 @@ async function fetchDocumentsFromDatabase({ sdk, projectId, onProgress, onError 
         blueprintVariant: denormalizeCaisyContentTypeVariant(doc.contentTypeVariant),
         fields: fieldsByDocumentId[doc.id] || [],
       }));
+      documentInputs.forEach((documentInput) => {
+        blueprintChangeSet.forEach((blueprintSet) => {
+          if (blueprintSet.sourceBlueprintId === documentInput.blueprintId) {
+            documentInput.blueprintId = blueprintSet.targetBlueprintId;
+          }
+        });
+        documentInput.fields.forEach((field) => {
+          blueprintChangeSet.forEach((blueprintSet) => {
+            blueprintSet.fields.forEach((fieldSet) => {
+              if (field.blueprintFieldId === fieldSet.sourceBlueprintFieldId) {
+                field.blueprintFieldId = fieldSet.targetBlueprintFieldId;
+              }
+            });
+          });
+        });
+      });
+
       await submitDocumentChanges(documentInputs, sdk, projectId);
 
       pageIndex++;

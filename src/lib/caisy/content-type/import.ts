@@ -7,6 +7,8 @@ import {
   BlueprintFieldInputInput,
   BlueprintFieldOptionsInput,
   ReferenceType,
+  PutManyBlueprintsResponse,
+  PutManyBlueprintsResponseFragment,
 } from "@caisy/sdk";
 import { CaisyRunOptions } from "../provider";
 import { contentType, contentTypeField, contentTypeGroup } from "../../common/schema";
@@ -15,6 +17,11 @@ import {
   denormalizeCaisyFieldOptions,
   denormalizeCaisyFieldType,
 } from "./normalize";
+
+let blueprintChangeSet: PutManyBlueprintsResponse["changeSet"] = [];
+
+// Export the variable
+export { blueprintChangeSet };
 
 async function fetchBlueprintsFromDatabase({ sdk, projectId, onProgress, onError }: CaisyRunOptions): Promise<void> {
   const blueprintInputs: BlueprintUpsertInputInput[] = [];
@@ -72,6 +79,7 @@ async function fetchBlueprintsFromDatabase({ sdk, projectId, onProgress, onError
         blueprintInputs,
       },
     });
+    blueprintChangeSet = result.PutManyBlueprints.changeSet;
     if (result.PutManyBlueprints.errors.length > 0) {
       console.error("Failed to import blueprints:", result.PutManyBlueprints.errors);
       result.PutManyBlueprints.errors.forEach((error) => {
