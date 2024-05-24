@@ -30,8 +30,8 @@ export const createCaisyProvider = ({ token, endpoint, projectId }: CaisyProvide
       await Promise.all([
         importCaisyTags({ sdk, projectId, onError, onProgress }),
         importCaisyBlueprints({ sdk, projectId, onError, onProgress }),
-        importCaisyDocuments({ sdk, projectId, onError, onProgress }),
       ]);
+      await importCaisyDocuments({ sdk, projectId, onError, onProgress });
       console.log("Successfully imported all data.");
     },
     export: async ({ onError, onProgress }): Promise<void> => {

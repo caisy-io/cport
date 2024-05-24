@@ -171,6 +171,39 @@ export const processDataForEntryField = (
   return {}; // Default case if none of the above matched
 };
 
+export const processDataForCaisyDocumentField = (
+  data: ContentEntryFieldData,
+  fieldType: ContentEntryContentTypeFieldType,
+): Maybe<Scalars["Any"]> => {
+  if (data === null || data === undefined) {
+    return {};
+  }
+  switch (fieldType) {
+    case ContentEntryContentTypeFieldType.String:
+    case ContentEntryContentTypeFieldType.Color:
+      return data.valueString;
+    case ContentEntryContentTypeFieldType.Boolean:
+      return data.valueBool;
+    case ContentEntryContentTypeFieldType.Int:
+    case ContentEntryContentTypeFieldType.Float:
+      return data.valueNumber;
+    case ContentEntryContentTypeFieldType.DateTime:
+      return data.valueDate;
+    case ContentEntryContentTypeFieldType.Connection:
+    case ContentEntryContentTypeFieldType.Tag:
+    case ContentEntryContentTypeFieldType.Select:
+      return JSON.parse(data.valueKeywords);
+    case ContentEntryContentTypeFieldType.Extension:
+    case ContentEntryContentTypeFieldType.GeoPoint:
+    case ContentEntryContentTypeFieldType.RichText:
+    case ContentEntryContentTypeFieldType.File:
+    case ContentEntryContentTypeFieldType.Video:
+    case ContentEntryContentTypeFieldType.Code:
+      return JSON.parse(data.valueObjects);
+  }
+  return {}; // Default case if none of the above matched
+};
+
 export const processDataForContentfulEntryField = (
   data: Maybe<Scalars["Any"]>,
   fieldType: ContentEntryContentTypeFieldType,
