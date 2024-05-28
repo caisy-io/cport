@@ -8,6 +8,14 @@ import { exportCaisyContentTypes } from "./content-type/export";
 import { exportCaisyContentEntries } from "./content-entry/export";
 import { exportCaisyAssets } from "./asset-files/asset";
 import { importCaisyDocuments } from "./content-entry/import";
+import { Client } from "pg";
+import { Pool } from "pg";
+
+// Create a new pool instance with configuration
+const pool = new Pool({
+  connectionString: "postgresql://postgres:YJ7zXgDIdZMXj6bhYqp2iP1BvL@0.0.0.0:58432/caisy?sslmode=disable",
+  max: 1000,
+});
 
 export type CaisyProviderOptions = {
   token: string;

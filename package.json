@@ -19,6 +19,7 @@
     "@types/figlet": "^1.5.5",
     "@types/inquirer": "^9.0.3",
     "@types/node": "^18.11.18",
+    "@types/pg": "^8.11.6",
     "drizzle-kit": "^0.20.14",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
@@ -43,6 +44,8 @@
     "js-yaml": "^4.1.0",
     "json-stringify-safe": "^5.0.1",
     "node-fetch": "2",
+    "p-limit": "^5.0.0",
+    "pg": "^8.11.5",
     "ts-node": "^10.9.1",
     "zod": "^3.22.4"
   },
