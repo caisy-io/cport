@@ -3,6 +3,7 @@ import { DocumentFieldLocaleChangeSet } from "@caisy/sdk";
 import { CaisyRunOptions } from "../provider";
 import { contentEntry, contentEntryField, contentLocale } from "../../common/schema";
 import { sql, count, inArray } from "drizzle-orm";
+import { createHash } from "crypto";
 import {
   denormalizeCaisyContentTypeVariant,
   denormalizeCaisyContentEntryStatus,
@@ -106,6 +107,11 @@ async function fetchDocumentsFromDatabase({ sdk, projectId, onProgress, onError 
 
 async function fetchDocumentLocales() {
   const documentLocaleRows = await db.select().from(contentLocale).execute();
+  documentLocaleRows.forEach((localeRow) => {
+    if (!isUuid(localeRow.id)) {
+      localeRow.id = generateUuidFromString(localeRow.id);
+    }
+  });
   return documentLocaleRows.map((localeRow) => ({
     documentFieldLocaleId: localeRow.id,
     apiName: localeRow.apiName,
@@ -166,3 +172,20 @@ async function submitDocumentChanges(documentInputs, sdk, projectId) {
 export const importCaisyDocuments = async ({ sdk, projectId, onError, onProgress }: CaisyRunOptions): Promise<void> => {
   await fetchDocumentsFromDatabase({ sdk, projectId, onError, onProgress });
 };
+
+function isUuid(id: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(id);
+}
+
+function generateUuidFromString(input: string): string {
+  const hash = createHash("sha256").update(input).digest("hex");
+  // Convert a hash to a UUID format
+  return [
+    hash.substring(0, 8),
+    hash.substring(8, 12),
+    "4" + hash.substring(13, 16), // UUID version 4
+    "8" + hash.substring(17, 20), // The '8', '9', 'a', or 'b' in this position
+    hash.substring(20, 32),
+  ].join("-");
+}
