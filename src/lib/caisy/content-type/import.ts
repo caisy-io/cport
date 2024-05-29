@@ -17,6 +17,7 @@ import {
   denormalizeCaisyFieldOptions,
   denormalizeCaisyFieldType,
 } from "./normalize";
+import { isUuid, generateUuidFromString } from "../../common/writer/content-entry";
 
 let blueprintChangeSet: PutManyBlueprintsResponse["changeSet"] = [];
 
@@ -31,12 +32,17 @@ async function fetchBlueprintsFromDatabase({ sdk, projectId, onProgress, onError
 
   // Map fields by group ID for faster lookup
   const fieldsByGroupId = blueprintFieldRows.reduce((acc, fieldRow) => {
+    const validFieldId = isUuid(fieldRow.id) ? fieldRow.id : generateUuidFromString(fieldRow.id);
+    const validFieldGroupId = isUuid(fieldRow.groupId) ? fieldRow.groupId : generateUuidFromString(fieldRow.groupId);
+    const validBlueprintId = isUuid(fieldRow.contentTypeId)
+      ? fieldRow.contentTypeId
+      : generateUuidFromString(fieldRow.contentTypeId);
     (acc[fieldRow.groupId] = acc[fieldRow.groupId] || []).push({
-      blueprintFieldId: fieldRow.id,
+      blueprintFieldId: validFieldId,
       name: fieldRow.name,
       type: denormalizeCaisyFieldType(fieldRow.type),
-      blueprintGroupId: fieldRow.groupId,
-      blueprintId: fieldRow.contentTypeId,
+      blueprintGroupId: validFieldGroupId,
+      blueprintId: validBlueprintId,
       description: fieldRow.description,
       system: fieldRow.system,
       options: denormalizeCaisyFieldOptions(fieldRow.options),
@@ -47,8 +53,9 @@ async function fetchBlueprintsFromDatabase({ sdk, projectId, onProgress, onError
 
   // Map groups by blueprint ID for correct blueprint association
   const groupsByBlueprintId = blueprintGroupRows.reduce((acc, groupRow) => {
+    const validGroupId = isUuid(groupRow.id) ? groupRow.id : generateUuidFromString(groupRow.id);
     (acc[groupRow.contentTypeId] = acc[groupRow.contentTypeId] || []).push({
-      blueprintGroupId: groupRow.id,
+      blueprintGroupId: validGroupId,
       name: groupRow.name,
       fields: fieldsByGroupId[groupRow.id] || [],
     });
@@ -57,8 +64,9 @@ async function fetchBlueprintsFromDatabase({ sdk, projectId, onProgress, onError
 
   // Generate blueprint inputs using mapped groups
   blueprintRows.forEach((row) => {
+    const validBlueprintId = isUuid(row.id) ? row.id : generateUuidFromString(row.id);
     blueprintInputs.push({
-      blueprintId: row.id,
+      blueprintId: validBlueprintId,
       name: row.name,
       variant: denormalizeCaisyContentTypeVariant(row.variant),
       groups: groupsByBlueprintId[row.id] || [],

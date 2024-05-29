@@ -78,6 +78,8 @@ export const denormalizeCaisyFieldType = (fieldType: String): BlueprintFieldType
       return BlueprintFieldType.BlueprintFieldTypeString;
     case ContentFieldType.Tag:
       return BlueprintFieldType.BlueprintFieldTypeTag;
+    case ContentFieldType.Array:
+      return BlueprintFieldType.BlueprintFieldTypeConnection;
     default:
       throw new Error(`Unsupported field type: ${fieldType}`);
   }
