@@ -16,6 +16,7 @@ import { contentLocaleSchema } from "../zod/content-entry";
 import { InferInsertModel, and, sql, eq, isNull } from "drizzle-orm";
 import { BlueprintPaginationResult } from "../../caisy/content-type/export";
 import { ContentFieldNameMap } from "../../contentful/content-type/writeContentTypes";
+import { createHash } from "crypto";
 
 const assetUrls = new Set<string>();
 export { assetUrls };
@@ -396,3 +397,22 @@ const insertDraftContentEntryFields = async (
     throw new Error(err);
   }
 };
+
+function isUuid(id: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(id);
+}
+
+function generateUuidFromString(input: string): string {
+  const hash = createHash("sha256").update(input).digest("hex");
+  // Convert a hash to a UUID format
+  return [
+    hash.substring(0, 8),
+    hash.substring(8, 12),
+    "4" + hash.substring(13, 16), // UUID version 4
+    "8" + hash.substring(17, 20), // The '8', '9', 'a', or 'b' in this position
+    hash.substring(20, 32),
+  ].join("-");
+}
+
+export { isUuid, generateUuidFromString };
