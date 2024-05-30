@@ -1,6 +1,8 @@
 import { Maybe, Scalars } from "./util";
 import { documentToHtmlString } from "@contentful/rich-text-html-renderer";
 import { BLOCKS, INLINES, MARKS, Document } from "@contentful/rich-text-types";
+import TurndownService from "turndown";
+import { richTextFromMarkdown } from "@contentful/rich-text-from-markdown";
 
 export enum ContentEntryContentTypeVariant {
   Unspecified = "unspecified",
@@ -199,6 +201,12 @@ export const processDataForCaisyDocumentField = (
     case ContentEntryContentTypeFieldType.File:
     case ContentEntryContentTypeFieldType.Video:
     case ContentEntryContentTypeFieldType.Code:
+      if (fieldType === ContentEntryContentTypeFieldType.RichText) {
+        const markdown = convertHtmlToMarkdown(data.valueObjects);
+        const richText = performConversion(markdown);
+        console.log("Rich Text:", richText);
+        return richText;
+      }
       return JSON.parse(data.valueObjects);
   }
   return {}; // Default case if none of the above matched
@@ -333,6 +341,39 @@ const convertRichTextToHtml = (richTextDocument: Document): string => {
   return documentToHtmlString(richTextDocument, options);
 };
 
-// const convertRichTextToHtml = (document) => {
-//   return documentToHtmlString(document);
-// };
+export function convertHtmlToMarkdown(html: string): string {
+  // Create a new instance of Turndown Service
+  const turndownService = new TurndownService({
+    headingStyle: "atx", // Can be set to 'setext' or 'atx' (Markdown heading style)
+    hr: "---", // Horizontal rule replacement
+    bulletListMarker: "-", // Bullet list marker ('*', '-', or '+')
+    codeBlockStyle: "fenced", // Code block style ('indented' or 'fenced')
+    fence: "```", // Fencing style for code blocks (typically three backticks)
+    emDelimiter: "*", // Emphasis delimiter ('*' or '_')
+    strongDelimiter: "**", // Strong delimiter ('**' or '__')
+    linkStyle: "inlined", // Can be 'inlined' or 'referenced'
+    linkReferenceStyle: "full", // Can be 'full', 'collapsed', or 'shortcut'
+  });
+  const markdown = turndownService.turndown(html);
+
+  return markdown;
+}
+
+export async function convertMarkdownToRichText(markdown: string): Promise<Document | null> {
+  try {
+    const document: Document | null = await richTextFromMarkdown(markdown);
+    return document;
+  } catch (error) {
+    console.error("Error converting Markdown to Rich Text:", error);
+    return null;
+  }
+}
+
+async function performConversion(markdown: string) {
+  const richTextDocument = await convertMarkdownToRichText(markdown);
+  if (richTextDocument) {
+    console.log("Converted Rich Text:", JSON.stringify(richTextDocument, null, 2));
+  } else {
+    console.log("Failed to convert Markdown to Rich Text.");
+  }
+}
