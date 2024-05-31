@@ -173,44 +173,86 @@ export const processDataForEntryField = (
   return {}; // Default case if none of the above matched
 };
 
-export const processDataForCaisyDocumentField = (
+export const processDataForCaisyDocumentField = async (
   data: ContentEntryFieldData,
   fieldType: ContentEntryContentTypeFieldType,
-): Maybe<Scalars["Any"]> => {
+): Promise<Maybe<Scalars["Any"]>> => {
   if (data === null || data === undefined) {
     return {};
   }
-  switch (fieldType) {
-    case ContentEntryContentTypeFieldType.String:
-    case ContentEntryContentTypeFieldType.Color:
-      return data.valueString;
-    case ContentEntryContentTypeFieldType.Boolean:
-      return data.valueBool;
-    case ContentEntryContentTypeFieldType.Int:
-    case ContentEntryContentTypeFieldType.Float:
-      return data.valueNumber;
-    case ContentEntryContentTypeFieldType.DateTime:
-      return data.valueDate;
-    case ContentEntryContentTypeFieldType.Connection:
-    case ContentEntryContentTypeFieldType.Tag:
-    case ContentEntryContentTypeFieldType.Select:
-      return JSON.parse(data.valueKeywords);
-    case ContentEntryContentTypeFieldType.Extension:
-    case ContentEntryContentTypeFieldType.GeoPoint:
-    case ContentEntryContentTypeFieldType.RichText:
-    case ContentEntryContentTypeFieldType.File:
-    case ContentEntryContentTypeFieldType.Video:
-    case ContentEntryContentTypeFieldType.Code:
-      if (fieldType === ContentEntryContentTypeFieldType.RichText) {
-        const markdown = convertHtmlToMarkdown(data.valueObjects);
-        const richText = performConversion(markdown);
-        console.log("Rich Text:", richText);
-        return richText;
-      }
-      return JSON.parse(data.valueObjects);
+
+  const safelyParseJSON = (jsonString: string) => {
+    try {
+      return JSON.parse(jsonString);
+    } catch (e) {
+      console.error("Failed to parse JSON:", e);
+      console.error("DATA FAILED:", jsonString);
+      return null; // or return jsonString to handle as raw data
+    }
+  };
+
+  try {
+    switch (fieldType) {
+      case ContentEntryContentTypeFieldType.String:
+      case ContentEntryContentTypeFieldType.Color:
+        return data.valueString;
+      case ContentEntryContentTypeFieldType.Boolean:
+        return data.valueBool;
+      case ContentEntryContentTypeFieldType.Int:
+      case ContentEntryContentTypeFieldType.Float:
+        return data.valueNumber;
+      case ContentEntryContentTypeFieldType.DateTime:
+        return data.valueDate;
+      case ContentEntryContentTypeFieldType.Connection:
+      case ContentEntryContentTypeFieldType.Tag:
+      case ContentEntryContentTypeFieldType.Select:
+        // return safelyParseJSON(data.valueKeywords);
+        return transformIdToJsonArray(data.valueKeywords);
+      case ContentEntryContentTypeFieldType.Extension:
+      case ContentEntryContentTypeFieldType.GeoPoint:
+      case ContentEntryContentTypeFieldType.File:
+      case ContentEntryContentTypeFieldType.Video:
+      case ContentEntryContentTypeFieldType.Code:
+        return safelyParseJSON(data.valueObjects);
+      case ContentEntryContentTypeFieldType.RichText:
+        if (isJsonString(data.valueObjects)) {
+          return safelyParseJSON(data.valueObjects);
+        } else {
+          const markdown = await convertHtmlToMarkdown(data.valueObjects);
+          const richText = await performConversion(markdown);
+          return richText;
+        }
+    }
+  } catch (error) {
+    console.error("Error processing data for Caisy document field:", error);
+    return {};
   }
+
   return {}; // Default case if none of the above matched
 };
+
+function handleArrayOrString(data: string): any {
+  try {
+    // Check if data starts with an array-like or object-like structure
+    if (data.startsWith("{") || data.startsWith("[")) {
+      return JSON.parse(data);
+    } else {
+      // Assume it is a list of IDs separated by some delimiter and convert to an array
+      return data.split(",").map((item) => item.trim());
+    }
+  } catch (error) {
+    console.error("Failed to handle data as array or string:", error);
+    return data; // Return original data if parsing fails
+  }
+}
+
+function transformIdToJsonArray(dataSingle) {
+  if (dataSingle == null) {
+    return JSON.stringify([]);
+  }
+  const cleanId = dataSingle.replace(/^\{|\}$/g, "").trim();
+  return JSON.stringify([cleanId]);
+}
 
 export const processDataForContentfulEntryField = (
   data: Maybe<Scalars["Any"]>,
@@ -369,10 +411,19 @@ export async function convertMarkdownToRichText(markdown: string): Promise<Docum
   }
 }
 
+function isJsonString(str: string): boolean {
+  try {
+    JSON.parse(str);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 async function performConversion(markdown: string) {
   const richTextDocument = await convertMarkdownToRichText(markdown);
   if (richTextDocument) {
-    console.log("Converted Rich Text:", JSON.stringify(richTextDocument, null, 2));
+    // console.log("Converted Rich Text:", JSON.stringify(richTextDocument, null, 2));
   } else {
     console.log("Failed to convert Markdown to Rich Text.");
   }

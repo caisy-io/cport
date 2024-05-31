@@ -83,7 +83,7 @@ const normalizeContentfulEntry = (entry: Entry<any>, draftContent: Number): Cont
     let fieldData = entry.fields[fieldKey];
     fields.push({
       id: `${entry.sys.id}_${fieldKey}_${locale}`,
-      blueprintFieldId: fieldKey,
+      blueprintFieldId: entry.sys.contentType.sys.id + "_" + fieldKey,
       createdAt: entry.sys.createdAt,
       data: fieldData,
       documentFieldLocaleId: locale,
