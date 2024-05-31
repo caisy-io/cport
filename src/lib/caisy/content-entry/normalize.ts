@@ -60,6 +60,8 @@ export const fromStringToCaisyContentFieldType = (fieldType: string): ContentEnt
       return ContentEntryContentTypeFieldType.Color;
     case "connection":
       return ContentEntryContentTypeFieldType.Connection;
+    case "array":
+      return ContentEntryContentTypeFieldType.Connection;
     case "datetime":
       return ContentEntryContentTypeFieldType.DateTime;
     case "extension":
@@ -94,6 +96,8 @@ export const fromStringToCaisyBlueprintFieldType = (fieldType: string): Blueprin
     case "color":
       return BlueprintFieldType.BlueprintFieldTypeColor;
     case "connection":
+      return BlueprintFieldType.BlueprintFieldTypeConnection;
+    case "array":
       return BlueprintFieldType.BlueprintFieldTypeConnection;
     case "datetime":
       return BlueprintFieldType.BlueprintFieldTypeDatetime;
