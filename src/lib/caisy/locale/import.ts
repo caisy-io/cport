@@ -7,6 +7,7 @@ import { isUuid, generateUuidFromString } from "../../common/writer/content-entr
 let localeChangeSet: DocumentFieldLocaleChangeSet[] = [];
 export { localeChangeSet };
 let localeIDandApiNameMatchMap = new Map<string, string>();
+export { localeIDandApiNameMatchMap };
 
 async function fetchDocumentLocalesFromDatabase({
   sdk,
@@ -24,11 +25,9 @@ async function fetchDocumentLocalesFromDatabase({
     });
     documentLocalesInputs.forEach((locale) => {
       if (locale.fallbackLocaleId !== null && locale.fallbackLocaleId !== "") {
-        console.log("fallbackLocaleId: ", localeIDandApiNameMatchMap.get(locale.fallbackLocaleId));
         locale.fallbackLocaleId = localeIDandApiNameMatchMap.get(locale.fallbackLocaleId);
       }
     });
-    console.log("inputs: ", documentLocalesInputs);
     const changeSet = await submitLocaleChanges(documentLocalesInputs, sdk, projectId);
     localeChangeSet = changeSet;
   } catch (error) {

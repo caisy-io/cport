@@ -207,7 +207,7 @@ export const processDataForCaisyDocumentField = async (
       case ContentEntryContentTypeFieldType.Tag:
       case ContentEntryContentTypeFieldType.Select:
         // return safelyParseJSON(data.valueKeywords);
-        return transformIdToJsonArray(data.valueKeywords);
+        return safelyParseJSON(transformIdToJsonArray(data.valueKeywords));
       case ContentEntryContentTypeFieldType.Extension:
       case ContentEntryContentTypeFieldType.GeoPoint:
       case ContentEntryContentTypeFieldType.File:
@@ -247,11 +247,14 @@ function handleArrayOrString(data: string): any {
 }
 
 function transformIdToJsonArray(dataSingle) {
-  if (dataSingle == null) {
+  if (Array.isArray(dataSingle)) {
+    return JSON.stringify(dataSingle.map((id) => id.replace(/^\{|\}$/g, "").trim()));
+  } else if (dataSingle == null) {
     return JSON.stringify([]);
+  } else {
+    const cleanId = dataSingle.replace(/^\{|\}$/g, "").trim();
+    return JSON.stringify([cleanId]);
   }
-  const cleanId = dataSingle.replace(/^\{|\}$/g, "").trim();
-  return JSON.stringify([cleanId]);
 }
 
 export const processDataForContentfulEntryField = (

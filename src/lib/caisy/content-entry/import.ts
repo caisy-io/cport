@@ -14,6 +14,7 @@ import { blueprintChangeSet } from "./../content-type/import";
 import { processDataForCaisyDocumentField, ContentEntryFieldData } from "../../common/types/content-entry";
 import { localeChangeSet } from "./../locale/import";
 import { isUuid, generateUuidFromString } from "../../common/writer/content-entry";
+import { localeIDandApiNameMatchMap } from "../locale/import";
 
 const PAGE_LIMIT = 100;
 
@@ -37,38 +38,48 @@ async function fetchDocumentsFromDatabase({ sdk, projectId, onProgress, onError 
       const documentIds = documentRows.map((doc) => doc.id);
       const documentFieldRows = await fetchDocumentFieldsByDocumentIds(documentIds);
       console.log("Fetched documents fields:", documentFieldRows.length);
-      const fieldsByDocumentId = documentFieldRows.reduce((acc, field) => {
-        const validFieldId = isUuid(field.contentTypeFieldId)
-          ? field.contentTypeFieldId
-          : generateUuidFromString(field.contentTypeFieldId);
-        let documentFieldLocaleID = isUuid(field.contentEntryFieldLocaleId)
-          ? field.contentEntryFieldLocaleId
-          : generateUuidFromString(field.contentEntryFieldLocaleId);
-        localeChangeSet.forEach((changeSetRes) => {
-          if (changeSetRes.sourceDocumentFieldLocaleId === documentFieldLocaleID) {
-            documentFieldLocaleID = changeSetRes.targetDocumentFieldLocaleId;
-          }
-        });
-        const entryData = {
-          valueString: field.valueString,
-          valueBool: field.valueBool,
-          valueDate: field.valueDate,
-          valueNumber: +field.valueNumber,
-          valueKeywords: field.valueKeywords,
-          valueObjects: field.valueObjects,
-        };
-        const fieldData = {
-          blueprintFieldId: validFieldId,
-          documentFieldLocaleId: documentFieldLocaleID,
-          data: processDataForCaisyDocumentField(
+      const fieldsByDocumentId = await Promise.all(
+        documentFieldRows.map(async (field) => {
+          const validFieldId = isUuid(field.contentTypeFieldId)
+            ? field.contentTypeFieldId
+            : generateUuidFromString(field.contentTypeFieldId);
+          let documentFieldLocaleID = localeIDandApiNameMatchMap.get(field.contentEntryFieldLocaleId);
+          localeChangeSet.forEach((changeSetRes) => {
+            if (changeSetRes.sourceDocumentFieldLocaleId === documentFieldLocaleID) {
+              documentFieldLocaleID = changeSetRes.targetDocumentFieldLocaleId;
+            }
+          });
+
+          const entryData = {
+            valueString: field.valueString,
+            valueBool: field.valueBool,
+            valueDate: field.valueDate,
+            valueNumber: +field.valueNumber,
+            valueKeywords: field.valueKeywords,
+            valueObjects: field.valueObjects,
+          };
+
+          const dataResult = await processDataForCaisyDocumentField(
             entryData,
             fromStringToCaisyContentFieldType(field.contentTypeFieldType),
-          ),
-          type: fromStringToCaisyBlueprintFieldType(field.contentTypeFieldType),
-          blueprintFieldName: field.contentTypeFieldName,
-        };
+          );
 
-        (acc[field.contentEntryId] = acc[field.contentEntryId] || []).push(fieldData);
+          return {
+            contentEntryId: field.contentEntryId,
+            fieldData: {
+              blueprintFieldId: validFieldId,
+              documentFieldLocaleId: documentFieldLocaleID,
+              data: dataResult,
+              type: fromStringToCaisyBlueprintFieldType(field.contentTypeFieldType),
+              blueprintFieldName: field.contentTypeFieldName,
+            },
+          };
+        }),
+      );
+
+      // Convert array of results into a structure grouped by contentEntryId
+      const groupedFieldsByDocumentId = fieldsByDocumentId.reduce((acc, item) => {
+        (acc[item.contentEntryId] = acc[item.contentEntryId] || []).push(item.fieldData);
         return acc;
       }, {});
 
@@ -85,7 +96,7 @@ async function fetchDocumentsFromDatabase({ sdk, projectId, onProgress, onError 
           statusId: denormalizeCaisyContentEntryStatus(doc.status),
           projectId: projectId,
           blueprintVariant: denormalizeCaisyContentTypeVariant(doc.contentTypeVariant),
-          fields: fieldsByDocumentId[doc.id] || [],
+          fields: groupedFieldsByDocumentId[doc.id] || [],
         };
       });
       documentInputs.forEach((documentInput) => {
