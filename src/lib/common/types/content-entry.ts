@@ -3,6 +3,7 @@ import { documentToHtmlString } from "@contentful/rich-text-html-renderer";
 import { BLOCKS, INLINES, MARKS, Document } from "@contentful/rich-text-types";
 import TurndownService from "turndown";
 import { richTextFromMarkdown } from "@contentful/rich-text-from-markdown";
+import { generateUuidFromString } from "../../common/writer/content-entry";
 
 export enum ContentEntryContentTypeVariant {
   Unspecified = "unspecified",
@@ -68,6 +69,7 @@ export type ContentEntry = {
 export type ContentEntryField = {
   id?: Maybe<Scalars["String"]>;
   blueprintFieldId?: Maybe<Scalars["String"]>;
+  blueprintFieldName?: Maybe<Scalars["String"]>;
   createdAt?: Maybe<Scalars["Time"]>;
   data?: Maybe<Scalars["Any"]>;
   documentFieldLocaleId?: Maybe<Scalars["String"]>;
@@ -219,6 +221,7 @@ export const processDataForCaisyDocumentField = async (
           return safelyParseJSON(data.valueObjects);
         } else {
           const markdown = await convertHtmlToMarkdown(data.valueObjects);
+          console.log("richText", markdown);
           const richText = await performConversion(markdown);
           return richText;
         }
@@ -248,12 +251,13 @@ function handleArrayOrString(data: string): any {
 
 function transformIdToJsonArray(dataSingle) {
   if (Array.isArray(dataSingle)) {
-    return JSON.stringify(dataSingle.map((id) => id.replace(/^\{|\}$/g, "").trim()));
+    return JSON.stringify(dataSingle.map((id) => generateUuidFromString(id.replace(/^\{|\}$/g, "").trim())));
   } else if (dataSingle == null) {
     return JSON.stringify([]);
   } else {
     const cleanId = dataSingle.replace(/^\{|\}$/g, "").trim();
-    return JSON.stringify([cleanId]);
+    const uuid = generateUuidFromString(cleanId);
+    return JSON.stringify([uuid]);
   }
 }
 
@@ -387,17 +391,16 @@ const convertRichTextToHtml = (richTextDocument: Document): string => {
 };
 
 export function convertHtmlToMarkdown(html: string): string {
-  // Create a new instance of Turndown Service
   const turndownService = new TurndownService({
-    headingStyle: "atx", // Can be set to 'setext' or 'atx' (Markdown heading style)
-    hr: "---", // Horizontal rule replacement
-    bulletListMarker: "-", // Bullet list marker ('*', '-', or '+')
-    codeBlockStyle: "fenced", // Code block style ('indented' or 'fenced')
-    fence: "```", // Fencing style for code blocks (typically three backticks)
-    emDelimiter: "*", // Emphasis delimiter ('*' or '_')
-    strongDelimiter: "**", // Strong delimiter ('**' or '__')
-    linkStyle: "inlined", // Can be 'inlined' or 'referenced'
-    linkReferenceStyle: "full", // Can be 'full', 'collapsed', or 'shortcut'
+    headingStyle: "atx",
+    hr: "---",
+    bulletListMarker: "-",
+    codeBlockStyle: "fenced",
+    fence: "```",
+    emDelimiter: "*",
+    strongDelimiter: "**",
+    linkStyle: "inlined",
+    linkReferenceStyle: "full",
   });
   const markdown = turndownService.turndown(html);
 

@@ -29,7 +29,7 @@ export const createCaisyProvider = ({ token, endpoint, projectId }: CaisyProvide
     import: async ({ onError, onProgress }): Promise<void> => {
       console.log("Importing data from Caisy...");
       await Promise.all([
-        // importCaisyTags({ sdk, projectId, onError, onProgress }),
+        importCaisyTags({ sdk, projectId, onError, onProgress }),
         importCaisyBlueprints({ sdk, projectId, onError, onProgress }),
       ]);
       await importCaisyDocumentLocales({ sdk, projectId, onError, onProgress });

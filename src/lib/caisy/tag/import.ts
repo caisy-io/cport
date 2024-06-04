@@ -2,10 +2,15 @@ import { db } from "../../common/db";
 import { initSdk, TagUpsertInputInput, ReferenceType } from "@caisy/sdk";
 import { CaisyRunOptions } from "../provider";
 import { tag } from "../../common/schema";
+import { isUuid, generateUuidFromString } from "../../common/writer/content-entry";
+
 async function fetchTagsFromDatabase({ sdk, projectId, onProgress, onError }: CaisyRunOptions): Promise<void> {
   let tags: TagUpsertInputInput[] = [];
   const rows = await db.select().from(tag).execute();
   rows.forEach((row) => {
+    if (!isUuid(row.id)) {
+      row.id = generateUuidFromString(row.id);
+    }
     tags.push({
       tagId: row.id,
       name: row.name,

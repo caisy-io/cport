@@ -62,7 +62,7 @@ const normalizeContentfulEntry = (entry: Entry<any>, draftContent: Number): Cont
   const titleField =
     typeof entry.fields.internalName === "string"
       ? entry.fields.internalName
-      : entry.fields.internalName["en-US"] || "No Title Provided";
+      : entry.fields.internalName["en-US"] || "";
 
   const previewImageUrl =
     entry.fields.image && entry.fields.image["en-US"] ? entry.fields.image["en-US"].url : undefined;
@@ -84,6 +84,7 @@ const normalizeContentfulEntry = (entry: Entry<any>, draftContent: Number): Cont
     fields.push({
       id: `${entry.sys.id}_${fieldKey}_${locale}`,
       blueprintFieldId: entry.sys.contentType.sys.id + "_" + fieldKey,
+      blueprintFieldName: fieldKey,
       createdAt: entry.sys.createdAt,
       data: fieldData,
       documentFieldLocaleId: locale,

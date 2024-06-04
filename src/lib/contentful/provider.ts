@@ -6,6 +6,7 @@ import { writeContentEntries, writeContentLocales } from "./content-entry/writeC
 import { ContentType, Entry, Locale, createClient } from "contentful";
 import { adjustContentfulContentEntryFields } from "./../common/writer/content-entry";
 import { writeAssets } from "./asset-files/asset";
+import { writeTags } from "./tag/writeTags";
 
 export type ContentfulProviderOptions = {
   token: string;
@@ -92,6 +93,7 @@ export const createContentfulProvider = ({
         managementToken: token,
       };
       const exportRes = (await contentfulExport(options)) as ContentfulExport;
+      await writeTags(exportRes.tags);
       await writeContentTypes(exportRes.contentTypes as unknown as ContentType[]);
       await writeContentLocales(exportRes.locales as unknown as Locale[]);
       await writeAssets(exportRes.assets);

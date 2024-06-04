@@ -96,8 +96,7 @@ export const insertContentfulEntryField = async (
   try {
     for (const field of fields) {
       let contentEntryFieldData = await processDataForContentfulEntryField(field.data, field.type);
-      // let contentTypeFieldName = blueprintMaps.blueprintFieldNameMap.get(field.blueprintFieldId) || "";
-      let contentTypeFieldName = ContentFieldNameMap.get(field.blueprintFieldId) || "";
+      let contentTypeFieldName = field.blueprintFieldName || "";
       if (contentTypeFieldName === "src" && contentEntryFieldData.valueObjects !== undefined) {
         const jsonObj = JSON.parse(contentEntryFieldData.valueObjects);
 
