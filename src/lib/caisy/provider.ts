@@ -9,6 +9,7 @@ import { exportCaisyContentEntries } from "./content-entry/export";
 import { exportCaisyAssets } from "./asset-files/asset";
 import { importCaisyDocuments } from "./content-entry/import";
 import { importCaisyDocumentLocales } from "./locale/import";
+import { importAssets } from "./asset-files/asset_upload";
 
 export type CaisyProviderOptions = {
   token: string;
@@ -34,6 +35,12 @@ export const createCaisyProvider = ({ token, endpoint, projectId }: CaisyProvide
       ]);
       await importCaisyDocumentLocales({ sdk, projectId, onError, onProgress });
       await importCaisyDocuments({ sdk, projectId, onError, onProgress });
+      await importAssets({
+        folderPath: "./../../../cport_assets/contentful",
+        token: token,
+        projectId: projectId,
+        endpoint: endpoint,
+      });
       console.log("Successfully imported all data.");
     },
     export: async ({ onError, onProgress }): Promise<void> => {
