@@ -8,6 +8,11 @@ export interface IUpload extends TusUpload {
   url: string;
 }
 
+export interface IUploadResult {
+  url: string;
+  documentId: string;
+}
+
 export interface IHandleFile {
   file: File | Blob | Pick<ReadableStreamDefaultReader, "read">;
   token: string;
@@ -51,10 +56,10 @@ export const uploadFile = async ({ file, token, projectId, meta, endpoint }) => 
 
         resolve({ url: assetUrl, documentId });
       },
-    });
+    }) as IUpload;
 
     upload.start();
-  });
+  }) as Promise<IUploadResult>;
 };
 
 export interface IUploadResult {
@@ -79,6 +84,7 @@ function getAllFiles(dirPath, arrayOfFiles = []) {
 export const importAssets = async ({ folderPath, token, projectId, endpoint }) => {
   const absoluteFolderPath = path.resolve(__dirname, "..", folderPath);
   console.log("Scanning directory:", absoluteFolderPath);
+  const idMap = new Map();
 
   try {
     const files = getAllFiles(absoluteFolderPath);
@@ -87,8 +93,10 @@ export const importAssets = async ({ folderPath, token, projectId, endpoint }) =
       const fileName = path.basename(filePath);
       const fileType = mime.lookup(filePath) || "application/octet-stream";
 
-      await uploadFile({
-        file: fileBuffer, // Pass the buffer directly
+      const oldId = path.basename(path.dirname(filePath)); // Assuming the old ID is the folder name
+
+      const { documentId } = await uploadFile({
+        file: fileBuffer,
         token,
         projectId,
         endpoint,
@@ -97,7 +105,9 @@ export const importAssets = async ({ folderPath, token, projectId, endpoint }) =
           filetype: fileType,
         },
       });
+      idMap.set(oldId, documentId);
     }
+    return idMap;
   } catch (error) {
     console.error("Error importing assets:", error);
     throw error;
