@@ -18,7 +18,10 @@ import { localeIDandApiNameMatchMap } from "../locale/import";
 
 const PAGE_LIMIT = 100;
 
-async function fetchDocumentsFromDatabase({ sdk, projectId, onProgress, onError }: CaisyRunOptions): Promise<void> {
+async function fetchDocumentsFromDatabase(
+  { sdk, projectId, onProgress, onError }: CaisyRunOptions,
+  idMap: Map<string, string>,
+): Promise<void> {
   try {
     const totalDocumentsResult = await db.select({ count: count() }).from(contentEntry);
     console.log("Total documents to import:", totalDocumentsResult[0].count);
@@ -62,6 +65,7 @@ async function fetchDocumentsFromDatabase({ sdk, projectId, onProgress, onError 
           const dataResult = await processDataForCaisyDocumentField(
             entryData,
             fromStringToCaisyContentFieldType(field.contentTypeFieldType),
+            idMap,
           );
 
           return {
@@ -150,6 +154,9 @@ async function submitDocumentChanges(documentInputs, sdk, projectId) {
   }
 }
 
-export const importCaisyDocuments = async ({ sdk, projectId, onError, onProgress }: CaisyRunOptions): Promise<void> => {
-  await fetchDocumentsFromDatabase({ sdk, projectId, onError, onProgress });
+export const importCaisyDocuments = async (
+  { sdk, projectId, onError, onProgress }: CaisyRunOptions,
+  idMap: Map<string, string>,
+): Promise<void> => {
+  await fetchDocumentsFromDatabase({ sdk, projectId, onError, onProgress }, idMap);
 };

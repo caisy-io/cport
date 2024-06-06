@@ -178,6 +178,7 @@ export const processDataForEntryField = (
 export const processDataForCaisyDocumentField = async (
   data: ContentEntryFieldData,
   fieldType: ContentEntryContentTypeFieldType,
+  idMap: Map<string, string>,
 ): Promise<Maybe<Scalars["Any"]>> => {
   if (data === null || data === undefined) {
     return {};
@@ -209,7 +210,7 @@ export const processDataForCaisyDocumentField = async (
       case ContentEntryContentTypeFieldType.Tag:
       case ContentEntryContentTypeFieldType.Select:
         // return safelyParseJSON(data.valueKeywords);
-        return safelyParseJSON(transformIdToJsonArray(data.valueKeywords));
+        return safelyParseJSON(transformIdToJsonArray(data.valueKeywords, idMap));
       case ContentEntryContentTypeFieldType.Extension:
       case ContentEntryContentTypeFieldType.GeoPoint:
       case ContentEntryContentTypeFieldType.File:
@@ -249,15 +250,22 @@ function handleArrayOrString(data: string): any {
   }
 }
 
-function transformIdToJsonArray(dataSingle) {
+function transformIdToJsonArray(dataSingle, idMap) {
   if (Array.isArray(dataSingle)) {
-    return JSON.stringify(dataSingle.map((id) => generateUuidFromString(id.replace(/^\{|\}$/g, "").trim())));
+    return JSON.stringify(
+      dataSingle.map((id) => {
+        const cleanId = id.replace(/^\{|\}$/g, "").trim();
+        // Check if the ID exists in the map and return the new ID if available
+        return idMap.has(cleanId) ? idMap.get(cleanId) : generateUuidFromString(cleanId);
+      }),
+    );
   } else if (dataSingle == null) {
     return JSON.stringify([]);
   } else {
     const cleanId = dataSingle.replace(/^\{|\}$/g, "").trim();
-    const uuid = generateUuidFromString(cleanId);
-    return JSON.stringify([uuid]);
+    // Check for mapped ID or generate a new UUID
+    const newId = idMap.has(cleanId) ? idMap.get(cleanId) : generateUuidFromString(cleanId);
+    return JSON.stringify([newId]);
   }
 }
 
@@ -390,7 +398,17 @@ const convertRichTextToHtml = (richTextDocument: Document): string => {
   return documentToHtmlString(richTextDocument, options);
 };
 
+function preprocessMarkdownForCustomSyntax(markdown) {
+  // Simple regex to find custom [entry-id:x] syntax and replace it with a JSON placeholder
+  const entryIdPattern = /\[entry-id:([^\]]+)\]/g;
+  return markdown.replace(entryIdPattern, (_, id) => {
+    // Returning a JSON structure as a placeholder, adjust according to your rich text requirements
+    return `<div class="entry-reference" data-entry-id="${id}"></div>`;
+  });
+}
+
 export function convertHtmlToMarkdown(html: string): string {
+  // Adjust your TurndownService setup here as needed
   const turndownService = new TurndownService({
     headingStyle: "atx",
     hr: "---",
@@ -402,13 +420,26 @@ export function convertHtmlToMarkdown(html: string): string {
     linkStyle: "inlined",
     linkReferenceStyle: "full",
   });
-  const markdown = turndownService.turndown(html);
 
-  return markdown;
+  // Adding a rule for `div` elements with `data-entry-id`
+  turndownService.addRule("entryIdDivs", {
+    filter: function (node) {
+      return node.nodeName === "DIV" && node.getAttribute("data-entry-id");
+    },
+    replacement: function (content, node) {
+      const id = node.getAttribute("data-entry-id");
+      return `\n\n[entry-id:${id}]\n\n`;
+    },
+  });
+
+  const markdown = turndownService.turndown(html);
+  // Process the markdown to handle any custom syntax
+  return preprocessMarkdownForCustomSyntax(markdown);
 }
 
 export async function convertMarkdownToRichText(markdown: string): Promise<Document | null> {
   try {
+    // Assuming richTextFromMarkdown can handle simple HTML, convert preprocessed markdown
     const document: Document | null = await richTextFromMarkdown(markdown);
     return document;
   } catch (error) {
