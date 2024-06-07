@@ -11,6 +11,7 @@ import {
   ContentEntryField,
   processDataForEntryField,
   processDataForContentfulEntryField,
+  ContentEntryContentTypeFieldType,
 } from "../types/content-entry";
 import { contentLocaleSchema } from "../zod/content-entry";
 import { InferInsertModel, and, sql, eq, isNull } from "drizzle-orm";
