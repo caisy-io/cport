@@ -4,6 +4,7 @@ import { BLOCKS, INLINES, MARKS, Document } from "@contentful/rich-text-types";
 import TurndownService from "turndown";
 import { richTextFromMarkdown } from "@contentful/rich-text-from-markdown";
 import { generateUuidFromString } from "../../common/writer/content-entry";
+// import { parseHTMLToJSON } from "@caisy/rich-text-html-parser";
 
 export enum ContentEntryContentTypeVariant {
   Unspecified = "unspecified",
@@ -89,12 +90,14 @@ export type ContentEntryFieldData = {
 
 const processConnectionData = (connectionData) => {
   if (Array.isArray(connectionData)) {
-    return connectionData.map((link) => formatId(link.sys.id)).join(", ");
+    const ids = connectionData.map((link) => link.sys.id).join(",");
+    return formatId(ids);
   } else if (connectionData && connectionData.sys) {
     return formatId(connectionData.sys.id);
   }
   return null;
 };
+
 const formatId = (id) => `{${id}}`;
 
 export const processDataForEntryField = (
@@ -209,6 +212,7 @@ export const processDataForCaisyDocumentField = async (
       case ContentEntryContentTypeFieldType.Connection:
       case ContentEntryContentTypeFieldType.Tag:
       case ContentEntryContentTypeFieldType.Select:
+      case ContentEntryContentTypeFieldType.Array:
         // return safelyParseJSON(data.valueKeywords);
         return safelyParseJSON(transformIdToJsonArray(data.valueKeywords, idMap));
       case ContentEntryContentTypeFieldType.Extension:
@@ -221,9 +225,8 @@ export const processDataForCaisyDocumentField = async (
         if (isJsonString(data.valueObjects)) {
           return safelyParseJSON(data.valueObjects);
         } else {
-          const markdown = await convertHtmlToMarkdown(data.valueObjects);
-          console.log("richText", markdown);
-          const richText = await performConversion(markdown);
+          const { parseHTMLToJSON } = await import("@caisy/rich-text-html-parser");
+          const richText = await parseHTMLToJSON(data.valueObjects);
           return richText;
         }
     }
@@ -252,21 +255,22 @@ function handleArrayOrString(data: string): any {
 
 function transformIdToJsonArray(dataSingle, idMap) {
   if (Array.isArray(dataSingle)) {
-    return JSON.stringify(
-      dataSingle.map((id) => {
-        const cleanId = id.replace(/^\{|\}$/g, "").trim();
-        // Check if the ID exists in the map and return the new ID if available
-        return idMap.has(cleanId) ? idMap.get(cleanId) : generateUuidFromString(cleanId);
-      }),
-    );
+    return JSON.stringify(dataSingle.map((id) => getNewId(id, idMap)));
   } else if (dataSingle == null) {
     return JSON.stringify([]);
   } else {
-    const cleanId = dataSingle.replace(/^\{|\}$/g, "").trim();
-    // Check for mapped ID or generate a new UUID
-    const newId = idMap.has(cleanId) ? idMap.get(cleanId) : generateUuidFromString(cleanId);
-    return JSON.stringify([newId]);
+    // Split the string by commas in case it contains multiple IDs in one string
+    const ids = dataSingle
+      .replace(/^\{|\}$/g, "")
+      .trim()
+      .split(",");
+    const transformedIds = ids.map((id) => getNewId(id.trim(), idMap));
+    return JSON.stringify(transformedIds);
   }
+}
+
+function getNewId(id, idMap) {
+  return idMap.has(id) ? idMap.get(id) : generateUuidFromString(id);
 }
 
 export const processDataForContentfulEntryField = (
@@ -320,6 +324,7 @@ export const processDataForContentfulEntryField = (
       }
     case ContentEntryContentTypeFieldType.Connection:
     case ContentEntryContentTypeFieldType.Tag:
+    case ContentEntryContentTypeFieldType.Array:
     case ContentEntryContentTypeFieldType.Select:
       return {
         valueObjects: undefined,
