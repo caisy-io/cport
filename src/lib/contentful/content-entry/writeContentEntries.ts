@@ -59,10 +59,13 @@ function isPublished(entity) {
 }
 
 const normalizeContentfulEntry = (entry: Entry<any>, draftContent: Number): ContentEntry => {
-  const titleField =
-    typeof entry.fields.internalName === "string"
-      ? entry.fields.internalName
-      : entry.fields.internalName["en-US"] || "";
+  let titleField = "Untitled";
+  try {
+    titleField =
+      typeof entry.fields.internalName === "string"
+        ? entry.fields.internalName
+        : entry.fields.internalName["en-US"] || "";
+  } catch {}
 
   const previewImageUrl =
     entry.fields.image && entry.fields.image["en-US"] ? entry.fields.image["en-US"].url : undefined;
@@ -121,9 +124,9 @@ export const writeContentEntries = async (contentEntries: Entry[], draftContent:
       }
       // await insertContentfulEntryField(normalizedContentEntry.fields, normalizedContentEntry.documentId);
     } catch (e) {
-      const normalizedContentEntry = normalizeContentfulEntry(contentEntry, draftContent);
+      throw e;
       // console.error(JSON.stringify(normalizedContentEntry, null, 2));
-      throw new Error(`Error writing content type: ${e}`);
+      // throw new Error(`Error writing content type: ${e}`, {cause: e} );
     }
   }
 };

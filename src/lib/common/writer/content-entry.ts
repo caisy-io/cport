@@ -94,8 +94,8 @@ export const insertContentfulEntryField = async (
   documentID: string,
   draftContent: Number,
 ) => {
-  try {
-    for (const field of fields) {
+  for (const field of fields) {
+    try {
       let contentEntryFieldData = await processDataForContentfulEntryField(field.data, field.type);
       let contentTypeFieldName = field.blueprintFieldName || "";
       if (contentTypeFieldName === "src" && contentEntryFieldData.valueObjects !== undefined) {
@@ -115,12 +115,19 @@ export const insertContentfulEntryField = async (
           contentTypeFieldId: field.blueprintFieldId,
           contentTypeFieldName: contentTypeFieldName,
           contentEntryFieldLocaleId: field.documentFieldLocaleId,
-          valueString: contentEntryFieldData.valueString,
-          valueBool: contentEntryFieldData.valueBool,
-          valueKeywords: contentEntryFieldData.valueKeywords,
-          valueDate: contentEntryFieldData.valueDate,
-          valueNumber: contentEntryFieldData.valueNumber,
-          valueObjects: contentEntryFieldData.valueObjects,
+          valueString: contentEntryFieldData.valueString ? `${contentEntryFieldData.valueString}` : null,
+          valueBool:
+            contentEntryFieldData.valueBool === undefined || contentEntryFieldData.valueBool === null
+              ? null
+              : contentEntryFieldData.valueBool
+                ? 1
+                : 0,
+          valueKeywords: contentEntryFieldData.valueKeywords ? `${contentEntryFieldData.valueKeywords}` : null,
+          valueDate: contentEntryFieldData.valueDate ? `${contentEntryFieldData.valueDate}` : null,
+          valueNumber: contentEntryFieldData.valueNumber ? `${contentEntryFieldData.valueNumber}` : null,
+          valueObjects: contentEntryFieldData.valueObjects
+            ? `${JSON.stringify(contentEntryFieldData.valueObjects)}`
+            : null,
         } as any)
         .returning({
           id: contentEntryField.id,
@@ -139,10 +146,12 @@ export const insertContentfulEntryField = async (
         })
         .onConflictDoNothing()
         .execute();
+    } catch (err) {
+      let contentEntryFieldData = await processDataForContentfulEntryField(field.data, field.type);
+      console.log(` contentEntryFieldData`, contentEntryFieldData);
+      console.log(` insertContentEntryFields`);
+      throw err;
     }
-  } catch (err) {
-    console.log(` insertContentEntryFields`);
-    throw new Error(err);
   }
 };
 
