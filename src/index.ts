@@ -21,6 +21,10 @@ async function run(): Promise<void> {
 
   console.log(` options`, options);
 
+  // const { parseJSONToHTML } = await import("@caisy/rich-text-html-parser");
+  // const htmlSample = await parseJSONToHTML(await require("./sample-data/caisy_richtext.json"));
+  // console.log(` htmlSample: `, htmlSample);
+
   const action = (options?.import && "import") || (options?.export && "export") || answers.action;
   const accessToken = options.token || answers.token;
   const outputPath = options.outputPath || answers.outputPath || "./output";

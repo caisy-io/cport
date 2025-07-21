@@ -52,26 +52,21 @@ const insertContentTypeGroups = async (contentTypeInput: ContentType) => {
 };
 
 const insertContentTypeGroup = async (group: ContentTypeGroup) => {
-  try {
-    return await db
-      .insert(contentTypeGroup)
-      .values({
-        id: group.id,
-        name: group.name,
-        contentTypeId: group.contentTypeId,
-        position: group.position,
-      })
-      .returning({
-        id: contentTypeGroup.id,
-        name: contentTypeGroup.name,
-        contentTypeId: contentTypeGroup.contentTypeId,
-        position: contentTypeGroup.position,
-      })
-      .execute();
-  } catch (err) {
-    console.log(` insertContentTypeGroup`);
-    throw new Error(err);
-  }
+  return await db
+    .insert(contentTypeGroup)
+    .values({
+      id: group.id,
+      name: group.name,
+      contentTypeId: group.contentTypeId,
+      position: group.position,
+    })
+    .returning({
+      id: contentTypeGroup.id,
+      name: contentTypeGroup.name,
+      contentTypeId: contentTypeGroup.contentTypeId,
+      position: contentTypeGroup.position,
+    })
+    .execute();
 };
 
 const insertContentTypeFields = async (fields: ContentTypeField[]) => {

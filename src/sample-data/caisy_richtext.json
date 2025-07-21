@@ -1,0 +1,749 @@
+{
+  "content": [
+    {
+      "attrs": {
+        "level": 1,
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "text": "Blueprint Sync",
+          "type": "text"
+        }
+      ],
+      "type": "heading"
+    },
+    {
+      "attrs": {
+        "documentId": "9387cccb-4b07-4e61-b1dd-199cba490c5e"
+      },
+      "type": "documentLink"
+    },
+    {
+      "attrs": {
+        "level": 2,
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "text": "Get a single Blueprint",
+          "type": "text"
+        }
+      ],
+      "type": "heading"
+    },
+    {
+      "attrs": {
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "text": "Let's start by looking at a blueprint in the CMS UI of a simple blog article.",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "documentId": "6d181653-af74-4fb1-8c7e-8d24b3ad8b47"
+      },
+      "type": "documentLink"
+    },
+    {
+      "attrs": {
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "text": "If you get this whole blueprint with all its groups and fields from the API, it looks like this:",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "documentId": "f2fc3c1d-5c6d-4d06-95d6-1fa9a07bcd25"
+      },
+      "type": "documentLink"
+    },
+    {
+      "attrs": {
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "text": "The full example json can be found ",
+          "type": "text"
+        },
+        {
+          "marks": [
+            {
+              "attrs": {
+                "class": null,
+                "href": "https://gist.github.com/MoritzGruber/5891595586fb875e147b59ae7bd37b10",
+                "target": "_self"
+              },
+              "type": "link"
+            }
+          ],
+          "text": "here.",
+          "type": "text"
+        },
+        {
+          "type": "hardBreak"
+        },
+        {
+          "text": "To get this data, you can either collect all your project blueprints with this GraphQL query from the internal API, as seen here:",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "documentId": "3b5b8cbb-a047-4fce-8a08-7e62aba573b7"
+      },
+      "type": "documentLink"
+    },
+    {
+      "attrs": {
+        "documentId": "d7ad46de-b78c-4a67-ab96-aa7f02d174e7"
+      },
+      "type": "documentLink"
+    },
+    {
+      "attrs": {
+        "level": 2,
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "text": "Create a Blueprint",
+          "type": "text"
+        }
+      ],
+      "type": "heading"
+    },
+    {
+      "attrs": {
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "text": "When creating blueprints, all IDs that are not passed are automatically generated. If you are looking into running multiple projects and syncing them, it might be good to note that you can create blueprints with the same IDs in different projects. The same applies for field and group IDs. If you duplicate a project in the UI, the blueprint IDs are also kept identical.",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "documentId": "6764943d-f89f-4001-9d50-927f8db67e05"
+      },
+      "type": "documentLink"
+    },
+    {
+      "attrs": {
+        "level": 2,
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "text": "Update a Blueprint",
+          "type": "text"
+        }
+      ],
+      "type": "heading"
+    },
+    {
+      "attrs": {
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "text": "The update operation allows you to modify various aspects of a blueprint, such as its name, description, and the fields within its groups.",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "textAlign": "start"
+      },
+      "content": [
+        {
+          "text": "One of the advantages of this update process is the ability to move fields between different groups without any problem. As long as the unique identifier (",
+          "type": "text"
+        },
+        {
+          "marks": [
+            {
+              "type": "code"
+            }
+          ],
+          "text": "blueprintFieldId",
+          "type": "text"
+        },
+        {
+          "text": ") of the field remains the same, you can change the group it belongs to without causing any data loss or having an impact on the external API.",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "textAlign": "start"
+      },
+      "content": [
+        {
+          "text": "This flexibility allows you to restructure your blueprints as needed, reorganizing fields into different groups or creating new groups altogether. The system ensures that the field data remains intact and correctly associated with its corresponding entity, regardless of which group it resides in.",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "textAlign": "start"
+      },
+      "content": [
+        {
+          "text": "By maintaining the same ",
+          "type": "text"
+        },
+        {
+          "marks": [
+            {
+              "type": "code"
+            }
+          ],
+          "text": "blueprintFieldId",
+          "type": "text"
+        },
+        {
+          "text": " for each field, the update operation can seamlessly relocate fields within the blueprint structure, ensuring a smooth transition without disrupting any existing data or breaking integrations with external systems.",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "textAlign": "start"
+      },
+      "content": [
+        {
+          "text": "This approach promotes better organization and maintainability of your blueprints, enabling you to adapt to changing requirements or optimize the structure of your data models without the need for complex data migrations or API changes.",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "textAlign": "start"
+      },
+      "content": [
+        {
+          "text": "Here's an example of how to retrieve a blueprint and update its fields:",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "documentId": "53d0d97c-dfef-44ab-bd52-66e727ff5f7c"
+      },
+      "type": "documentLink"
+    },
+    {
+      "attrs": {
+        "level": 2,
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "text": "Delete a Blueprint",
+          "type": "text"
+        }
+      ],
+      "type": "heading"
+    },
+    {
+      "attrs": {
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "text": "Sometimes you may need to remove a blueprint from your project entirely. This operation will permanently delete the blueprint and all its associated data, including groups and fields. Here's an example of how to delete a blueprint:",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "textAlign": "start"
+      },
+      "content": [
+        {
+          "text": "We can use the ",
+          "type": "text"
+        },
+        {
+          "marks": [
+            {
+              "type": "code"
+            }
+          ],
+          "text": "DeleteBlueprint",
+          "type": "text"
+        },
+        {
+          "text": " mutation to remove a blueprint from our project. This mutation takes the ",
+          "type": "text"
+        },
+        {
+          "marks": [
+            {
+              "type": "code"
+            }
+          ],
+          "text": "blueprintId",
+          "type": "text"
+        },
+        {
+          "text": " as an input parameter, which uniquely identifies the blueprint you want to delete. After executing this mutation successfully, the blueprint and its associated data will be permanently removed from the system.",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "textAlign": "start"
+      },
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "documentId": "e509edad-5abb-4690-9a33-98b3664ed8a8"
+      },
+      "type": "documentLink"
+    },
+    {
+      "attrs": {
+        "level": 2,
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "text": "Get all project Blueprints",
+          "type": "text"
+        }
+      ],
+      "type": "heading"
+    },
+    {
+      "attrs": {
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "text": "Retrieving all the blueprints associated with a project can be a useful operation for various reasons. For example, you might want to display a list of available blueprints to users, allowing them to select and work with specific blueprints within your application. Additionally, you may need to perform batch operations or analyses across all blueprints in a project.",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "textAlign": "start"
+      },
+      "content": [
+        {
+          "text": "Our system supports fetching all the blueprints within a project through a single GraphQL query. This query can be particularly handy when you need to have a comprehensive view of the data models and structures defined across your project.",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "textAlign": "start"
+      },
+      "content": [
+        {
+          "text": "Here's an example of how to fetch all blueprints from a project:",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "documentId": "ea8b9361-aed3-4593-a48e-77ea9a51be8a"
+      },
+      "type": "documentLink"
+    },
+    {
+      "attrs": {
+        "textAlign": "start"
+      },
+      "content": [
+        {
+          "text": "The response structure, ",
+          "type": "text"
+        },
+        {
+          "marks": [
+            {
+              "type": "code"
+            }
+          ],
+          "text": "connection->edges->node",
+          "type": "text"
+        },
+        {
+          "text": " follows the",
+          "type": "text"
+        },
+        {
+          "marks": [
+            {
+              "attrs": {
+                "class": null,
+                "href": "https://relay.dev/graphql/connections.htm",
+                "target": "_self"
+              },
+              "type": "link"
+            }
+          ],
+          "text": " Relay specification",
+          "type": "text"
+        },
+        {
+          "text": " for pagination and connection handling. The ",
+          "type": "text"
+        },
+        {
+          "marks": [
+            {
+              "type": "code"
+            }
+          ],
+          "text": "connection",
+          "type": "text"
+        },
+        {
+          "text": " field contains the paginated data, with each ",
+          "type": "text"
+        },
+        {
+          "marks": [
+            {
+              "type": "code"
+            }
+          ],
+          "text": "edge",
+          "type": "text"
+        },
+        {
+          "text": " representing a single blueprint. The ",
+          "type": "text"
+        },
+        {
+          "marks": [
+            {
+              "type": "code"
+            }
+          ],
+          "text": "node",
+          "type": "text"
+        },
+        {
+          "text": " field within each edge contains the actual blueprint data.",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "textAlign": "start"
+      },
+      "content": [
+        {
+          "text": "It's worth noting that for projects with a large number of blueprints (more than 1000), our system supports pagination to ensure efficient data retrieval and prevent potential performance issues. Pagination allows you to fetch blueprints in smaller batches, making it easier to manage and process the data on the client side.",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "textAlign": "start"
+      },
+      "content": [
+        {
+          "text": "However, for most users and projects, fetching all the blueprints on the first page should be sufficient, as it's uncommon to have thousands of blueprints within a single project. By default, the first page will return the first 1000 blueprints, providing you with a fast overview of the available data models in your project.",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "level": 2,
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "text": "Upsert multiple Blueprints",
+          "type": "text"
+        }
+      ],
+      "type": "heading"
+    },
+    {
+      "attrs": {
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "text": "In this example, we'll leverage the output from the ",
+          "type": "text"
+        },
+        {
+          "marks": [
+            {
+              "type": "code"
+            }
+          ],
+          "text": "GetManyBlueprints",
+          "type": "text"
+        },
+        {
+          "text": " query to upsert (insert or update) multiple blueprints in our project simultaneously. This approach allows us to efficiently synchronize our project's blueprints with a backup or external source.",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "documentId": "ce1d05df-1cc9-40e7-af7d-8ea12ef134ff"
+      },
+      "type": "documentLink"
+    },
+    {
+      "attrs": {
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "text": "This approach streamlines the process of synchronizing our project's blueprints with a backup or external source. By directly using the output from ",
+          "type": "text"
+        },
+        {
+          "marks": [
+            {
+              "type": "code"
+            }
+          ],
+          "text": "GetManyBlueprints",
+          "type": "text"
+        },
+        {
+          "text": " as input for ",
+          "type": "text"
+        },
+        {
+          "marks": [
+            {
+              "type": "code"
+            }
+          ],
+          "text": "PutManyBlueprints",
+          "type": "text"
+        },
+        {
+          "text": ", we can efficiently upsert multiple blueprints without the need for manual processing or transformation.",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "textAlign": "start"
+      },
+      "content": [
+        {
+          "text": "The ",
+          "type": "text"
+        },
+        {
+          "marks": [
+            {
+              "type": "code"
+            }
+          ],
+          "text": "PutManyBlueprints",
+          "type": "text"
+        },
+        {
+          "text": " mutation will create new blueprints for those that don't exist in the project and update existing ones if they have changed, ensuring that our project's blueprints match the desired state defined by the ",
+          "type": "text"
+        },
+        {
+          "marks": [
+            {
+              "type": "code"
+            }
+          ],
+          "text": "backupBlueprints",
+          "type": "text"
+        },
+        {
+          "text": " array.",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "level": 2,
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "text": "Bonus: Upsert Blueprints from other project",
+          "type": "text"
+        }
+      ],
+      "type": "heading"
+    },
+    {
+      "attrs": {
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "text": "There are more considerations than just blueprints when duplicating project data. You may also want to copy tags, and potentially other related entities. However, instead of downloading all the data and uploading it again, which can be inefficient, you can leverage a dedicated port operation to copy this data even faster. Here's an example that duplicates tags and blueprints from one project to another, similar to the ",
+          "type": "text"
+        },
+        {
+          "marks": [
+            {
+              "type": "code"
+            }
+          ],
+          "text": "GetManyBlueprints",
+          "type": "text"
+        },
+        {
+          "text": " and ",
+          "type": "text"
+        },
+        {
+          "marks": [
+            {
+              "type": "code"
+            }
+          ],
+          "text": "PutManyBlueprints",
+          "type": "text"
+        },
+        {
+          "text": " operations:",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "documentId": "bb6e41eb-df1e-40f6-876e-06ae62988edc"
+      },
+      "type": "documentLink"
+    },
+    {
+      "attrs": {
+        "level": 3,
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "text": "Conclusion",
+          "type": "text"
+        }
+      ],
+      "type": "heading"
+    },
+    {
+      "attrs": {
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "text": "This article has covered various operations for managing blueprints within your projects using the Caisy Internal API. From creating, updating, and deleting individual blueprints to fetching all blueprints or duplicating entire project structures, the API provides a comprehensive set of tools to streamline your workflow.",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "textAlign": "start"
+      },
+      "content": [
+        {
+          "text": "As your project grows and evolves, the ability to efficiently manipulate blueprints is crucial. The examples and explanations provided should equip you with the knowledge and skills necessary to seamlessly work with blueprints and ensure your project's data structure remains consistent and up-to-date.",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "textAlign": "start"
+      },
+      "content": [
+        {
+          "text": "Remember, the power lies in the flexibility and scalability of the Caisy Internal API. ",
+          "type": "text"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "textAlign": "start"
+      },
+      "content": [
+        {
+          "text": "Happy coding, and may your projects thrive with the help of the Caisy Internal API's powerful blueprint management capabilities!",
+          "type": "text"
+        },
+        {
+          "type": "hardBreak"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "attrs": {
+        "documentId": "509beac2-c742-4b6d-8971-fed24e161d09"
+      },
+      "type": "documentLink"
+    }
+  ],
+  "type": "doc"
+}
