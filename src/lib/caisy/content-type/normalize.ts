@@ -14,6 +14,7 @@ import {
 } from "../../common/types/content-type";
 import { generateUuidFromString, isUuid } from "../../common/writer/content-entry";
 import { maybeToValue, requireString, filterDefined, isDefined } from "../../common/utils/type-guards";
+import { toPascalCase } from "./import";
 
 export const normalizeCaisyFieldType = (fieldType: BlueprintFieldType): ContentFieldType => {
   switch (fieldType) {
@@ -127,16 +128,36 @@ export const normalizeCaisyFieldOptions = (fieldTypeOptions: BlueprintFieldOptio
 export const denormalizeCaisyFieldOptions = (
   fieldOptions: ContentTypeFieldOptions,
   fieldType?: string,
+  blueprintRows?: any[],
 ): BlueprintFieldOptions => {
   const initalConnectedIds = fieldOptions.connection?.connectedIds || undefined;
   let connectedIds: string[] | undefined = undefined;
   if (initalConnectedIds) {
     connectedIds = initalConnectedIds
       .filter((id): id is string => id != null)
-      .map(id => {
+      .map(maybeOldCase => {
+        const id = toPascalCase(maybeOldCase);
         const validBlueprintId = isUuid(id) ? id : generateUuidFromString(id);
         return validBlueprintId;
       });
+  }
+
+  let variant = fieldOptions?.connection?.variant
+    ? denormalizeCaisyContentTypeVariant(fieldOptions.connection.variant)
+    : BlueprintVariant.BlueprintVariantUnspecified;
+
+  if (fieldType === ContentFieldType.Array || (connectedIds?.length || 0) >= 1) {
+    const allVariants =
+      blueprintRows
+        ?.filter(b => connectedIds?.includes(isUuid(b.id) ? b.id : generateUuidFromString(b.id)))
+        .map(b => b.variant) || [];
+
+    const uniqueVariants = Array.from(new Set(allVariants));
+    if (uniqueVariants.length === 1) {
+      variant = denormalizeCaisyContentTypeVariant(uniqueVariants[0]);
+    } else if (uniqueVariants.length > 1) {
+      variant = BlueprintVariant.BlueprintVariantUnspecified;
+    }
   }
 
   return {
@@ -167,9 +188,7 @@ export const denormalizeCaisyFieldOptions = (
             visualization: fieldOptions.connection.visualization
               ? denormalizeCaisyConnectionFieldVisualization(fieldOptions.connection.visualization)
               : undefined,
-            variant: fieldOptions.connection.variant
-              ? denormalizeCaisyContentTypeVariant(fieldOptions.connection.variant)
-              : BlueprintVariant.BlueprintVariantUnspecified,
+            variant,
           },
         }
       : {}),

@@ -1,16 +1,5 @@
 import { db } from "../../common/db";
-import {
-  initSdk,
-  PutManyBlueprintsRequestInput,
-  BlueprintUpsertInputInput,
-  BlueprintGroupInputInput,
-  BlueprintFieldInputInput,
-  BlueprintFieldOptionsInput,
-  ReferenceType,
-  PutManyBlueprintsResponse,
-  PutManyBlueprintsResponseFragment,
-  BlueprintFieldType,
-} from "@caisy/sdk";
+import { BlueprintUpsertInputInput, PutManyBlueprintsResponse, BlueprintFieldType } from "@caisy/sdk";
 import { CaisyRunOptions } from "../provider";
 import { contentType, contentTypeField, contentTypeGroup } from "../../common/schema";
 import {
@@ -19,11 +8,70 @@ import {
   denormalizeCaisyFieldType,
 } from "./normalize";
 import { isUuid, generateUuidFromString } from "../../common/writer/content-entry";
+import { sql } from "drizzle-orm";
 
 let blueprintChangeSet: PutManyBlueprintsResponse["changeSet"] = [];
 
 // Export the variable
 export { blueprintChangeSet };
+
+export function toPascalCase(str: string): string {
+  return str
+    .replace(/[-_\s]+(.)?/g, (_, char) => (char ? char.toUpperCase() : ""))
+    .replace(/^[a-z]/, char => char.toUpperCase());
+}
+
+export async function ensureBlueprintNamingConvention(): Promise<void> {
+  console.log("Starting blueprint naming convention enforcement...");
+
+  try {
+    const contentTypes = await db.select().from(contentType).execute();
+
+    // Disable foreign key constraints globally
+    await db.run(sql`PRAGMA foreign_keys = OFF`);
+
+    for (const ct of contentTypes) {
+      const currentId = ct.id;
+      const currentName = ct.name;
+      const pascalCaseName = toPascalCase(currentName);
+      const pascalCaseId = toPascalCase(currentId);
+
+      if (currentName !== pascalCaseName || currentId !== pascalCaseId) {
+        console.log(`Converting: ID "${currentId}" -> "${pascalCaseId}", name "${currentName}" -> "${pascalCaseName}"`);
+
+        // Run separate statements for this content type
+        await db.run(
+          sql.raw(
+            `UPDATE content_entry SET content_type_id = '${pascalCaseId}' WHERE content_type_id = '${currentId}'`,
+          ),
+        );
+        await db.run(
+          sql.raw(
+            `UPDATE content_type_group SET content_type_id = '${pascalCaseId}' WHERE content_type_id = '${currentId}'`,
+          ),
+        );
+        await db.run(
+          sql.raw(
+            `UPDATE content_type_field SET content_type_id = '${pascalCaseId}' WHERE content_type_id = '${currentId}'`,
+          ),
+        );
+        await db.run(
+          sql.raw(
+            `UPDATE content_type SET id = '${pascalCaseId}', name = '${pascalCaseName}' WHERE id = '${currentId}'`,
+          ),
+        );
+      }
+    }
+
+    // Re-enable foreign key constraints
+    await db.run(sql`PRAGMA foreign_keys = ON`);
+
+    console.log("Blueprint naming convention enforcement completed successfully.");
+  } catch (error) {
+    console.error("Error enforcing blueprint naming convention:", error);
+    throw error;
+  }
+}
 
 async function fetchBlueprintsFromDatabase({ sdk, projectId, onProgress, onError }: CaisyRunOptions): Promise<void> {
   const blueprintInputs: BlueprintUpsertInputInput[] = [];
@@ -41,10 +89,8 @@ async function fetchBlueprintsFromDatabase({ sdk, projectId, onProgress, onError
         : generateUuidFromString(fieldRow.contentTypeId);
 
       const fieldType = denormalizeCaisyFieldType(fieldRow.type);
-      const options = denormalizeCaisyFieldOptions(fieldRow.options, fieldRow.type);
-      if (fieldRow.options && fieldType === BlueprintFieldType.BlueprintFieldTypeConnection) {
-        console.log(`input`, fieldRow.options, `=> options.connection`, options?.connection);
-      }
+      const options = denormalizeCaisyFieldOptions(fieldRow.options, fieldRow.type, blueprintRows);
+
       const groupId = fieldRow.groupId;
       if (!acc[groupId]) {
         acc[groupId] = [];
