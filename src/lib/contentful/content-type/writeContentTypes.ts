@@ -1,4 +1,3 @@
-import { ContentType, ContentTypeField, ContentTypeFieldType } from "contentful";
 import {
   ContentType as CommonContentType,
   ContentFieldType,
@@ -10,12 +9,13 @@ import {
 import { writeContentType } from "../../common/writer/content-type";
 
 import { ContentEntryContentTypeFieldType } from "../../common/types/content-entry";
+import { ContentType, ContentTypeField } from "../types/lib";
 
 const ContentFieldTypeMap = new Map<string, ContentEntryContentTypeFieldType>();
 const ContentFieldNameMap = new Map<string, string>();
 export { ContentFieldTypeMap, ContentFieldNameMap };
 
-const normalizeContentfulFieldType = (type: ContentTypeFieldType): ContentFieldType => {
+const normalizeContentfulFieldType = (type: any): ContentFieldType => {
   switch (type) {
     case "Boolean":
       return ContentFieldType.Boolean;
@@ -46,7 +46,7 @@ const normalizeContentfulFieldType = (type: ContentTypeFieldType): ContentFieldT
   }
 };
 
-const normalizeContentEntryContentTypeFieldType = (type: ContentTypeFieldType): ContentEntryContentTypeFieldType => {
+const normalizeContentEntryContentTypeFieldType = (type: any): ContentEntryContentTypeFieldType => {
   switch (type) {
     case "Boolean":
       return ContentEntryContentTypeFieldType.Boolean;
@@ -77,18 +77,63 @@ const normalizeContentEntryContentTypeFieldType = (type: ContentTypeFieldType): 
   }
 };
 
-const normalizeContentfulFieldOptions = (field: ContentTypeField): ContentTypeFieldOptions => {
+const normalizeContentfulFieldOptions = (
+  field: ContentTypeField,
+  contentTypes: ContentType[],
+): ContentTypeFieldOptions => {
+  const min = field?.validations?.find((v: any) => v.size)?.size?.min || undefined;
+  const max = field?.validations?.find((v: any) => v.size)?.size?.max || undefined;
+
+  let connectedIds =
+    (field?.items?.type === "Link" &&
+      field?.items?.validations?.find((v: any) => v.linkContentType)?.linkContentType) ||
+    undefined;
+
+  if (field.type === "Link" && field.linkType == "Asset") {
+    // Asset links don't need connectedIds processing
+  } else if (field.type === "Link") {
+    connectedIds = field?.validations?.find((v: any) => v.linkContentType)?.linkContentType || undefined;
+  }
+
+  const filteredConnectedIds = connectedIds
+    ? connectedIds.filter((id: string) => contentTypes.some(ct => ct.sys.id === id))
+    : undefined;
+
+  let unqiue = undefined;
+  let pattern = undefined;
+  let extra: any = undefined;
+  if (field.type === "Symbol") {
+    unqiue = field.validations?.find((v: any) => v.unique)?.unique || undefined;
+    pattern = field.validations?.find((v: any) => v.regexp)?.regexp?.pattern || undefined;
+    if (unqiue || pattern) {
+      extra = {
+        uniqueLocal: unqiue,
+        string: {
+          pattern,
+        },
+      };
+    }
+  }
+
   return {
     required: field.required,
     localized: field.localized,
     disableInUi: field.disabled,
     disableInApi: field.omitted,
-    ...(field.items?.type === "Link" && {
+    ...((field.items?.type === "Link" || field.type == "Array" || field.type == "Link") && {
       connection: {
-        variant: ContentTypeVariant.Document,
+        multiple: field.type == "Array",
+        variant:
+          field.type === "Link" && field.linkType == "Asset"
+            ? ContentTypeVariant.Asset
+            : ContentTypeVariant.Unspecified,
         visualization: ContentTypeFieldConnectionVisualization.Deafult,
+        ...(min !== undefined ? { min } : {}),
+        ...(max !== undefined ? { max } : {}),
+        ...(filteredConnectedIds ? { connectedIds: filteredConnectedIds } : {}),
       },
     }),
+    ...(extra ? extra : {}),
   };
 };
 
@@ -99,7 +144,7 @@ export const normalizeContentfulContentTypeVariant = (sys: any): ContentTypeVari
   return ContentTypeVariant.Document;
 };
 
-const normalizeContentfulContentType = (contentType: ContentType): CommonContentType => {
+const normalizeContentfulContentType = (contentType: ContentType, contentTypes: ContentType[]): CommonContentType => {
   return {
     id: contentType.sys.id,
     name: contentType.sys.id,
@@ -109,12 +154,15 @@ const normalizeContentfulContentType = (contentType: ContentType): CommonContent
     groups: [
       {
         id: contentType.sys.id + "-group",
-        name: contentType.sys.id + "-group",
+        name: "Main",
         position: 0,
         contentTypeId: contentType.sys.id,
         fields: contentType.fields.map((field, index) => {
-          ContentFieldTypeMap.set(field.id, normalizeContentEntryContentTypeFieldType(field.type));
-          ContentFieldNameMap.set(field.id, field.name);
+          ContentFieldTypeMap.set(
+            contentType.sys.id + "_" + field.id,
+            normalizeContentEntryContentTypeFieldType(field.type),
+          );
+          ContentFieldNameMap.set(contentType.sys.id + "_" + field.id, field.name);
           return {
             id: contentType.sys.id + "_" + field.id,
             name: field.id,
@@ -123,8 +171,8 @@ const normalizeContentfulContentType = (contentType: ContentType): CommonContent
             contentTypeId: contentType.sys.id,
             type: normalizeContentfulFieldType(field.type),
             position: index,
-            primary: false,
-            options: normalizeContentfulFieldOptions(field),
+            primary: field.id === contentType.displayField,
+            options: normalizeContentfulFieldOptions(field, contentTypes),
           };
         }),
       },
@@ -132,14 +180,14 @@ const normalizeContentfulContentType = (contentType: ContentType): CommonContent
   };
 };
 
-export const writeContentTypes = async (contentTypes: ContentType[]) => {
+export const writeContentTypes = async (contentTypes: any[]) => {
   for (const contentType of contentTypes) {
     try {
-      const normalizedContentType = normalizeContentfulContentType(contentType);
-      console.info(JSON.stringify(normalizedContentType, null, 2));
+      const normalizedContentType = normalizeContentfulContentType(contentType, contentTypes);
+      // console.info(JSON.stringify(normalizedContentType, null, 2));
       await writeContentType(normalizedContentType);
     } catch (e) {
-      const normalizedContentType = normalizeContentfulContentType(contentType);
+      const normalizedContentType = normalizeContentfulContentType(contentType, contentTypes);
       console.error(JSON.stringify(normalizedContentType, null, 2));
       throw new Error(`Error writing content type: ${e}`);
     }

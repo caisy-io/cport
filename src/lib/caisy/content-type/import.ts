@@ -9,6 +9,7 @@ import {
   ReferenceType,
   PutManyBlueprintsResponse,
   PutManyBlueprintsResponseFragment,
+  BlueprintFieldType,
 } from "@caisy/sdk";
 import { CaisyRunOptions } from "../provider";
 import { contentType, contentTypeField, contentTypeGroup } from "../../common/schema";
@@ -31,39 +32,59 @@ async function fetchBlueprintsFromDatabase({ sdk, projectId, onProgress, onError
   const blueprintFieldRows = await db.select().from(contentTypeField).execute();
 
   // Map fields by group ID for faster lookup
-  const fieldsByGroupId = blueprintFieldRows.reduce((acc, fieldRow) => {
-    const validFieldId = isUuid(fieldRow.id) ? fieldRow.id : generateUuidFromString(fieldRow.id);
-    const validFieldGroupId = isUuid(fieldRow.groupId) ? fieldRow.groupId : generateUuidFromString(fieldRow.groupId);
-    const validBlueprintId = isUuid(fieldRow.contentTypeId)
-      ? fieldRow.contentTypeId
-      : generateUuidFromString(fieldRow.contentTypeId);
-    (acc[fieldRow.groupId] = acc[fieldRow.groupId] || []).push({
-      blueprintFieldId: validFieldId,
-      name: fieldRow.name,
-      type: denormalizeCaisyFieldType(fieldRow.type),
-      blueprintGroupId: validFieldGroupId,
-      blueprintId: validBlueprintId,
-      description: fieldRow.description,
-      system: fieldRow.system,
-      options: denormalizeCaisyFieldOptions(fieldRow.options),
-      title: fieldRow.title,
-    });
-    return acc;
-  }, {});
+  const fieldsByGroupId = blueprintFieldRows.reduce(
+    (acc: Record<string, any>, fieldRow) => {
+      const validFieldId = isUuid(fieldRow.id) ? fieldRow.id : generateUuidFromString(fieldRow.id);
+      const validFieldGroupId = isUuid(fieldRow.groupId) ? fieldRow.groupId : generateUuidFromString(fieldRow.groupId);
+      const validBlueprintId = isUuid(fieldRow.contentTypeId)
+        ? fieldRow.contentTypeId
+        : generateUuidFromString(fieldRow.contentTypeId);
+
+      const fieldType = denormalizeCaisyFieldType(fieldRow.type);
+      const options = denormalizeCaisyFieldOptions(fieldRow.options, fieldRow.type);
+      if (fieldRow.options && fieldType === BlueprintFieldType.BlueprintFieldTypeConnection) {
+        console.log(`input`, fieldRow.options, `=> options.connection`, options?.connection);
+      }
+      const groupId = fieldRow.groupId;
+      if (!acc[groupId]) {
+        acc[groupId] = [];
+      }
+      acc[groupId].push({
+        blueprintFieldId: validFieldId,
+        name: fieldRow.name,
+        type: fieldType,
+        blueprintGroupId: validFieldGroupId,
+        blueprintId: validBlueprintId,
+        description: fieldRow.description,
+        system: fieldRow.system,
+        options: options,
+        title: fieldRow.title,
+      });
+      return acc;
+    },
+    {} as Record<string, any>,
+  );
 
   // Map groups by blueprint ID for correct blueprint association
-  const groupsByBlueprintId = blueprintGroupRows.reduce((acc, groupRow) => {
-    const validGroupId = isUuid(groupRow.id) ? groupRow.id : generateUuidFromString(groupRow.id);
-    (acc[groupRow.contentTypeId] = acc[groupRow.contentTypeId] || []).push({
-      blueprintGroupId: validGroupId,
-      name: groupRow.name,
-      fields: fieldsByGroupId[groupRow.id] || [],
-    });
-    return acc;
-  }, {});
+  const groupsByBlueprintId = blueprintGroupRows.reduce(
+    (acc: Record<string, any>, groupRow) => {
+      const validGroupId = isUuid(groupRow.id) ? groupRow.id : generateUuidFromString(groupRow.id);
+      const contentTypeId = groupRow.contentTypeId;
+      if (!acc[contentTypeId]) {
+        acc[contentTypeId] = [];
+      }
+      acc[contentTypeId].push({
+        blueprintGroupId: validGroupId,
+        name: groupRow.name,
+        fields: fieldsByGroupId[groupRow.id] || [],
+      });
+      return acc;
+    },
+    {} as Record<string, any>,
+  );
 
   // Generate blueprint inputs using mapped groups
-  blueprintRows.forEach((row) => {
+  blueprintRows.forEach(row => {
     const validBlueprintId = isUuid(row.id) ? row.id : generateUuidFromString(row.id);
     blueprintInputs.push({
       blueprintId: validBlueprintId,
@@ -78,8 +99,6 @@ async function fetchBlueprintsFromDatabase({ sdk, projectId, onProgress, onError
       title: row.title,
     });
   });
-  const fs = require("fs");
-  const logStream = fs.createWriteStream("logs.txt", { flags: "a" });
   try {
     const result = await sdk.PutManyBlueprints({
       input: {
@@ -87,12 +106,14 @@ async function fetchBlueprintsFromDatabase({ sdk, projectId, onProgress, onError
         blueprintInputs,
       },
     });
-    blueprintChangeSet = result.PutManyBlueprints.changeSet;
-    if (result.PutManyBlueprints.errors.length > 0) {
+    blueprintChangeSet = result.PutManyBlueprints?.changeSet || [];
+    if (result.PutManyBlueprints?.errors && result.PutManyBlueprints.errors.length > 0) {
       console.error("Failed to import blueprints:", result.PutManyBlueprints.errors);
-      result.PutManyBlueprints.errors.forEach((error) => {
-        console.error("Error:", error.errorMessage);
-        console.error("ID:", error.blueprintId);
+      result.PutManyBlueprints.errors.forEach(error => {
+        if (error) {
+          console.error("Error:", error.errorMessage);
+          console.error("ID:", error.blueprintId);
+        }
       });
     } else {
       console.log("Successfully imported all blueprints.");

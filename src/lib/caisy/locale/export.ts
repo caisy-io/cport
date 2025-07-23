@@ -12,8 +12,8 @@ export const exportCaisyLocales = async ({ sdk, projectId }: CaisyRunOptions): P
   });
 
   await Promise.all(
-    allLocalesResult.GetAllDocumentFieldLocale.documentFieldLocales.map(async (locale) => {
-      await writeContentLocale(normalizeCaisyLocale(locale));
+    allLocalesResult!.GetAllDocumentFieldLocale!.documentFieldLocales!.map(async locale => {
+      await writeContentLocale(normalizeCaisyLocale(locale!));
     }),
   );
 };

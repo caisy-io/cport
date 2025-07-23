@@ -1,74 +1,62 @@
-import {
-  ContentType,
-  ContentTypeField,
-  ContentTypeFieldType,
-  Entry,
-  EntryField,
-  EntryFieldType,
-  Locale,
-} from "contentful";
-import {
-  ContentType as CommonContentType,
-  ContentFieldType,
-  ContentTypeFieldConnectionVisualization,
-  ContentTypeFieldOptions,
-  ContentTypeVariant,
-} from "../../common/types/content-type";
-
-import {
-  ContentEntry,
-  ContentEntryField,
-  ContentEntryContentTypeVariant,
-  ContentEntryContentTypeFieldType,
-  ContentEntryFieldData,
-  ContentEntryStatus,
-} from "../../common/types/content-entry";
-import { InferInsertModel, is } from "drizzle-orm";
-import { ContentFieldTypeMap, ContentFieldNameMap } from "../content-type/writeContentTypes";
+import { ContentEntry, ContentEntryField, ContentEntryStatus } from "../../common/types/content-entry";
+import { InferInsertModel } from "drizzle-orm";
+import { ContentFieldTypeMap } from "../content-type/writeContentTypes";
 
 import { contentLocale } from "../../common/schema";
 import { insertContentEntry, writeContentLocale, insertContentfulEntryField } from "../../common/writer/content-entry";
 
-import { writeContentType } from "../../common/writer/content-type";
-import { writeContentEntryDraft } from "../../common/writer/content-entry";
 import { normalizeContentfulContentTypeVariant } from "../../contentful/content-type/writeContentTypes";
-const normalizeContentfulLocale = (locale: Locale): InferInsertModel<typeof contentLocale> => {
+import { ContentfulExportContentType } from "../types";
+const normalizeContentfulLocale = (locale: {
+  sys: { id: string };
+  code: string;
+  name: string;
+  fallbackCode?: string;
+  default?: boolean;
+}): InferInsertModel<typeof contentLocale> => {
   return {
     id: locale.sys.id,
     apiName: locale.code,
     title: locale.name,
     flag: "",
     fallbackLocaleId: locale.fallbackCode,
-    default: locale.default,
+    default: locale.default ?? false,
     disableInResponse: false,
     disableEditing: false,
     allowEmptyRequired: false,
   };
 };
 
-function isDraft(entity) {
+function isDraft(entity: { sys: { publishedVersion?: number } }): boolean {
   return !entity.sys.publishedVersion;
 }
 
-function isChanged(entity) {
+function isChanged(entity: { sys: { publishedVersion?: number; version: number } }): boolean {
   return !!entity.sys.publishedVersion && entity.sys.version >= entity.sys.publishedVersion + 2;
 }
 
-function isPublished(entity) {
+function isPublished(entity: { sys: { publishedVersion?: number; version: number } }): boolean {
   return !!entity.sys.publishedVersion && entity.sys.version == entity.sys.publishedVersion + 1;
 }
 
-const normalizeContentfulEntry = (entry: Entry<any>, draftContent: Number): ContentEntry => {
+const normalizeContentfulEntry = (
+  entry: any,
+  draftContent: number,
+  contentTypes: ContentfulExportContentType[],
+  defaultLocale = "en-US",
+): ContentEntry => {
   let titleField = "Untitled";
-  try {
-    titleField =
-      typeof entry.fields.internalName === "string"
-        ? entry.fields.internalName
-        : entry.fields.internalName["en-US"] || "";
-  } catch {}
+  // console.log(`  entry.fields`,  entry.fields);
+  const matchingContentType = contentTypes.find(ct => ct.sys.id === entry.sys.contentType.sys.id);
+  // console.log(` matchingContentType`, matchingContentType);
+  if (matchingContentType && matchingContentType.displayField) {
+    titleField = entry.fields[matchingContentType.displayField] || "Untitled";
+  }
+  // console.log(` entry.fields`, entry.fields);
+  // console.log(` titleField`, titleField);
 
   const previewImageUrl =
-    entry.fields.image && entry.fields.image["en-US"] ? entry.fields.image["en-US"].url : undefined;
+    entry.fields.image && entry.fields.image[defaultLocale] ? entry.fields.image[defaultLocale].url : undefined;
 
   const fields: ContentEntryField[] = [];
   let entryStatus = ContentEntryStatus.Published;
@@ -81,9 +69,12 @@ const normalizeContentfulEntry = (entry: Entry<any>, draftContent: Number): Cont
     }
   }
 
-  Object.keys(entry.fields).forEach((fieldKey) => {
+  Object.keys(entry.fields).forEach(fieldKey => {
     const locale = entry.sys.locale;
-    let fieldData = entry.fields[fieldKey];
+    const fieldData = entry.fields[fieldKey];
+    // console.log(` fieldKey`, fieldKey);
+    // console.log(` ContentFieldTypeMap`, ContentFieldTypeMap);
+    // console.log(` entry.sys`, entry.sys);
     fields.push({
       id: `${entry.sys.id}_${fieldKey}_${locale}`,
       blueprintFieldId: entry.sys.contentType.sys.id + "_" + fieldKey,
@@ -91,7 +82,7 @@ const normalizeContentfulEntry = (entry: Entry<any>, draftContent: Number): Cont
       createdAt: entry.sys.createdAt,
       data: fieldData,
       documentFieldLocaleId: locale,
-      type: ContentFieldTypeMap.get(fieldKey as string),
+      type: ContentFieldTypeMap.get((entry.sys.contentType.sys.id + "_" + fieldKey) as string),
       updatedAt: entry.sys.updatedAt,
     });
   });
@@ -108,37 +99,38 @@ const normalizeContentfulEntry = (entry: Entry<any>, draftContent: Number): Cont
   };
 };
 
-export const writeContentEntries = async (contentEntries: Entry[], draftContent: Number) => {
+export const writeContentEntries = async (
+  contentEntries: any[],
+  draftContent: number,
+  contentTypes: ContentfulExportContentType[],
+  defaultLocale?: string,
+) => {
   for (const contentEntry of contentEntries) {
-    try {
-      const normalizedContentEntry = normalizeContentfulEntry(contentEntry, draftContent);
-      // console.info(JSON.stringify(normalizedContentEntry, null, 2));
-      await insertContentEntry(normalizedContentEntry);
+    const normalizedContentEntry = normalizeContentfulEntry(contentEntry, draftContent, contentTypes, defaultLocale);
+    // console.info(JSON.stringify(normalizedContentEntry, null, 2));
+    await insertContentEntry(normalizedContentEntry);
+    if (normalizedContentEntry.fields) {
       if (
         normalizedContentEntry.status === ContentEntryStatus.Draft ||
         normalizedContentEntry.status === ContentEntryStatus.Changed
       ) {
-        await insertContentfulEntryField(normalizedContentEntry.fields, normalizedContentEntry.documentId, 1);
+        await insertContentfulEntryField(normalizedContentEntry.fields, normalizedContentEntry!.documentId!, 1);
       } else {
-        await insertContentfulEntryField(normalizedContentEntry.fields, normalizedContentEntry.documentId, 0);
+        await insertContentfulEntryField(normalizedContentEntry.fields, normalizedContentEntry!.documentId!, 0);
       }
-      // await insertContentfulEntryField(normalizedContentEntry.fields, normalizedContentEntry.documentId);
-    } catch (e) {
-      throw e;
-      // console.error(JSON.stringify(normalizedContentEntry, null, 2));
-      // throw new Error(`Error writing content type: ${e}`, {cause: e} );
     }
+    // await insertContentfulEntryField(normalizedContentEntry.fields, normalizedContentEntry.documentId);
   }
 };
 
-export const writeContentLocales = async (contentLocales: Locale[]) => {
+export const writeContentLocales = async (contentLocales: any[]) => {
   for (const contentLocale of contentLocales) {
     try {
       const normalizedContentLocale = normalizeContentfulLocale(contentLocale);
       // console.info(JSON.stringify(normalizedContentLocale, null, 2));
       await writeContentLocale(normalizedContentLocale);
     } catch (e) {
-      const normalizedContentLocale = normalizeContentfulLocale(contentLocale);
+      // const normalizedContentLocale = normalizeContentfulLocale(contentLocale);
       // console.error(JSON.stringify(normalizedContentLocale, null, 2));
       console.error("Error inserting content entry fields", e);
       throw new Error(`Error writing content locale: ${e}`);

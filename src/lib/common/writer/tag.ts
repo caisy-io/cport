@@ -15,7 +15,7 @@ export const writeTag = async (tagInput: z.infer<typeof tagSchema>) => {
       .insert(tag)
       .values({
         id: input.id,
-        color: input.color,
+        color: input.color || null,
         name: input.name,
       })
       .returning({
@@ -23,9 +23,10 @@ export const writeTag = async (tagInput: z.infer<typeof tagSchema>) => {
         color: tag.color,
         name: tag.name,
       })
+      .onConflictDoNothing()
       .execute();
     return r;
   } catch (err) {
-    throw new Error(err);
+    throw new Error(err instanceof Error ? err.message : String(err));
   }
 };

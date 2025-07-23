@@ -9,7 +9,6 @@ export async function saveToJson(
   fileNameFn: (item: any) => string, // function to generate file name
   dataFn: (item: any) => any, // function to extract data to save
 ): Promise<void> {
-
   const dataItems = Array.isArray(data) ? data : data.items; // handle different data structures
 
   dataItems.forEach((item: any) => {

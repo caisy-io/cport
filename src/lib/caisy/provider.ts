@@ -15,6 +15,7 @@ export type CaisyProviderOptions = {
   token: string;
   projectId: string;
   endpoint?: string;
+  defaultLocale?: string;
 };
 export type CaisyRunOptions = {
   sdk: ReturnType<typeof initSdk>;

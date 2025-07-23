@@ -12,6 +12,8 @@ import {
   ContentTypeFieldOptions,
   ContentTypeVariant,
 } from "../../common/types/content-type";
+import { generateUuidFromString, isUuid } from "../../common/writer/content-entry";
+import { maybeToValue, requireString, filterDefined, isDefined } from "../../common/utils/type-guards";
 
 export const normalizeCaisyFieldType = (fieldType: BlueprintFieldType): ContentFieldType => {
   switch (fieldType) {
@@ -85,66 +87,89 @@ export const denormalizeCaisyFieldType = (fieldType: String): BlueprintFieldType
   }
 };
 
-export const normalizeCaisyFieldOptions = (fieldType: BlueprintFieldOptions): ContentTypeFieldOptions => {
+export const normalizeCaisyFieldOptions = (fieldTypeOptions: BlueprintFieldOptions): ContentTypeFieldOptions => {
   return {
-    uniqueGlobal: fieldType.uniqueGlobal,
-    uniqueLocal: fieldType.uniqueLocal,
-    float: fieldType.float,
-    int: fieldType.int,
-    string: fieldType.string,
-    datetime: fieldType.datetime,
-    extension: fieldType.extension,
-    disableInApi: fieldType.disableInApi,
-    disableInUi: fieldType.disableInUi,
-    external: fieldType.external,
-    file: fieldType.file,
-    localized: fieldType.localized,
-    primary: fieldType.primary,
-    required: fieldType.required,
-    code: fieldType.code,
-    richtext: fieldType.richtext,
-    select: fieldType.select,
-    tag: fieldType.tag,
-    video: fieldType.video,
-    ...(fieldType.connection
+    uniqueGlobal: fieldTypeOptions.uniqueGlobal,
+    uniqueLocal: fieldTypeOptions.uniqueLocal,
+    float: fieldTypeOptions.float,
+    int: fieldTypeOptions.int,
+    string: fieldTypeOptions.string,
+    datetime: fieldTypeOptions.datetime,
+    extension: fieldTypeOptions.extension,
+    disableInApi: fieldTypeOptions.disableInApi,
+    disableInUi: fieldTypeOptions.disableInUi,
+    external: fieldTypeOptions.external,
+    file: fieldTypeOptions.file,
+    localized: fieldTypeOptions.localized,
+    primary: fieldTypeOptions.primary,
+    required: fieldTypeOptions.required,
+    code: fieldTypeOptions.code,
+    richtext: fieldTypeOptions.richtext,
+    select: fieldTypeOptions.select,
+    tag: fieldTypeOptions.tag,
+    video: fieldTypeOptions.video,
+    ...(fieldTypeOptions.connection
       ? {
           connection: {
-            connectedIds: fieldType.connection.connectedIds,
-            visualization: normalizeCaisyConnectionFieldVisualization(fieldType.connection.visualization),
-            variant: normalizeCaisyContentTypeVariant(fieldType.connection.variant),
+            connectedIds: fieldTypeOptions.connection.connectedIds,
+            visualization: fieldTypeOptions.connection.visualization
+              ? normalizeCaisyConnectionFieldVisualization(fieldTypeOptions.connection.visualization)
+              : undefined,
+            variant: fieldTypeOptions.connection.variant
+              ? normalizeCaisyContentTypeVariant(fieldTypeOptions.connection.variant)
+              : undefined,
           } as ContentTypeFieldOptions["connection"],
         }
       : {}),
   };
 };
 
-export const denormalizeCaisyFieldOptions = (fieldType: ContentTypeFieldOptions): BlueprintFieldOptions => {
+export const denormalizeCaisyFieldOptions = (
+  fieldOptions: ContentTypeFieldOptions,
+  fieldType?: string,
+): BlueprintFieldOptions => {
+  const initalConnectedIds = fieldOptions.connection?.connectedIds || undefined;
+  let connectedIds: string[] | undefined = undefined;
+  if (initalConnectedIds) {
+    connectedIds = initalConnectedIds
+      .filter((id): id is string => id != null)
+      .map(id => {
+        const validBlueprintId = isUuid(id) ? id : generateUuidFromString(id);
+        return validBlueprintId;
+      });
+  }
+
   return {
-    uniqueGlobal: fieldType.uniqueGlobal,
-    uniqueLocal: fieldType.uniqueLocal,
-    float: fieldType.float,
-    int: fieldType.int,
-    string: fieldType.string,
-    datetime: fieldType.datetime,
-    extension: fieldType.extension,
-    disableInApi: fieldType.disableInApi,
-    disableInUi: fieldType.disableInUi,
-    external: fieldType.external,
-    file: fieldType.file,
-    localized: fieldType.localized,
-    primary: fieldType.primary,
-    required: fieldType.required,
-    code: fieldType.code,
-    richtext: fieldType.richtext,
-    select: fieldType.select,
-    tag: fieldType.tag,
-    video: fieldType.video,
-    ...(fieldType.connection
+    uniqueGlobal: fieldOptions.uniqueGlobal,
+    uniqueLocal: fieldOptions.uniqueLocal,
+    float: fieldOptions.float,
+    int: fieldOptions.int,
+    string: fieldOptions.string,
+    datetime: fieldOptions.datetime,
+    extension: fieldOptions.extension,
+    disableInApi: fieldOptions.disableInApi,
+    disableInUi: fieldOptions.disableInUi,
+    external: fieldOptions.external,
+    file: fieldOptions.file,
+    localized: fieldOptions.localized,
+    primary: fieldOptions.primary,
+    required: fieldOptions.required,
+    code: fieldOptions.code,
+    richtext: fieldOptions.richtext,
+    select: fieldOptions.select,
+    tag: fieldOptions.tag,
+    video: fieldOptions.video,
+    ...(fieldOptions.connection
       ? {
           connection: {
-            connectedIds: fieldType.connection.connectedIds,
-            visualization: denormalizeCaisyConnectionFieldVisualization(fieldType.connection.visualization),
-            variant: denormalizeCaisyContentTypeVariant(fieldType.connection.variant),
+            multiple: fieldType === ContentFieldType.Array || fieldOptions.connection.multiple,
+            connectedIds: fieldOptions.connection.connectedIds ? connectedIds : [],
+            visualization: fieldOptions.connection.visualization
+              ? denormalizeCaisyConnectionFieldVisualization(fieldOptions.connection.visualization)
+              : undefined,
+            variant: fieldOptions.connection.variant
+              ? denormalizeCaisyContentTypeVariant(fieldOptions.connection.variant)
+              : BlueprintVariant.BlueprintVariantUnspecified,
           },
         }
       : {}),
@@ -177,7 +202,7 @@ export const denormalizeCaisyContentTypeVariant = (blueprintVariant: string): Bl
     case ContentTypeVariant.Template:
       return BlueprintVariant.BlueprintVariantTemplate;
     default:
-      return BlueprintVariant.BlueprintVariantDocument;
+      return BlueprintVariant.BlueprintVariantUnspecified;
   }
 };
 
@@ -219,28 +244,34 @@ export const normalizeCaisyContentType = (blueprint: BlueprintResponse): Content
     system: blueprint.system,
     single: blueprint.single,
     tagIds: blueprint.tagIds,
-    variant: normalizeCaisyContentTypeVariant(blueprint.variant),
+    variant: blueprint.variant ? normalizeCaisyContentTypeVariant(blueprint.variant) : ContentTypeVariant.Unspecified,
     previewImageUrl: blueprint.previewImageUrl,
     exposeMutations: blueprint.exposeMutations,
     description: blueprint.description,
-    groups: blueprint.groups.map((group, index) => ({
-      id: group.blueprintGroupId,
-      contentTypeId: blueprint.blueprintId,
-      position: index,
-      name: group.name,
-      fields: group.fields.map((field, index) => ({
-        id: field.blueprintFieldId,
-        name: field.name,
-        groupId: group.blueprintGroupId,
-        contentTypeId: blueprint.blueprintId,
-        position: index,
-        primary: !!field.options.primary,
-        title: field.title,
-        type: normalizeCaisyFieldType(field.type),
-        system: field.system,
-        description: field.description,
-        options: normalizeCaisyFieldOptions(field.options),
-      })),
-    })),
+    groups:
+      blueprint.groups
+        ?.filter(group => group != null)
+        .map((group, index) => ({
+          id: group.blueprintGroupId,
+          contentTypeId: blueprint.blueprintId,
+          position: index,
+          name: group.name,
+          fields:
+            group.fields
+              ?.filter(field => field != null)
+              .map((field, index) => ({
+                id: field.blueprintFieldId,
+                name: field.name,
+                groupId: group.blueprintGroupId,
+                contentTypeId: blueprint.blueprintId,
+                position: index,
+                primary: !!field.options?.primary,
+                title: field.title,
+                type: field.type ? normalizeCaisyFieldType(field.type) : ContentFieldType.String,
+                system: field.system,
+                description: field.description,
+                options: field.options ? normalizeCaisyFieldOptions(field.options) : ({} as ContentTypeFieldOptions),
+              })) ?? [],
+        })) ?? [],
   };
 };

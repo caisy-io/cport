@@ -4,14 +4,13 @@ import { BLOCKS, INLINES, MARKS, Document } from "@contentful/rich-text-types";
 import TurndownService from "turndown";
 import { richTextFromMarkdown } from "@contentful/rich-text-from-markdown";
 import { generateUuidFromString } from "../../common/writer/content-entry";
-// import { parseHTMLToJSON } from "@caisy/rich-text-html-parser";
 
 export enum ContentEntryContentTypeVariant {
-  Unspecified = "unspecified",
-  Document = "document",
-  Asset = "asset",
-  Component = "component",
-  Template = "template",
+  Unspecified = "UNSPECIFIED",
+  Document = "DOCUMENT",
+  Asset = "ASSET",
+  Component = "COMPONENT",
+  Template = "TEMPLATE",
 }
 
 export enum DocumentMode {
@@ -88,9 +87,12 @@ export type ContentEntryFieldData = {
   valueObjects?: string | null;
 };
 
-const processConnectionData = (connectionData) => {
+const processConnectionData = (connectionData: any) => {
   if (Array.isArray(connectionData)) {
-    const ids = connectionData.map((link) => link.sys.id).join(",");
+    const ids = connectionData
+      .filter(link => link && link.sys && link.sys.id) // Filter out null/undefined entries
+      .map(link => link.sys.id)
+      .join(",");
     return formatId(ids);
   } else if (connectionData && connectionData.sys) {
     return formatId(connectionData.sys.id);
@@ -98,7 +100,7 @@ const processConnectionData = (connectionData) => {
   return null;
 };
 
-const formatId = (id) => `{${id}}`;
+const formatId = (id: string) => `{${id}}`;
 
 export const processDataForEntryField = (
   data: Maybe<Scalars["Any"]>,
@@ -137,7 +139,7 @@ export const processDataForEntryField = (
         valueDate: undefined,
         valueObjects: undefined,
       };
-    case ContentEntryContentTypeFieldType.DateTime:
+    case ContentEntryContentTypeFieldType.DateTime: {
       const parsedDate = Date.parse(data);
       if (!isNaN(parsedDate)) {
         return {
@@ -149,6 +151,8 @@ export const processDataForEntryField = (
           valueObjects: undefined,
         };
       }
+      break;
+    }
     case ContentEntryContentTypeFieldType.Connection:
     case ContentEntryContentTypeFieldType.Tag:
     case ContentEntryContentTypeFieldType.Select:
@@ -220,14 +224,17 @@ export const processDataForCaisyDocumentField = async (
       case ContentEntryContentTypeFieldType.File:
       case ContentEntryContentTypeFieldType.Video:
       case ContentEntryContentTypeFieldType.Code:
-        return safelyParseJSON(data.valueObjects);
+        return safelyParseJSON(data.valueObjects!);
       case ContentEntryContentTypeFieldType.RichText:
-        if (isJsonString(data.valueObjects)) {
-          return safelyParseJSON(data.valueObjects);
-        } else {
+        if (isJsonString(data.valueObjects!)) {
           const { parseHTMLToJSON } = await import("@caisy/rich-text-html-parser");
-          const richText = await parseHTMLToJSON(data.valueObjects);
+          const jsonStr = JSON.parse(data.valueObjects!);
+          const richText = await parseHTMLToJSON(jsonStr);
           return richText;
+          // return safelyParseJSON(data.valueObjects);
+        } else {
+          console.log(`data.valueObjects can not be parsed as valid richtext`, data.valueObjects);
+          return null;
         }
     }
   } catch (error) {
@@ -245,7 +252,7 @@ function handleArrayOrString(data: string): any {
       return JSON.parse(data);
     } else {
       // Assume it is a list of IDs separated by some delimiter and convert to an array
-      return data.split(",").map((item) => item.trim());
+      return data.split(",").map(item => item.trim());
     }
   } catch (error) {
     console.error("Failed to handle data as array or string:", error);
@@ -253,9 +260,9 @@ function handleArrayOrString(data: string): any {
   }
 }
 
-function transformIdToJsonArray(dataSingle, idMap) {
+function transformIdToJsonArray(dataSingle: any, idMap: Map<string, string>) {
   if (Array.isArray(dataSingle)) {
-    return JSON.stringify(dataSingle.map((id) => getNewId(id, idMap)));
+    return JSON.stringify(dataSingle.map(id => getNewId(id, idMap)));
   } else if (dataSingle == null) {
     return JSON.stringify([]);
   } else {
@@ -264,12 +271,12 @@ function transformIdToJsonArray(dataSingle, idMap) {
       .replace(/^\{|\}$/g, "")
       .trim()
       .split(",");
-    const transformedIds = ids.map((id) => getNewId(id.trim(), idMap));
+    const transformedIds = ids.map((id: string) => getNewId(id.trim(), idMap));
     return JSON.stringify(transformedIds);
   }
 }
 
-function getNewId(id, idMap) {
+function getNewId(id: string, idMap: Map<string, string>) {
   return idMap.has(id) ? idMap.get(id) : generateUuidFromString(id);
 }
 
@@ -310,7 +317,7 @@ export const processDataForContentfulEntryField = (
         valueDate: undefined,
         valueObjects: undefined,
       };
-    case ContentEntryContentTypeFieldType.DateTime:
+    case ContentEntryContentTypeFieldType.DateTime: {
       const parsedDate = Date.parse(data);
       if (!isNaN(parsedDate)) {
         return {
@@ -322,6 +329,8 @@ export const processDataForContentfulEntryField = (
           valueObjects: undefined,
         };
       }
+      break;
+    }
     case ContentEntryContentTypeFieldType.Connection:
     case ContentEntryContentTypeFieldType.Tag:
     case ContentEntryContentTypeFieldType.Array:
@@ -403,10 +412,10 @@ const convertRichTextToHtml = (richTextDocument: Document): string => {
   return documentToHtmlString(richTextDocument, options);
 };
 
-function preprocessMarkdownForCustomSyntax(markdown) {
+function preprocessMarkdownForCustomSyntax(markdown: string) {
   // Simple regex to find custom [entry-id:x] syntax and replace it with a JSON placeholder
   const entryIdPattern = /\[entry-id:([^\]]+)\]/g;
-  return markdown.replace(entryIdPattern, (_, id) => {
+  return markdown.replace(entryIdPattern, (_: string, id: string) => {
     // Returning a JSON structure as a placeholder, adjust according to your rich text requirements
     return `<div class="entry-reference" data-entry-id="${id}"></div>`;
   });
@@ -428,10 +437,10 @@ export function convertHtmlToMarkdown(html: string): string {
 
   // Adding a rule for `div` elements with `data-entry-id`
   turndownService.addRule("entryIdDivs", {
-    filter: function (node) {
+    filter: function (node: any) {
       return node.nodeName === "DIV" && node.getAttribute("data-entry-id");
     },
-    replacement: function (content, node) {
+    replacement: function (content, node: any) {
       const id = node.getAttribute("data-entry-id");
       return `\n\n[entry-id:${id}]\n\n`;
     },

@@ -24,8 +24,8 @@ async function fetchDocumentsFromDatabase(
 ): Promise<void> {
   try {
     const totalDocumentsResult = await db.select({ count: count() }).from(contentEntry);
-    console.log("Total documents to import:", totalDocumentsResult[0].count);
-    const totalDocuments = totalDocumentsResult[0].count;
+    console.log("Total documents to import:", totalDocumentsResult[0]?.count || 0);
+    const totalDocuments = totalDocumentsResult[0]?.count || 0;
 
     let pageIndex = 0;
     const pageSize = PAGE_LIMIT;
@@ -38,18 +38,18 @@ async function fetchDocumentsFromDatabase(
         .limit(pageSize)
         .execute();
 
-      const documentIds = documentRows.map((doc) => doc.id);
+      const documentIds = documentRows.map(doc => doc.id);
       const documentFieldRows = await fetchDocumentFieldsByDocumentIds(documentIds);
       console.log("Fetched documents fields:", documentFieldRows.length);
       const fieldsByDocumentId = await Promise.all(
-        documentFieldRows.map(async (field) => {
+        documentFieldRows.map(async field => {
           const validFieldId = isUuid(field.contentTypeFieldId)
             ? field.contentTypeFieldId
             : generateUuidFromString(field.contentTypeFieldId);
-          let documentFieldLocaleID = localeIDandApiNameMatchMap.get(field.contentEntryFieldLocaleId);
-          localeChangeSet.forEach((changeSetRes) => {
-            if (changeSetRes.sourceDocumentFieldLocaleId === documentFieldLocaleID) {
-              documentFieldLocaleID = changeSetRes.targetDocumentFieldLocaleId;
+          let documentFieldLocaleID = localeIDandApiNameMatchMap.get(field.contentEntryFieldLocaleId || "");
+          localeChangeSet.forEach(changeSetRes => {
+            if (changeSetRes?.sourceDocumentFieldLocaleId === documentFieldLocaleID) {
+              documentFieldLocaleID = changeSetRes.targetDocumentFieldLocaleId || documentFieldLocaleID;
             }
           });
 
@@ -82,12 +82,19 @@ async function fetchDocumentsFromDatabase(
       );
 
       // Convert array of results into a structure grouped by contentEntryId
-      const groupedFieldsByDocumentId = fieldsByDocumentId.reduce((acc, item) => {
-        (acc[item.contentEntryId] = acc[item.contentEntryId] || []).push(item.fieldData);
-        return acc;
-      }, {});
+      const groupedFieldsByDocumentId = fieldsByDocumentId.reduce(
+        (acc: Record<string, any>, item: any) => {
+          const entryId = item.contentEntryId;
+          if (!acc[entryId]) {
+            acc[entryId] = [];
+          }
+          acc[entryId].push(item.fieldData);
+          return acc;
+        },
+        {} as Record<string, any>,
+      );
 
-      const documentInputs = documentRows.map((doc) => {
+      const documentInputs = documentRows.map(doc => {
         const validDocumentId = isUuid(doc.id) ? doc.id : generateUuidFromString(doc.id);
         const validBlueprintId = isUuid(doc.contentTypeId)
           ? doc.contentTypeId
@@ -103,17 +110,17 @@ async function fetchDocumentsFromDatabase(
           fields: groupedFieldsByDocumentId[doc.id] || [],
         };
       });
-      documentInputs.forEach((documentInput) => {
-        blueprintChangeSet.forEach((blueprintSet) => {
-          if (blueprintSet.sourceBlueprintId === documentInput.blueprintId) {
-            documentInput.blueprintId = blueprintSet.targetBlueprintId;
+      documentInputs.forEach(documentInput => {
+        blueprintChangeSet?.forEach(blueprintSet => {
+          if (blueprintSet?.sourceBlueprintId === documentInput.blueprintId) {
+            documentInput.blueprintId = blueprintSet.targetBlueprintId || documentInput.blueprintId;
           }
         });
-        documentInput.fields.forEach((field) => {
-          blueprintChangeSet.forEach((blueprintSet) => {
-            blueprintSet.fields.forEach((fieldSet) => {
-              if (field.blueprintFieldId === fieldSet.sourceBlueprintFieldId) {
-                field.blueprintFieldId = fieldSet.targetBlueprintFieldId;
+        documentInput.fields.forEach((field: any) => {
+          blueprintChangeSet?.forEach(blueprintSet => {
+            blueprintSet?.fields?.forEach(fieldSet => {
+              if (fieldSet && field.blueprintFieldId === fieldSet.sourceBlueprintFieldId) {
+                field.blueprintFieldId = fieldSet.targetBlueprintFieldId || field.blueprintFieldId;
               }
             });
           });
@@ -126,7 +133,7 @@ async function fetchDocumentsFromDatabase(
     }
   } catch (error) {
     console.error("Error fetching or importing documents:", error);
-    onError?.({ error, step: "fetchDocuments", meta: {} });
+    onError?.({ error: error as Error, step: "fetchDocuments", meta: {} });
   }
 }
 
@@ -139,7 +146,7 @@ async function fetchDocumentFieldsByDocumentIds(documentIds: string[]): Promise<
   return documentFieldRows;
 }
 
-async function submitDocumentChanges(documentInputs, sdk, projectId) {
+async function submitDocumentChanges(documentInputs: any[], sdk: any, projectId: string): Promise<void> {
   const result = await sdk.PutManyDocuments({
     input: {
       projectId,
@@ -147,7 +154,7 @@ async function submitDocumentChanges(documentInputs, sdk, projectId) {
     },
   });
 
-  if (result.PutManyDocuments.errors.length > 0) {
+  if (result.PutManyDocuments?.errors?.length > 0) {
     console.error("Failed to import documents:", result.PutManyDocuments.errors);
   } else {
     console.log("Successfully imported all documents.");

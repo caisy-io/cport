@@ -18,6 +18,7 @@ import { InferInsertModel, and, sql, eq, isNull } from "drizzle-orm";
 import { BlueprintPaginationResult } from "../../caisy/content-type/export";
 import { ContentFieldNameMap } from "../../contentful/content-type/writeContentTypes";
 import { createHash } from "crypto";
+import { requireString } from "../utils/type-guards";
 
 const assetUrls = new Set<string>();
 export { assetUrls };
@@ -38,6 +39,7 @@ export const writeContentLocale = async (locale: InferInsertModel<typeof content
       disableEditing: contentLocale.disableEditing,
       allowEmptyRequired: contentLocale.allowEmptyRequired,
     })
+    .onConflictDoNothing()
     .execute();
 
   return dbRes;
@@ -48,7 +50,9 @@ export const writeContentEntryDraft = async (
   blueprintMaps: BlueprintPaginationResult,
 ) => {
   const contentEntryResult = await insertContentEntry(contentEntryInput);
-  await insertDraftContentEntryFields(contentEntryInput.fields, contentEntryInput.documentId, blueprintMaps);
+  if (contentEntryInput.fields && contentEntryInput.documentId) {
+    await insertDraftContentEntryFields(contentEntryInput.fields, contentEntryInput.documentId, blueprintMaps);
+  }
   return contentEntryResult;
 };
 
@@ -57,21 +61,29 @@ export const writeContentEntryPublished = async (
   blueprintMaps: BlueprintPaginationResult,
 ) => {
   const contentEntryResult = await insertContentEntry(contentEntryInput);
-  await insertPublishedContentEntryFields(contentEntryInput.fields, contentEntryInput.documentId, blueprintMaps);
+  if (contentEntryInput.fields && contentEntryInput.documentId) {
+    await insertPublishedContentEntryFields(contentEntryInput.fields, contentEntryInput.documentId, blueprintMaps);
+  }
   return contentEntryResult;
 };
 
 export const insertContentEntry = async (contentEntryInput: ContentEntry) => {
   try {
+    if (!contentEntryInput.documentId) {
+      throw new Error("Content entry documentId is required");
+    }
+    if (!contentEntryInput.blueprintId) {
+      throw new Error("Content entry blueprintId is required");
+    }
     return await db
       .insert(contentEntry)
       .values({
         id: contentEntryInput.documentId,
-        title: contentEntryInput.title,
-        status: contentEntryInput.status,
         contentTypeId: contentEntryInput.blueprintId,
-        contentTypeVariant: contentEntryInput.blueprintVariant,
-        previewImageUrl: contentEntryInput.previewImageUrl,
+        contentTypeVariant: contentEntryInput.blueprintVariant || "Document",
+        title: contentEntryInput.title || null,
+        status: contentEntryInput.status || "Draft",
+        previewImageUrl: contentEntryInput.previewImageUrl || null,
       })
       .returning({
         id: contentEntry.id,
@@ -85,7 +97,7 @@ export const insertContentEntry = async (contentEntryInput: ContentEntry) => {
       .execute();
   } catch (err) {
     console.log(` insertContentEntry`);
-    throw new Error(err);
+    throw new Error(err instanceof Error ? err.message : String(err));
   }
 };
 
@@ -96,13 +108,19 @@ export const insertContentfulEntryField = async (
 ) => {
   for (const field of fields) {
     try {
-      let contentEntryFieldData = await processDataForContentfulEntryField(field.data, field.type);
-      let contentTypeFieldName = field.blueprintFieldName || "";
+      const contentEntryFieldData = await processDataForContentfulEntryField(
+        field.data,
+        `${field.type}` as ContentEntryContentTypeFieldType,
+      );
+      const contentTypeFieldName = field.blueprintFieldName || "";
       if (contentTypeFieldName === "src" && contentEntryFieldData.valueObjects !== undefined) {
-        const jsonObj = JSON.parse(contentEntryFieldData.valueObjects);
+        const jsonObj = JSON.parse(contentEntryFieldData.valueObjects || "{}");
 
-        const url: string = jsonObj.url;
-        assetUrls.add(url);
+        const url: string = jsonObj?.url || "";
+        if (url) assetUrls.add(url);
+      }
+      if (contentEntryFieldData?.valueString && `${contentEntryFieldData?.valueString}`.includes("object")) {
+        console.log(` contentEntryFieldData [object Object]`, contentEntryFieldData, field);
       }
 
       await db
@@ -147,7 +165,10 @@ export const insertContentfulEntryField = async (
         .onConflictDoNothing()
         .execute();
     } catch (err) {
-      let contentEntryFieldData = await processDataForContentfulEntryField(field.data, field.type);
+      const contentEntryFieldData = await processDataForContentfulEntryField(
+        field.data,
+        (field.type as ContentEntryContentTypeFieldType) || "TEXT",
+      );
       console.log(` contentEntryFieldData`, contentEntryFieldData);
       console.log(` insertContentEntryFields`);
       throw err;
@@ -196,7 +217,7 @@ export const adjustContentfulContentEntryFields = async () => {
       console.error("Error executing AdjustContentfulContentEntryFieldsWithDrizzle:", err);
       throw err;
     }
-    const rawSQLDrop = sql.raw(`DROP TABLE content_entry_field_draft;`);
+    const rawSQLDrop = sql.raw(`DROP TABLE IF EXISTS content_entry_field_draft;`);
     try {
       await db.run(rawSQLDrop);
       console.log("Drop operation completed successfully.");
@@ -204,7 +225,7 @@ export const adjustContentfulContentEntryFields = async () => {
       console.error("Error executing insertContentEntryFieldsWithDrizzle3:", err);
       throw err;
     }
-    const rawSQLDrop2 = sql.raw(`DROP TABLE content_entry_field_published;`);
+    const rawSQLDrop2 = sql.raw(`DROP TABLE IF EXISTS content_entry_field_published;`);
     try {
       await db.run(rawSQLDrop2);
       console.log("Drop operation2 completed successfully.");
@@ -270,7 +291,7 @@ export const insertContentEntryFields = async () => {
       throw err;
     }
 
-    const rawSQLDrop = sql.raw(`DROP TABLE content_entry_field_draft;`);
+    const rawSQLDrop = sql.raw(`DROP TABLE IF EXISTS content_entry_field_draft;`);
     try {
       await db.run(rawSQLDrop);
       console.log("Drop operation completed successfully.");
@@ -278,7 +299,7 @@ export const insertContentEntryFields = async () => {
       console.error("Error executing insertContentEntryFieldsWithDrizzle3:", err);
       throw err;
     }
-    const rawSQLDrop2 = sql.raw(`DROP TABLE content_entry_field_published;`);
+    const rawSQLDrop2 = sql.raw(`DROP TABLE IF EXISTS content_entry_field_published;`);
     try {
       await db.run(rawSQLDrop2);
       console.log("Drop operation2 completed successfully.");
@@ -300,9 +321,11 @@ const insertPublishedContentEntryFields = async (
 ) => {
   try {
     for (const field of fields) {
-      let contentEntryFieldData = await processDataForEntryField(field.data, field.type);
-      let contentTypeFieldName = blueprintMaps.blueprintFieldNameMap.get(field.blueprintFieldId) || "";
-      if (contentTypeFieldName === "src" && contentEntryFieldData.valueObjects !== undefined) {
+      if (!field.type || !field.blueprintFieldId) continue;
+
+      const contentEntryFieldData = await processDataForEntryField(field.data, field.type);
+      const contentTypeFieldName = blueprintMaps?.blueprintFieldNameMap?.get(field.blueprintFieldId) || "";
+      if (contentTypeFieldName === "src" && contentEntryFieldData.valueObjects) {
         const jsonObj = JSON.parse(contentEntryFieldData.valueObjects);
 
         const url: string = jsonObj.url;
@@ -346,7 +369,7 @@ const insertPublishedContentEntryFields = async (
     }
   } catch (err) {
     console.log(` insertContentEntryFieldsPublished`);
-    throw new Error(err);
+    throw new Error(err instanceof Error ? err.message : String(err));
   }
 };
 
@@ -357,9 +380,11 @@ const insertDraftContentEntryFields = async (
 ) => {
   try {
     for (const field of fields) {
-      let contentEntryFieldData = await processDataForEntryField(field.data, field.type);
-      let contentTypeFieldName = blueprintMaps.blueprintFieldNameMap.get(field.blueprintFieldId) || "";
-      if (contentTypeFieldName === "src" && contentEntryFieldData.valueObjects !== undefined) {
+      if (!field.type || !field.blueprintFieldId) continue;
+
+      const contentEntryFieldData = await processDataForEntryField(field.data, field.type);
+      const contentTypeFieldName = blueprintMaps.blueprintFieldNameMap.get(field.blueprintFieldId) || "";
+      if (contentTypeFieldName === "src" && contentEntryFieldData.valueObjects) {
         const jsonObj = JSON.parse(contentEntryFieldData.valueObjects);
 
         const url: string = jsonObj.url;
@@ -403,7 +428,7 @@ const insertDraftContentEntryFields = async (
     }
   } catch (err) {
     console.log(` insertContentEntryFieldsDraft`);
-    throw new Error(err);
+    throw new Error(err instanceof Error ? err.message : String(err));
   }
 };
 

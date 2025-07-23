@@ -32,7 +32,7 @@ export const contentTypeGroup = sqliteTable(
       .references(() => contentType.id),
     position: integer("position").notNull(),
   },
-  (t) => {
+  t => {
     return {
       unq: unique().on(t.contentTypeId, t.position),
     };
@@ -61,7 +61,7 @@ export const contentTypeField = sqliteTable(
     disableInApi: integer("disable_in_api", { mode: "boolean" }),
     system: integer("system", { mode: "boolean" }),
   },
-  (t) => {
+  t => {
     return {
       unq: unique().on(t.contentTypeId, t.groupId, t.position),
     };
@@ -78,7 +78,7 @@ export const contentTypeTag = sqliteTable(
       .notNull()
       .references(() => tag.id),
   },
-  (t) => {
+  t => {
     return {
       pk: primaryKey({ columns: [t.contentTypeId, t.tagId] }),
     };
@@ -123,7 +123,7 @@ export const contentEntryField = sqliteTable(
     valueNumber: text("value_number"),
     valueObjects: text("value_objects"),
   },
-  (table) => {
+  table => {
     return {
       pk: primaryKey({ columns: [table.id, table.draftContent] }),
     };
@@ -153,7 +153,7 @@ export const contentEntryFieldDraft = sqliteTable(
     valueNumber: text("value_number"),
     valueObjects: text("value_objects"),
   },
-  (table) => {
+  table => {
     return {
       pk: primaryKey({ columns: [table.id, table.draftContent] }),
     };
@@ -177,18 +177,9 @@ export const contentEntryFieldPublished = sqliteTable(
     valueNumber: text("value_number"),
     valueObjects: text("value_objects"),
   },
-  (table) => {
+  table => {
     return {
       pk: primaryKey({ columns: [table.id, table.draftContent] }),
     };
   },
 );
-
-// table: content_entry_field
-// FOR CHANGED CONTENT
-//  blogPage-2_body 1 this is my changed content
-//  blogPage-2_body 0 this is my published content
-// FOR PUBLISHED CONTENT
-//  blogPage-2_body 0 this is my published content
-// FOR DRAFT CONTENT
-//  blogPage-2_body 1 this is my changed content

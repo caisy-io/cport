@@ -1,29 +1,31 @@
 import { assetUrls } from "../../common/writer/content-entry";
 import { CaisyRunOptions } from "../provider";
-import fetch from "node-fetch";
 import { promises as fs } from "fs";
 import { v4 as uuidv4 } from "uuid";
 import path from "path";
 import { db } from "../../common/db";
 import { assetFile } from "../../common/schema";
 import { AssetFile } from "../../common/types/content-entry";
-
 const RELATIVE_TARGET_DIR = "../../../../cport_assets/caisy";
 const MAX_RETRY_ATTEMPTS = 3;
 const RETRY_DELAY = 1000;
 const MAX_CONCURRENT_DOWNLOADS = 100;
 
 function cleanFilename(url: string): string {
-  let path = url.split("?")[0];
+  const pathPart = url.split("?")[0];
+  if (!pathPart) return "";
 
-  let segments = path.split("/");
+  const segments = pathPart.split("/");
 
   let filename = segments.pop();
+  if (!filename) return "";
 
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  if (uuidRegex.test(segments[segments.length - 1])) {
+  const lastSegment = segments[segments.length - 1];
+  if (segments.length > 0 && lastSegment && uuidRegex.test(lastSegment)) {
+    // UUID found in segments
   } else {
-    if (uuidRegex.test(filename.substring(0, 36))) {
+    if (filename && filename.length >= 36 && uuidRegex.test(filename.substring(0, 36))) {
       filename = filename.substring(36);
     }
   }
@@ -31,7 +33,7 @@ function cleanFilename(url: string): string {
   return filename || "";
 }
 
-function chunkArray(array, chunkSize) {
+function chunkArray<T>(array: T[], chunkSize: number): T[][] {
   const chunks = [];
   for (let i = 0; i < array.length; i += chunkSize) {
     chunks.push(array.slice(i, i + chunkSize));
@@ -41,6 +43,7 @@ function chunkArray(array, chunkSize) {
 
 const downloadImage = async (url: string, attempt = 1) => {
   try {
+    const fetch = (await import("node-fetch")).default;
     const response = await fetch(url);
     if (!response.ok) throw new Error(`Failed to fetch image: ${response.statusText}`);
     const buffer = await response.buffer();
@@ -61,7 +64,7 @@ const downloadImage = async (url: string, attempt = 1) => {
     console.error(`Failed to download image from ${url}: ${error}`);
     if (attempt < MAX_RETRY_ATTEMPTS) {
       console.log(`Retrying... Attempt ${attempt + 1} of ${MAX_RETRY_ATTEMPTS}`);
-      await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
       await downloadImage(url, attempt + 1);
     } else {
       console.error(`Failed to download image after ${MAX_RETRY_ATTEMPTS} attempts`);
@@ -83,12 +86,15 @@ function extractPathAfterMarker(fullPath: string): string {
 
 const insertCportAsset = async (assetFileInput: AssetFile) => {
   try {
+    if (!assetFileInput.id) {
+      throw new Error("Asset ID is required");
+    }
     return await db
       .insert(assetFile)
       .values({
         id: assetFileInput.id,
-        original_url: assetFileInput.originalUrl,
-        local_path: assetFileInput.localPath,
+        original_url: assetFileInput.originalUrl || null,
+        local_path: assetFileInput.localPath || null,
       })
       .returning({
         id: assetFile.id,
@@ -99,7 +105,7 @@ const insertCportAsset = async (assetFileInput: AssetFile) => {
       .execute();
   } catch (err) {
     console.log(` insertCportAsset err`, err);
-    throw new Error(err);
+    throw new Error(err instanceof Error ? err.message : String(err));
   }
 };
 
@@ -110,13 +116,13 @@ export const assetFiles = async ({
   onProgress,
   onError,
 }: CaisyRunOptions & { after: string | null }) => {
-  const urls = Array.from(assetUrls).map((url) => `${url}?original`);
+  const urls = Array.from(assetUrls).map(url => `${url}?original`);
 
   const urlChunks = chunkArray(urls, MAX_CONCURRENT_DOWNLOADS);
 
   // Process each chunk sequentially
   for (const chunk of urlChunks) {
-    await Promise.all(chunk.map((url) => downloadImage(url))).catch((error) => {
+    await Promise.all(chunk.map(url => downloadImage(url))).catch(error => {
       console.error(`An error occurred during image downloads in a chunk:`, error);
     });
   }

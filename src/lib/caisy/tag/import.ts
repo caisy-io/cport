@@ -5,9 +5,9 @@ import { tag } from "../../common/schema";
 import { isUuid, generateUuidFromString } from "../../common/writer/content-entry";
 
 async function fetchTagsFromDatabase({ sdk, projectId, onProgress, onError }: CaisyRunOptions): Promise<void> {
-  let tags: TagUpsertInputInput[] = [];
+  const tags: TagUpsertInputInput[] = [];
   const rows = await db.select().from(tag).execute();
-  rows.forEach((row) => {
+  rows.forEach(row => {
     if (!isUuid(row.id)) {
       row.id = generateUuidFromString(row.id);
     }
@@ -24,8 +24,8 @@ async function fetchTagsFromDatabase({ sdk, projectId, onProgress, onError }: Ca
       tagInputs: tags,
     },
   });
-  if (allTagsResult.PutManyTags.errors.length > 0) {
-    console.error(`Failed to import tags: ${allTagsResult.PutManyTags.errors}`);
+  if (allTagsResult?.PutManyTags?.errors?.length! > 0) {
+    console.error(`Failed to import tags: ${allTagsResult?.PutManyTags?.errors}`);
   } else {
     console.log(`Successfully imported tags.`);
   }

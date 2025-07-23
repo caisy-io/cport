@@ -7,8 +7,6 @@ import { CaisyProviderOptions } from "../lib/caisy/provider";
 
 program
   .version("0.0.1")
-  // .option("-i, --import", "import data")
-  // .option("-e, --export", "export data")
   .option("-m, --migrate", "migrate data directly from one provider to another")
   .option("-o, --outputPath <outputPath>", "output data storage location")
   .option("-I, --importPath <inputPath>", "input data storage location")
@@ -19,7 +17,7 @@ program
   .option(
     "-s, --set <set>",
     "set individual configuration values",
-    (value, previous) => {
+    (value: string, previous: string[]) => {
       previous.push(value);
       return previous;
     },
@@ -44,22 +42,23 @@ export type OptionsShared = {
     token?: string;
     deliveryToken?: string;
     previewToken?: string;
+    defaultLocale?: string;
   };
 };
 export type OptionsInput = OptionsShared & {
   set?: string[];
 };
 
-function snakeToCamel(key) {
-  return key.replace(/([-_][a-z])/g, (group) => group.toUpperCase().replace("-", "").replace("_", ""));
+function snakeToCamel(key: string): string {
+  return key.replace(/([-_][a-z])/g, (group: string) => group.toUpperCase().replace("-", "").replace("_", ""));
 }
 
-function convertObjectToCamelCase(obj) {
+function convertObjectToCamelCase(obj: any): any {
   if (Array.isArray(obj)) {
     return obj.map(convertObjectToCamelCase);
   } else if (typeof obj === "object" && obj !== null) {
-    const newObj = {};
-    Object.keys(obj).forEach((key) => {
+    const newObj: Record<string, any> = {};
+    Object.keys(obj).forEach(key => {
       newObj[snakeToCamel(key)] = convertObjectToCamelCase(obj[key]);
     });
     return newObj;
@@ -70,7 +69,7 @@ function convertObjectToCamelCase(obj) {
 const options = (program.opts() || {}) as OptionsInput;
 
 // Load the configuration file if provided
-let config = {};
+let config: Record<string, any> = {};
 if (options.config) {
   const configPath = path.resolve(options.config);
   const configContent = fs.readFileSync(configPath, "utf8");
@@ -80,26 +79,28 @@ if (options.config) {
 
 // Merge the --set values with the configuration
 if (options.set) {
-  options.set.forEach((setParam) => {
+  options.set.forEach(setParam => {
     const [key, value] = setParam.split("=");
+    if (!key) return;
+
     const keys = key.split(".");
-    let obj = config;
+    let obj: Record<string, any> = config;
     for (let i = 0; i < keys.length - 1; i++) {
-      if (!obj[keys[i]]) {
-        obj[keys[i]] = {};
+      const currentKey = keys[i];
+      if (!currentKey) continue;
+
+      if (!obj[currentKey]) {
+        obj[currentKey] = {};
       }
-      obj = obj[keys[i]];
+      obj = obj[currentKey];
     }
-    obj[keys[keys.length - 1]] = value;
+    const finalKey = keys[keys.length - 1];
+    if (finalKey) {
+      obj[finalKey] = value;
+    }
   });
 }
 
-// console.log(` config`, config);
-// Merge the command-line options with the configuration
 const mergedOptions: OptionsShared = { ...config, ...options };
-
-// Use the merged options for further processing
-// console.log("Options:", mergedOptions);
-// Add your CLI logic here
 
 export default mergedOptions;

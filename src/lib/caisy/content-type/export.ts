@@ -24,26 +24,37 @@ export const paginateBlueprints = async ({
     },
   });
 
-  const hasNextPage = allTagsResult.GetManyBlueprints.connection.pageInfo.hasNextPage;
-  const endCursor = allTagsResult.GetManyBlueprints.connection.pageInfo.endCursor;
+  const hasNextPage = allTagsResult.GetManyBlueprints?.connection?.pageInfo?.hasNextPage || false;
+  const endCursor = allTagsResult.GetManyBlueprints?.connection?.pageInfo?.endCursor || null;
 
   const blueprintMap = new Map<string, string>();
   const blueprintFieldNameMap = new Map<string, string>();
   const blueprintFieldTypeMap = new Map<string, string>();
 
-  await Promise.all(
-    allTagsResult.GetManyBlueprints.connection.edges.map(async (blueprint) => {
-      const contentType = normalizeCaisyContentType(blueprint.node);
-      blueprint.node.groups.forEach((group) => {
-        group.fields.forEach((field) => {
-          blueprintFieldNameMap.set(field.blueprintFieldId, field.name);
-          blueprintFieldTypeMap.set(field.blueprintFieldId, field.type);
-        });
-      });
-      blueprintMap.set(contentType.id, contentType.variant);
-      await writeContentType(contentType);
-    }),
-  );
+  const edges = allTagsResult.GetManyBlueprints?.connection?.edges;
+  if (edges) {
+    await Promise.all(
+      edges.map(async blueprint => {
+        if (blueprint?.node) {
+          const contentType = normalizeCaisyContentType(blueprint.node);
+          blueprint.node.groups?.forEach(group => {
+            if (group?.fields) {
+              group.fields.forEach(field => {
+                if (field?.blueprintFieldId && field?.name && field?.type) {
+                  blueprintFieldNameMap.set(field.blueprintFieldId, field.name);
+                  blueprintFieldTypeMap.set(field.blueprintFieldId, field.type);
+                }
+              });
+            }
+          });
+          if (contentType.id) {
+            blueprintMap.set(contentType.id, contentType.variant || "");
+          }
+          await writeContentType(contentType);
+        }
+      }),
+    );
+  }
 
   if (hasNextPage) {
     const nextPageMap = await paginateBlueprints({ onError, onProgress, sdk, projectId, after: endCursor });

@@ -171,6 +171,7 @@ export type ContentTypeFieldVideo = {
 };
 
 export enum ContentTypeVariant {
+  Unspecified = "UNSPECIFIED",
   Document = "DOCUMENT",
   Asset = "ASSET",
   Component = "COMPONENT",

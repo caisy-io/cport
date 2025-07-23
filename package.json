@@ -9,22 +9,38 @@
     "gen": "rm -rf cport.db && rm -rf ./drizzle && yarn drizzle-kit generate:sqlite",
     "build": "tsc",
     "prepare": "husky",
-    "asset": "ts-node src/lib/caisy/asset-files/asset.ts"
+    "asset": "ts-node src/lib/caisy/asset-files/asset.ts",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write \"src/**/*.{ts,js,json}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,js,json}\""
   },
   "keywords": [],
   "author": "caisy",
   "license": "ISC",
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.8",
     "@types/cli-progress": "^3.11.0",
     "@types/figlet": "^1.5.5",
     "@types/inquirer": "^9.0.3",
-    "@types/node": "^18.11.18",
+    "@types/js-yaml": "^4.0.9",
+    "@types/json-stringify-safe": "^5.0.3",
+    "@types/mime-types": "^2.1.4",
+    "@types/node": "^20.10.0",
     "@types/pg": "^8.11.6",
+    "@types/turndown": "^5.0.4",
+    "@types/uuid": "^9.0.7",
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/parser": "^8.38.0",
     "drizzle-kit": "^0.20.14",
+    "eslint": "8.56.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.29.1",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
     "prettier": "3.2.5",
-    "typescript": "^4.9.4"
+    "typescript": "^5.3.0"
   },
   "dependencies": {
     "@caisy/rich-text-html-parser": "^0.1.2",
@@ -33,12 +49,14 @@
     "@contentful/rich-text-html-renderer": "^16.3.5",
     "@contentful/rich-text-types": "^16.5.2",
     "better-sqlite3": "^9.4.3",
+    "blurhash": "^2.0.5",
+    "canvas": "^3.1.2",
     "chalk": "4.1.2",
     "cheerio": "^1.0.0-rc.12",
     "cli-progress": "^3.12.0",
     "commander": "^10.0.0",
-    "contentful": "^10.1.8",
-    "contentful-export": "^7.19.138",
+    "contentful": "^11.7.8",
+    "contentful-export": "^7.21.68",
     "dotenv": "^16.0.3",
     "drizzle-orm": "^0.29.5",
     "drizzle-zod": "^0.5.1",
@@ -46,17 +64,14 @@
     "inquirer": "^8.0.0",
     "js-yaml": "^4.1.0",
     "json-stringify-safe": "^5.0.1",
-    "node-fetch": "2",
+    "node-fetch": "^3.3.2",
     "p-limit": "^5.0.0",
     "pg": "^8.11.5",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.9.2",
     "turndown": "^7.2.0",
     "zod": "^3.22.4"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
-  },
-  "volta": {
-    "node": "18.19.1"
   }
 }

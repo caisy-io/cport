@@ -189,8 +189,8 @@ export const denormalizeCaisyFieldEntry = (fieldType: ContentEntryContentTypeFie
   }
 };
 
-export const denormalizeCaisyContentTypeVariant = (blueprintVariant: string): BlueprintVariant => {
-  switch (blueprintVariant) {
+export const denormalizeCaisyContentTypeVariant = (contentEntryContentTypeVariant: string): BlueprintVariant => {
+  switch (contentEntryContentTypeVariant) {
     case ContentEntryContentTypeVariant.Document:
       return BlueprintVariant.BlueprintVariantDocument;
     case ContentEntryContentTypeVariant.Asset:
@@ -223,7 +223,7 @@ export const normalizeCaisyContentEntry = (
   document: DocumentWithFieldsResponse,
   blueprintVariantsMap: BlueprintPaginationResult,
 ): ContentEntry => {
-  let blueprintVariant: string;
+  let blueprintVariant: string = "DOCUMENT"; // Default value
   for (const [key, value] of blueprintVariantsMap.blueprintMap.entries()) {
     if (key === document.blueprintId) {
       blueprintVariant = value;
@@ -234,7 +234,7 @@ export const normalizeCaisyContentEntry = (
     title: document.title,
     blueprintVariant: normalizeCaisyContentTypeVariant(blueprintVariant),
     previewImageUrl: document.previewImageUrl,
-    status: normalizeCaisyContentEntryStatus(document.statusId),
+    status: normalizeCaisyContentEntryStatus(document.statusId || 0),
     archivedAt: document.archivedAt,
     blueprintId: document.blueprintId,
     projectId: document.projectId,
@@ -245,15 +245,19 @@ export const normalizeCaisyContentEntry = (
     lastUpdatedByUserId: document.lastUpdatedByUserId,
     updatedAt: document.updatedAt,
     unpublishedAt: document.unpublishedAt,
-    fields: document.fields.map((field) => {
-      return {
-        blueprintFieldId: field.blueprintFieldId,
-        createdAt: field.createdAt,
-        documentFieldLocaleId: field.documentFieldLocaleId,
-        data: field.data,
-        updatedAt: field.updatedAt,
-        type: normalizeCaisyFieldEntry(field.type),
-      };
-    }),
+    fields:
+      document.fields
+        ?.map(field => {
+          if (!field) return null;
+          return {
+            blueprintFieldId: field.blueprintFieldId,
+            createdAt: field.createdAt,
+            documentFieldLocaleId: field.documentFieldLocaleId,
+            data: field.data,
+            updatedAt: field.updatedAt,
+            type: normalizeCaisyFieldEntry(field.type || BlueprintFieldType.BlueprintFieldTypeString),
+          };
+        })
+        .filter(field => field !== null) || [],
   };
 };

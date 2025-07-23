@@ -6,7 +6,7 @@ import { isUuid, generateUuidFromString } from "../../common/writer/content-entr
 
 let localeChangeSet: DocumentFieldLocaleChangeSet[] = [];
 export { localeChangeSet };
-let localeIDandApiNameMatchMap = new Map<string, string>();
+const localeIDandApiNameMatchMap = new Map<string, string>();
 export { localeIDandApiNameMatchMap };
 
 async function fetchDocumentLocalesFromDatabase({
@@ -17,20 +17,20 @@ async function fetchDocumentLocalesFromDatabase({
 }: CaisyRunOptions): Promise<void> {
   try {
     const documentLocalesInputs = await fetchDocumentLocales();
-    documentLocalesInputs.forEach((locale) => {
+    documentLocalesInputs.forEach(locale => {
       localeIDandApiNameMatchMap.set(locale.apiName, locale.documentFieldLocaleId);
       if (locale.apiName === "en-US") {
         locale.apiName = "en";
       }
     });
-    documentLocalesInputs.forEach((locale) => {
+    documentLocalesInputs.forEach((locale: any) => {
       if (locale.fallbackLocaleId !== null && locale.fallbackLocaleId !== "") {
         locale.fallbackLocaleId = localeIDandApiNameMatchMap.get(locale.fallbackLocaleId);
       }
     });
     const changeSet = await submitLocaleChanges(documentLocalesInputs, sdk, projectId);
     localeChangeSet = changeSet;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching or importing document locales:", error);
     onError?.({ error, step: "fetchDocumentLocales", meta: {} });
   }
@@ -38,12 +38,12 @@ async function fetchDocumentLocalesFromDatabase({
 
 async function fetchDocumentLocales() {
   const documentLocaleRows = await db.select().from(contentLocale).execute();
-  documentLocaleRows.forEach((localeRow) => {
+  documentLocaleRows.forEach(localeRow => {
     if (!isUuid(localeRow.id)) {
       localeRow.id = generateUuidFromString(localeRow.id);
     }
   });
-  return documentLocaleRows.map((localeRow) => ({
+  return documentLocaleRows.map(localeRow => ({
     documentFieldLocaleId: localeRow.id,
     apiName: localeRow.apiName,
     allowEmptyRequired: localeRow.allowEmptyRequired,
@@ -56,8 +56,8 @@ async function fetchDocumentLocales() {
   }));
 }
 
-async function submitLocaleChanges(documentLocalesInputs, sdk, projectId) {
-  let changeSet: DocumentFieldLocaleChangeSet[] = [];
+async function submitLocaleChanges(documentLocalesInputs: any[], sdk: any, projectId: string) {
+  const changeSet: DocumentFieldLocaleChangeSet[] = [];
   const result = await sdk.PutManyDocumentFieldLocales({
     input: {
       projectId,
@@ -70,7 +70,7 @@ async function submitLocaleChanges(documentLocalesInputs, sdk, projectId) {
   } else {
     console.log("Successfully imported all document field locales.");
   }
-  result.PutManyDocumentFieldLocales.changeSet.forEach((changeSetRes) => {
+  result.PutManyDocumentFieldLocales.changeSet.forEach((changeSetRes: any) => {
     changeSet.push(changeSetRes);
   });
   return changeSet;

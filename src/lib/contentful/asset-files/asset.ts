@@ -1,5 +1,4 @@
 import { assetUrls } from "../../common/writer/content-entry";
-import fetch from "node-fetch";
 import { promises as fs } from "fs";
 import { v4 as uuidv4 } from "uuid";
 import path from "path";
@@ -13,9 +12,11 @@ const RETRY_DELAY = 1000;
 
 const downloadImage = async (url: string, assetId: string, attempt = 1) => {
   try {
+    const fetch = (await import("node-fetch")).default;
     const response = await fetch(url);
     if (!response.ok) throw new Error(`Failed to fetch image: ${response.statusText}`);
-    const buffer = await response.buffer();
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
     const originalName = path.basename(url);
 
@@ -31,7 +32,7 @@ const downloadImage = async (url: string, assetId: string, attempt = 1) => {
     console.error(`Failed to download image from ${url}: ${error}`);
     if (attempt < MAX_RETRY_ATTEMPTS) {
       console.log(`Retrying... Attempt ${attempt + 1} of ${MAX_RETRY_ATTEMPTS}`);
-      await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
       await downloadImage(url, assetId, attempt + 1);
     } else {
       console.error(`Failed to download image after ${MAX_RETRY_ATTEMPTS} attempts`);
@@ -53,12 +54,15 @@ function extractPathAfterMarker(fullPath: string): string {
 
 const insertCportAsset = async (assetFileInput: AssetFile) => {
   try {
+    if (!assetFileInput.id) {
+      throw new Error("Asset ID is required");
+    }
     return await db
       .insert(assetFile)
       .values({
         id: assetFileInput.id,
-        original_url: assetFileInput.originalUrl,
-        local_path: assetFileInput.localPath,
+        original_url: assetFileInput.originalUrl || null,
+        local_path: assetFileInput.localPath || null,
       })
       .returning({
         id: assetFile.id,
@@ -69,20 +73,26 @@ const insertCportAsset = async (assetFileInput: AssetFile) => {
       .execute();
   } catch (err) {
     console.log(` insertCportAsset err`, err);
-    throw new Error(err);
+    throw new Error(err instanceof Error ? err.message : String(err));
   }
 };
 
-export const writeAssets = async (assets: any[]) => {
+export const writeAssets = async (assets: any[], defaultLocale?: string) => {
   for (const asset of assets) {
-    let assetUrl = await getAssetUrl(asset);
-    await downloadImage(assetUrl, asset.sys.id);
+    const assetUrl = await getAssetUrl(asset, defaultLocale);
+    // console.log(` assetUrl`, assetUrl);
+    if (assetUrl) {
+      await downloadImage(assetUrl, asset.sys.id);
+    } else {
+      console.log(`Skipping asset ${asset.sys.id} - no valid URL found`);
+    }
   }
 };
 
-async function getAssetUrl(asset: any) {
-  if (asset && asset.fields && asset.fields.file && asset.fields.file["en-US"]) {
-    const fileUrl = asset.fields.file["en-US"].url;
+async function getAssetUrl(asset: any, defaultLocale = "en-US"): Promise<string | null> {
+  // console.log(` asset.fields.file`, asset?.fields?.file, defaultLocale);
+  if (asset && asset.fields && asset.fields.file && asset.fields.file[defaultLocale]) {
+    const fileUrl = asset.fields.file[defaultLocale].url;
     return `https:${fileUrl}`;
   }
   return null;

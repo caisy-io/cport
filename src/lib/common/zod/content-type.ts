@@ -21,7 +21,7 @@ export const contentTypeTypeSchema = z.enum([
   "ARRAY",
 ]);
 
-export const contentTypeVariantSchema = z.enum(["DOCUMENT", "ASSET", "COMPONENT", "TEMPLATE"]);
+export const contentTypeVariantSchema = z.enum(["UNSPECIFIED", "DOCUMENT", "ASSET", "COMPONENT", "TEMPLATE"]);
 
 export const contentTypeFieldVideoSchema = z.object({
   pattern: z.string().optional(),

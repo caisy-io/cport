@@ -39,22 +39,30 @@ export const paginateDocuments = async ({
     },
   });
 
-  const hasNextPage = allDocumentsResult.GetManyDocuments.connection.pageInfo.hasNextPage;
-  const endCursor = allDocumentsResult.GetManyDocuments.connection.pageInfo.endCursor;
+  const hasNextPage = allDocumentsResult.GetManyDocuments?.connection?.pageInfo?.hasNextPage || false;
+  const endCursor = allDocumentsResult.GetManyDocuments?.connection?.pageInfo?.endCursor || null;
 
-  await Promise.all(
-    allDocumentsResult.GetManyDocuments.connection.edges.map(async (document) => {
-      const contentEntry = normalizeCaisyContentEntry(document.node, blueprintDetailsMap);
-      await writeContentEntryDraft(contentEntry, blueprintDetailsMap);
-    }),
-  );
+  if (allDocumentsResult.GetManyDocuments?.connection?.edges) {
+    await Promise.all(
+      allDocumentsResult.GetManyDocuments.connection.edges.map(async document => {
+        if (document?.node) {
+          const contentEntry = normalizeCaisyContentEntry(document.node, blueprintDetailsMap);
+          await writeContentEntryDraft(contentEntry, blueprintDetailsMap);
+        }
+      }),
+    );
+  }
 
-  await Promise.all(
-    allPublishedDocumentsResult.GetManyDocuments.connection.edges.map(async (document) => {
-      const contentEntry = normalizeCaisyContentEntry(document.node, blueprintDetailsMap);
-      await writeContentEntryPublished(contentEntry, blueprintDetailsMap);
-    }),
-  );
+  if (allPublishedDocumentsResult.GetManyDocuments?.connection?.edges) {
+    await Promise.all(
+      allPublishedDocumentsResult.GetManyDocuments.connection.edges.map(async document => {
+        if (document?.node) {
+          const contentEntry = normalizeCaisyContentEntry(document.node, blueprintDetailsMap);
+          await writeContentEntryPublished(contentEntry, blueprintDetailsMap);
+        }
+      }),
+    );
+  }
 
   if (hasNextPage) {
     await paginateDocuments({
