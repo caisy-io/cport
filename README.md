@@ -81,15 +81,20 @@ We will use the term 'ContentType' in cport too, since if with diffrent database
 yarn
 ```
 
-````bash
+```bash
 brew install pkg-config cairo pango libpng jpeg giflib librsvg pixman python-setuptools
-``` for canvas to work
+```
+
+for canvas to work
 see: https://www.npmjs.com/package/canvas
 we use this to process images in cport
+
 ### run in dev mode
 
 ### CONFIGURATION
+
 create a config.yaml file in the root directory of the project. Like this:
+
 ```yaml
 caisy:
   project_id: "1234abcd-5678-90ef-ghij-klmnopqrstuv"
@@ -102,7 +107,7 @@ contentful:
   previewToken: "preview_token_contentful_PREVIEW123456789"
   deliveryToken: "delivery_token_contentful_DELIVERY987654321"
   defaultLocale: "de"
-````
+```
 
 ```bash
 yarn dev
